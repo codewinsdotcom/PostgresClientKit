@@ -17,9 +17,22 @@
 //  limitations under the License.
 //
 
+/// A credential for authenticating to the Postgres server.
+///
+/// PostgresClientKit supports `trust`, `password`, and `md5` authentication.  The configuration of
+/// the Postgres server determines which authentication types are allowed.  Refer to the [PostgreSQL
+/// documentation](https://www.postgresql.org/docs/11/client-authentication.html).
 public enum Credential {
+    
+    /// Connects without authenticating.
     case trust
+    
+    /// Authenticates by cleartext password.  Not recommended unless the connection is encrypted by
+    /// SSL/TLS (see `ConnectionConfiguration.ssl`).
     case cleartextPassword(password: String)
+    
+    /// Authenticates by MD5 hash of the username (`ConnectionConfiguration.user`), password, and
+    /// random salt.
     case md5Password(password: String)
 }
 
