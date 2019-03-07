@@ -1,9 +1,15 @@
 import XCTest
 
+extension PostgresClientKitTests {
+    static let __allTests = [
+        ("testExample", testExample),
+    ]
+}
+
 #if !os(macOS)
-public func allTests() -> [XCTestCaseEntry] {
+public func __allTests() -> [XCTestCaseEntry] {
     return [
-        testCase(PostgresClientKitTests.allTests),
+        testCase(PostgresClientKitTests.__allTests),
     ]
 }
 #endif

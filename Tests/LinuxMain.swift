@@ -3,5 +3,6 @@ import XCTest
 import PostgresClientKitTests
 
 var tests = [XCTestCaseEntry]()
-tests += PostgresClientKitTests.allTests()
+tests += PostgresClientKitTests.__allTests()
+
 XCTMain(tests)
