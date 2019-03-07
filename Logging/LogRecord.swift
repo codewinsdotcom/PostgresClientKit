@@ -52,10 +52,10 @@ public struct LogRecord {
     /// The log level that reflects the importance of the event.
     public let level: LogLevel
     
-    // A message describing this event.
+    /// A message describing this event.
     public let message: CustomStringConvertible
     
-    // The context of the event, such as a session or connection identifier.
+    /// The context of the event, such as a session or connection identifier.
     public let context: CustomStringConvertible?
     
     /// The timestamp of the event.

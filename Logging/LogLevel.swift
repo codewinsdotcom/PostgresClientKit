@@ -38,10 +38,10 @@ public enum LogLevel: Int, Comparable {
     /// An even more detailed debug message.
     case finest = 300
     
-    /// As the value of `Logger.logLevel`, disables all logging.
+    /// As the value of `Logger.level`, disables all logging.
     case off = 10000
     
-    /// As the value of `Logger.logLevel`, logs all log records.
+    /// As the value of `Logger.level`, logs all log records.
     case all = 0
     
     

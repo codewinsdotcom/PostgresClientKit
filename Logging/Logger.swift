@@ -22,7 +22,7 @@ import Foundation
 /// Logs events of interest.
 ///
 /// A `LogRecord` describes a loggable event.  Each record has a level which reflects the importance
-/// of the event.  If the log level of a record is at least as high as the `logLevel` of the logger,
+/// of the event.  If the log level of a record is at least as high as the `level` of the logger,
 /// the logger dispatches the record to the logger's current `handler`.
 ///
 /// Example:
@@ -69,7 +69,7 @@ public class Logger {
     }
     private var _level = LogLevel.info
     
-    /// The log handler for this logger.  Defaults to a `ConsoleHandler`.
+    /// The log handler for this logger.  Defaults to a `ConsoleLogHandler`.
     public var handler: LogHandler {
         get {
             semaphore.wait()
@@ -132,7 +132,7 @@ public class Logger {
         }
     }
     
-    /// Equivalent to log(level: .severe, ...)`.
+    /// Equivalent to `log(level: .severe, ...)`.
     public func severe(_ message: String,
                        context: CustomStringConvertible? = nil,
                        file: String = #file,
@@ -141,7 +141,7 @@ public class Logger {
         log(level: .severe, message: message, context: context)
     }
     
-    /// Equivalent to log(level: .warning, ...)`.
+    /// Equivalent to `log(level: .warning, ...)`.
     public func warning(_ message: String,
                         context: CustomStringConvertible? = nil,
                         file: String = #file,
@@ -150,7 +150,7 @@ public class Logger {
         log(level: .warning, message: message, context: context)
     }
     
-    /// Equivalent to log(level: .info, ...)`.
+    /// Equivalent to `log(level: .info, ...)`.
     public func info(_ message: String,
                         context: CustomStringConvertible? = nil,
                         file: String = #file,
@@ -159,7 +159,7 @@ public class Logger {
         log(level: .info, message: message, context: context)
     }
     
-    /// Equivalent to log(level: .fine, ...)`.
+    /// Equivalent to `log(level: .fine, ...)`.
     public func fine(_ message: String,
                         context: CustomStringConvertible? = nil,
                         file: String = #file,
@@ -168,7 +168,7 @@ public class Logger {
         log(level: .fine, message: message, context: context)
     }
     
-    /// Equivalent to log(level: .finer, ...)`.
+    /// Equivalent to `log(level: .finer, ...)`.
     public func finer(_ message: String,
                         context: CustomStringConvertible? = nil,
                         file: String = #file,
@@ -177,7 +177,7 @@ public class Logger {
         log(level: .finer, message: message, context: context)
     }
     
-    /// Equivalent to log(level: .finest, ...)`.
+    /// Equivalent to `log(level: .finest, ...)`.
     public func finest(_ message: String,
                         context: CustomStringConvertible? = nil,
                         file: String = #file,
