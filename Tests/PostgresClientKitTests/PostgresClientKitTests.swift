@@ -1,5 +1,5 @@
 import XCTest
-@testable import PostgresClientKit
+@testable import Postgres
 
 final class PostgresClientKitTests: XCTestCase {
     func testExample() {

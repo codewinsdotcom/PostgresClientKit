@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Socket",
+        "repositoryURL": "https://github.com/IBM-Swift/BlueSocket.git",
+        "state": {
+          "branch": null,
+          "revision": "a40b405bdf32bc853307dd5dee8d00636e394013",
+          "version": "1.0.44"
+        }
+      },
+      {
+        "package": "SSLService",
+        "repositoryURL": "https://github.com/IBM-Swift/BlueSSLService",
+        "state": {
+          "branch": null,
+          "revision": "6910763b0dfa6f95a75217215d8cdce3ee11a6ae",
+          "version": "1.0.44"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
