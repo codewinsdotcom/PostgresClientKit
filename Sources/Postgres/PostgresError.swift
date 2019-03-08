@@ -17,7 +17,14 @@
 //  limitations under the License.
 //
 
+/// Errors thrown by PostgresClientKit.
 public enum PostgresError: Error {
+    
+    /// A network error occurred in communicating with the Postgres server.
+    case socketError(cause: Error)
+    
+    /// The Postgres server reported an internal error or returned an invalid response.
+    case serverError(description: String)
 }
 
 // EOF

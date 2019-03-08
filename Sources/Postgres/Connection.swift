@@ -17,6 +17,9 @@
 //  limitations under the License.
 //
 
+import Foundation
+import Socket
+
 public class Connection: CustomStringConvertible {
     
     public init(configuration: ConnectionConfiguration,
@@ -41,6 +44,107 @@ public class Connection: CustomStringConvertible {
     
     public func close() { }
     
+    
+    //
+    // MARK: Socket
+    //
+    
+    /// The underlying socket to the Postgres server.
+    private let socket: Socket
+    
+    /// A buffer of data read from Postgres but not yet consumed.
+    private var readBuffer = Data()
+    
+    /// The index of the next byte to consume from the read buffer.
+    private var readBufferPosition = 0
+    
+    /// Reads an unsigned 8-bit integer from Postgres.
+    ///
+    /// - Returns: the value
+    /// - Throws: `PostgresError` if the operation fails
+    private func readUInt8() throws -> UInt8 {
+        
+        if readBufferPosition == readBuffer.count {
+            try refillReadBuffer()
+        }
+        
+        let byte = readBuffer[readBufferPosition]
+        readBufferPosition += 1
+        
+        return byte
+    }
+    
+    /// Reads data from Postgres.
+    ///
+    /// - Parameter count: the number of bytes to read
+    /// - Returns: the data
+    /// - Throws: `PostgresError` if the operation fails
+    private func readData(count: Int) throws -> Data {
+        
+        var data = Data()
+        
+        while data.count < count {
+            
+            let fromIndex = readBufferPosition
+            let toIndex = min(readBufferPosition + count, readBuffer.count)
+            let chunk = readBuffer[fromIndex..<toIndex]
+            data += chunk
+            readBufferPosition += chunk.count
+            
+            if data.count < count {
+                try refillReadBuffer()
+            }
+        }
+        
+        return data
+    }
+    
+    /// Reads an unsigned big-endian 32-bit integer from Postgres.
+    ///
+    /// - Returns: the value
+    /// - Throws: `PostgresError` if the operation fails
+    private func readUInt32() throws -> UInt32 {
+        
+        let value = try
+            UInt32(readUInt8()) << 24 +
+            UInt32(readUInt8()) << 16 +
+            UInt32(readUInt8()) << 8 +
+            UInt32(readUInt8())
+        
+        return value
+    }
+    
+    /// Reads a single ASCII character from Postgres.
+    ///
+    /// - Returns: the character
+    /// - Throws: `PostgresError` if the operation fails
+    private func readASCIICharacter() throws -> Character {
+        
+        let c = try Character(Unicode.Scalar(readUInt8()))
+        
+        return c
+    }
+    
+    private func refillReadBuffer() throws {
+        
+        assert(readBufferPosition == readBuffer.count)
+        
+        readBuffer.removeAll()
+        readBufferPosition = 0
+        
+        var readCount = 0
+        
+        do {
+            readCount = try socket.read(into: &readBuffer)
+        } catch {
+            throw PostgresError.socketError(cause: error)
+        }
+        
+        if readCount == 0 {
+            throw PostgresError.serverError(description: "no data available from server")
+        }
+    }
+
     
     //
     // MARK: CustomStringConvertible
