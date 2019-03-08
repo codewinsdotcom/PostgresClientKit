@@ -138,7 +138,8 @@ public class Logger {
                        file: String = #file,
                        function: String = #function,
                        line: Int = #line) {
-        log(level: .severe, message: message, context: context)
+        log(level: .severe, message: message, context: context,
+            file: file, function: function, line: line)
     }
     
     /// Equivalent to `log(level: .warning, ...)`.
@@ -147,7 +148,8 @@ public class Logger {
                         file: String = #file,
                         function: String = #function,
                         line: Int = #line) {
-        log(level: .warning, message: message, context: context)
+        log(level: .warning, message: message, context: context,
+            file: file, function: function, line: line)
     }
     
     /// Equivalent to `log(level: .info, ...)`.
@@ -156,7 +158,8 @@ public class Logger {
                         file: String = #file,
                         function: String = #function,
                         line: Int = #line) {
-        log(level: .info, message: message, context: context)
+        log(level: .info, message: message, context: context,
+            file: file, function: function, line: line)
     }
     
     /// Equivalent to `log(level: .fine, ...)`.
@@ -165,7 +168,8 @@ public class Logger {
                         file: String = #file,
                         function: String = #function,
                         line: Int = #line) {
-        log(level: .fine, message: message, context: context)
+        log(level: .fine, message: message, context: context,
+            file: file, function: function, line: line)
     }
     
     /// Equivalent to `log(level: .finer, ...)`.
@@ -174,7 +178,8 @@ public class Logger {
                         file: String = #file,
                         function: String = #function,
                         line: Int = #line) {
-        log(level: .finer, message: message, context: context)
+        log(level: .finer, message: message, context: context,
+            file: file, function: function, line: line)
     }
     
     /// Equivalent to `log(level: .finest, ...)`.
@@ -183,7 +188,8 @@ public class Logger {
                         file: String = #file,
                         function: String = #function,
                         line: Int = #line) {
-        log(level: .finest, message: message, context: context)
+        log(level: .finest, message: message, context: context,
+            file: file, function: function, line: line)
     }
 }
 
