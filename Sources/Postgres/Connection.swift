@@ -58,23 +58,49 @@ public class Connection: CustomStringConvertible {
     /// The index of the next byte to consume from the read buffer.
     private var readBufferPosition = 0
     
-    /// Reads an unsigned 8-bit integer from Postgres.
+    /// Reads an unsigned 8-bit integer from Postgres without consuming it.
     ///
     /// - Returns: the value
     /// - Throws: `PostgresError` if the operation fails
-    private func readUInt8() throws -> UInt8 {
+    private func peekUInt8() throws -> UInt8 {
         
         if readBufferPosition == readBuffer.count {
             try refillReadBuffer()
         }
         
         let byte = readBuffer[readBufferPosition]
+        
+        return byte
+    }
+    
+    /// Reads an unsigned 8-bit integer from Postgres.
+    ///
+    /// - Returns: the value
+    /// - Throws: `PostgresError` if the operation fails
+    private func readUInt8() throws -> UInt8 {
+        
+        let byte = try peekUInt8()
         readBufferPosition += 1
         
         return byte
     }
     
-    /// Reads data from Postgres.
+    /// Reads an unsigned big-endian 32-bit integer from Postgres.
+    ///
+    /// - Returns: the value
+    /// - Throws: `PostgresError` if the operation fails
+    private func readUInt32() throws -> UInt32 {
+        
+        let value = try
+            UInt32(readUInt8()) << 24 +
+            UInt32(readUInt8()) << 16 +
+            UInt32(readUInt8()) << 8 +
+            UInt32(readUInt8())
+        
+        return value
+    }
+    
+    /// Reads the specified number of bytes from Postgres.
     ///
     /// - Parameter count: the number of bytes to read
     /// - Returns: the data
@@ -96,22 +122,9 @@ public class Connection: CustomStringConvertible {
             }
         }
         
+        assert(data.count == count)
+        
         return data
-    }
-    
-    /// Reads an unsigned big-endian 32-bit integer from Postgres.
-    ///
-    /// - Returns: the value
-    /// - Throws: `PostgresError` if the operation fails
-    private func readUInt32() throws -> UInt32 {
-        
-        let value = try
-            UInt32(readUInt8()) << 24 +
-            UInt32(readUInt8()) << 16 +
-            UInt32(readUInt8()) << 8 +
-            UInt32(readUInt8())
-        
-        return value
     }
     
     /// Reads a single ASCII character from Postgres.
@@ -142,6 +155,85 @@ public class Connection: CustomStringConvertible {
         
         if readCount == 0 {
             throw PostgresError.serverError(description: "no data available from server")
+        }
+    }
+    
+    /// The body of a response (everything after the bytes indicating the response length).
+    internal class ResponseBody {
+        
+        /// Creates an instance.
+        ///
+        /// - Parameters:
+        ///   - connection: the connection
+        ///   - responseLength: the response length, in bytes
+        private init(connection: Connection, responseLength: Int) {
+            
+            self.connection = connection
+            
+            // responseLength includes the 4-byte response length
+            self.bytesRemaining = responseLength - 4
+        }
+        
+        private let connection: Connection
+        private var bytesRemaining: Int
+        
+        /// Reads an unsigned 8-bit integer without consuming it.
+        ///
+        /// - Returns: the value
+        /// - Throws: `PostgresError` if the operation fails
+        internal func peekUInt8() throws -> UInt8 {
+            
+            if bytesRemaining == 0 {
+                throw PostgresError.serverError(description: "response too short")
+            }
+            
+            let byte = try connection.peekUInt8()
+            
+            return byte
+        }
+        
+        /// Reads an unsigned 8-bit integer.
+        ///
+        /// - Returns: the value
+        /// - Throws: `PostgresError` if the operation fails
+        internal func readUInt8() throws -> UInt8 {
+            
+            if bytesRemaining == 0 {
+                throw PostgresError.serverError(description: "response too short")
+            }
+            
+            let byte = try connection.readUInt8()
+            bytesRemaining -= 1
+            
+            return byte
+        }
+        
+        /// Reads the specified number of bytes.
+        ///
+        /// - Parameter count: the number of bytes to read
+        /// - Returns: the data
+        /// - Throws: `PostgresError` if the operation fails
+        internal func readData(count: Int) throws -> Data {
+            
+            if bytesRemaining < count {
+                throw PostgresError.serverError(description: "response too short")
+            }
+            
+            let data = try connection.readData(count: count)
+            bytesRemaining -= data.count
+            
+            assert(data.count == count)
+            
+            return data
+        }
+        
+        /// Verifies the response body has been fully consumed.
+        ///
+        /// - Throws: `PostgresError` if not fully consumed
+        internal func verifyFullyConsumed() throws {
+            if bytesRemaining != 0 {
+                throw PostgresError.serverError(description: "response too long")
+            }
         }
     }
 
