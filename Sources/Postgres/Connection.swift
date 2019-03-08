@@ -150,9 +150,8 @@ public class Connection: CustomStringConvertible {
     // MARK: CustomStringConvertible
     //
     
-    public var description: String {
-        return "FIXME"
-    }
+    /// A short string that identifies this connection.
+    public let description = "Connection-\(Postgres.nextId())"
 }
 
 // EOF
