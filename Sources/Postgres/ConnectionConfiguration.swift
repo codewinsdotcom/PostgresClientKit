@@ -17,15 +17,29 @@
 //  limitations under the License.
 //
 
+/// The configuration for a connection to the Postgres server.
 public struct ConnectionConfiguration {
     
+    /// Creates an instance.
     public init() { }
     
+    /// The hostname or IP address of the Postgres server.  Defaults to `localhost`.
     public var host = "localhost"
+    
+    /// The port number of the Postgres server.  Defaults to `5432`.
     public var port = 5432
+    
+    /// Whether to use SSL/TLS to connect to the Postgres server.  Defaults to `true`.
     public var ssl = true
+    
+    /// The name of the database of the Postgres server.  Defaults to `postgres`.
     public var database = "postgres"
+    
+    /// The Postgres user name.  Defaults to an empty string.
     public var user: String = ""
+    
+    /// The credential to use to authenticate to the Postgres server.  Defaults to
+    /// `Credential.trust`.
     public var credential: Credential = .trust
 }
 
