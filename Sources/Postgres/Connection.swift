@@ -27,12 +27,6 @@ public class Connection: CustomStringConvertible {
     
     public weak var delegate: ConnectionDelegate?
     
-    public func close() { }
-    
-    public var isClosed: Bool {
-        return false
-    }
-    
     public func prepareStatement(text: String) throws -> Statement {
         fatalError()
     }
@@ -40,6 +34,17 @@ public class Connection: CustomStringConvertible {
     public func beginTransaction() throws { }
     public func commitTransaction() throws { }
     public func rollbackTransaction() throws { }
+    
+    public var isClosed: Bool {
+        return false
+    }
+    
+    public func close() { }
+    
+    
+    //
+    // MARK: CustomStringConvertible
+    //
     
     public var description: String {
         return "FIXME"

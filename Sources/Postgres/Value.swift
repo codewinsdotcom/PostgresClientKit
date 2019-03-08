@@ -23,10 +23,6 @@ public struct Value: ValueConvertible, CustomStringConvertible {
     
     public init(_ rawValue: String?) { }
     
-    public var postgresValue: Value {
-        fatalError()
-    }
-    
     public var isNull: Bool {
         fatalError()
     }
@@ -56,6 +52,20 @@ public struct Value: ValueConvertible, CustomStringConvertible {
     }
     
     // ...similar conversions for other basic Swift types...
+    
+    
+    //
+    // MARK: ValueConvertible
+    //
+    
+    public var postgresValue: Value {
+        fatalError()
+    }
+    
+
+    //
+    // MARK: CustomStringConvertible
+    //
     
     public var description: String {
         return "FIXME"

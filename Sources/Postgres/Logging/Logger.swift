@@ -51,6 +51,9 @@ import Foundation
 /// `Logger` is threadsafe.
 public class Logger {
     
+    /// Creates an instance.
+    public init() { }
+    
     /// Used to make this logger instance threadsafe.
     private let semaphore = DispatchSemaphore(value: 1)
     
@@ -84,9 +87,6 @@ public class Logger {
     }
     private var _handler: LogHandler = ConsoleLogHandler()
 
-    /// Creates an instance.
-    public init() { }
-    
     /// Gets whether a `LogRecord` instance with the specified log level would be logged.
     ///
     /// - Parameter level: the log level

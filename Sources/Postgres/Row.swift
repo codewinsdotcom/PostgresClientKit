@@ -25,6 +25,11 @@ public struct Row: CustomStringConvertible {
     
     public var columns: [Value]
     
+    
+    //
+    // MARK: CustomStringConvertible
+    //
+    
     public var description: String {
         return "FIXME"
     }

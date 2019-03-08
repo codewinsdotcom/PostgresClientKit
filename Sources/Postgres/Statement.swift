@@ -24,6 +24,7 @@ public class Statement: CustomStringConvertible {
     }
     
     public let connection: Connection
+    
     public let text: String
     
     @discardableResult public func execute(
@@ -32,11 +33,16 @@ public class Statement: CustomStringConvertible {
         fatalError()
     }
     
-    public func close() { }
-    
     public var isClosed: Bool {
         return false
     }
+    
+    public func close() { }
+    
+    
+    //
+    // MARK: CustomStringConvertible
+    //
     
     public var description: String {
         return "FIXME"

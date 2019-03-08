@@ -38,6 +38,11 @@ public struct Notice: CustomStringConvertible {
     public let line: String?
     public let routine: String?
     
+    
+    //
+    // MARK: CustomStringConvertible
+    //
+    
     public var description: String {
         return "FIXME"
     }

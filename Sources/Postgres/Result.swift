@@ -24,14 +24,21 @@ public class Result: CustomStringConvertible {
     }
     
     public let statement: Statement
-    public let rows: Rows
-    public private(set) var rowCount: Int?
     
-    public func close() { }
+    public let rows: Rows
+    
+    public private(set) var rowCount: Int?
     
     public var isClosed: Bool {
         return false
     }
+    
+    public func close() { }
+    
+    
+    //
+    // MARK: CustomStringConvertible
+    //
     
     public var description: String {
         return "FIXME"

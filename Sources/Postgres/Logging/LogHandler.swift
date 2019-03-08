@@ -39,20 +39,11 @@ public protocol LogHandler {
 /// A log handler that prints log records to standard output.
 public class ConsoleLogHandler: LogHandler {
     
-    /// Formats timestamps in ISO8601 format.
-    private static let timestampFormatter: DateFormatter = {
-        let df = DateFormatter()
-        df.locale = Locale(identifier: "en_US_POSIX")
-        df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-        df.timeZone = TimeZone(secondsFromGMT: 0)
-        return df
-    }()
+    /// Creates an instance.
+    public init() { }
     
     /// A queue used to make this class threadsafe.
     private let queue = DispatchQueue(label: "Postgres.ConsoleLogHandler")
-    
-    /// Creates an instance.
-    public init() { }
     
     /// Prints a log record to standard output.
     ///
@@ -74,6 +65,15 @@ public class ConsoleLogHandler: LogHandler {
             print("[\(prefix)] \(record.message)")
         }
     }
+    
+    /// Formats timestamps in ISO8601 format.
+    private static let timestampFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.locale = Locale(identifier: "en_US_POSIX")
+        df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+        df.timeZone = TimeZone(secondsFromGMT: 0)
+        return df
+    }()
 }
 
 // EOF
