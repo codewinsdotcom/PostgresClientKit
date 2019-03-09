@@ -1,4 +1,5 @@
 //
+//  Request.swift
 //  PostgresClientKit
 //
 //  Copyright 2019 David Pitfield and the PostgresClientKit contributors
@@ -18,7 +19,7 @@
 
 import Foundation
 
-/// A request from the client to the Postgres server.
+/// An abstract request from the client to the Postgres server.
 internal class Request: CustomStringConvertible {
     
     /// The request type.

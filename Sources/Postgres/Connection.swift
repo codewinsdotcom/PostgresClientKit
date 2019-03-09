@@ -164,19 +164,23 @@ public class Connection: CustomStringConvertible {
         /// Creates an instance.
         ///
         /// - Parameters:
-        ///   - connection: the connection
+        ///   - responseType: the response type
         ///   - responseLength: the response length, in bytes
-        private init(connection: Connection, responseLength: Int) {
+        ///   - connection: the connection
+        private init(responseType: Character, responseLength: Int, connection: Connection) {
             
-            self.connection = connection
+            self.responseType = responseType
             
             // responseLength includes the 4-byte response length
             self.bytesRemaining = responseLength - 4
+            
+            self.connection = connection
         }
         
-        private let connection: Connection
+        internal let responseType: Character
         private var bytesRemaining: Int
-        
+        private let connection: Connection
+
         /// Reads an unsigned 8-bit integer without consuming it.
         ///
         /// - Returns: the value
