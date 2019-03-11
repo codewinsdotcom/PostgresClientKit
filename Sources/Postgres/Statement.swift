@@ -39,6 +39,10 @@ public class Statement: CustomStringConvertible {
     
     public func close() { }
     
+    deinit {
+        close()
+    }
+    
     
     //
     // MARK: CustomStringConvertible

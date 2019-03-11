@@ -22,13 +22,48 @@ import Socket
 
 public class Connection: CustomStringConvertible {
     
+    //
+    // MARK: Connection lifecycle
+    //
+    
+    /// Creates a connection.
+    ///
+    /// - Parameters:
+    ///   - configuration: the connection configuration
+    ///   - delegate: the optional delegate for the connection
+    /// - Throws: `PostgresError` if the operation fails
     public init(configuration: ConnectionConfiguration,
                 delegate: ConnectionDelegate? = nil) throws {
         
-        fatalError()
+        self.delegate = delegate
+        
+        let host = configuration.host
+        let port = configuration.port
+
+        do {
+            socket = try Socket.create()
+            try socket.connect(to: host, port: Int32(port))
+        } catch {
+            throw PostgresError.socketError(cause: error)
+        }
     }
     
     public weak var delegate: ConnectionDelegate?
+    
+    public var isClosed: Bool {
+        return false
+    }
+    
+    public func close() { }
+    
+    deinit {
+        close()
+    }
+    
+
+    //
+    // MARK: Statement execution
+    //
     
     public func prepareStatement(text: String) throws -> Statement {
         fatalError()
@@ -37,12 +72,6 @@ public class Connection: CustomStringConvertible {
     public func beginTransaction() throws { }
     public func commitTransaction() throws { }
     public func rollbackTransaction() throws { }
-    
-    public var isClosed: Bool {
-        return false
-    }
-    
-    public func close() { }
     
     
     //
@@ -240,8 +269,8 @@ public class Connection: CustomStringConvertible {
             }
         }
     }
-
     
+
     //
     // MARK: CustomStringConvertible
     //
