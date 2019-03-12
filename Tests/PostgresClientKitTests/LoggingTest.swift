@@ -17,7 +17,7 @@
 //  limitations under the License.
 //
 
-import Postgres
+import PostgresClientKit
 import XCTest
 
 /// Tests logging.

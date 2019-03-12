@@ -1,5 +1,5 @@
 import Foundation
-import Postgres
+import PostgresClientKit
 
 let logger = Logger()
 logger.level = .warning

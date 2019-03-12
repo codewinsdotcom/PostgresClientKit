@@ -7,7 +7,7 @@ let package = Package(
     products: [
         .library(
             name: "PostgresClientKit",
-            targets: ["Postgres"]),
+            targets: ["PostgresClientKit"]),
     ],
     dependencies: [
         .package(url: "https://github.com/IBM-Swift/BlueSocket.git", from: "1.0.0"),
@@ -15,10 +15,10 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "Postgres",
+            name: "PostgresClientKit",
             dependencies: ["Socket", "SSLService"]),
         .testTarget(
             name: "PostgresClientKitTests",
-            dependencies: ["Postgres"]),
+            dependencies: ["PostgresClientKit"]),
     ]
 )

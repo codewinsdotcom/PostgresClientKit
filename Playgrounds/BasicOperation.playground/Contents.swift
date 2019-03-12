@@ -1,12 +1,12 @@
-import Postgres
+import PostgresClientKit
 
 func performQuery() throws {
     
-    var configuration = Postgres.ConnectionConfiguration()
+    var configuration = PostgresClientKit.ConnectionConfiguration()
     configuration.user = "dbp"
     configuration.credential = .md5Password(password: "foo")
     
-    let connection = try Postgres.Connection(configuration: configuration)
+    let connection = try PostgresClientKit.Connection(configuration: configuration)
     
     let statement = try connection.prepareStatement(
         text: "SELECT * FROM project WHERE airport = $1;")
