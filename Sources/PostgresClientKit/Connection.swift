@@ -75,6 +75,101 @@ public class Connection: CustomStringConvertible {
     
     
     //
+    // MARK: Request processing
+    //
+    
+    // FIXME: to do
+    
+    
+    //
+    // MARK: Response processing
+    //
+    
+    /// The body of a response (everything after the bytes indicating the response length).
+    internal class ResponseBody {
+        
+        /// Creates an instance.
+        ///
+        /// - Parameters:
+        ///   - responseType: the response type
+        ///   - responseLength: the response length, in bytes
+        ///   - connection: the connection
+        private init(responseType: Character, responseLength: Int, connection: Connection) {
+            
+            self.responseType = responseType
+            
+            // responseLength includes the 4-byte response length
+            self.bytesRemaining = responseLength - 4
+            
+            self.connection = connection
+        }
+        
+        internal let responseType: Character
+        private var bytesRemaining: Int
+        private let connection: Connection
+        
+        /// Reads an unsigned 8-bit integer without consuming it.
+        ///
+        /// - Returns: the value
+        /// - Throws: `PostgresError` if the operation fails
+        internal func peekUInt8() throws -> UInt8 {
+            
+            if bytesRemaining == 0 {
+                throw PostgresError.serverError(description: "response too short")
+            }
+            
+            let byte = try connection.peekUInt8()
+            
+            return byte
+        }
+        
+        /// Reads an unsigned 8-bit integer.
+        ///
+        /// - Returns: the value
+        /// - Throws: `PostgresError` if the operation fails
+        internal func readUInt8() throws -> UInt8 {
+            
+            if bytesRemaining == 0 {
+                throw PostgresError.serverError(description: "response too short")
+            }
+            
+            let byte = try connection.readUInt8()
+            bytesRemaining -= 1
+            
+            return byte
+        }
+        
+        /// Reads the specified number of bytes.
+        ///
+        /// - Parameter count: the number of bytes to read
+        /// - Returns: the data
+        /// - Throws: `PostgresError` if the operation fails
+        internal func readData(count: Int) throws -> Data {
+            
+            if bytesRemaining < count {
+                throw PostgresError.serverError(description: "response too short")
+            }
+            
+            let data = try connection.readData(count: count)
+            bytesRemaining -= data.count
+            
+            assert(data.count == count)
+            
+            return data
+        }
+        
+        /// Verifies the response body has been fully consumed.
+        ///
+        /// - Throws: `PostgresError` if not fully consumed
+        internal func verifyFullyConsumed() throws {
+            if bytesRemaining != 0 {
+                throw PostgresError.serverError(description: "response too long")
+            }
+        }
+    }
+    
+    
+    //
     // MARK: Socket
     //
     
@@ -187,90 +282,7 @@ public class Connection: CustomStringConvertible {
         }
     }
     
-    /// The body of a response (everything after the bytes indicating the response length).
-    internal class ResponseBody {
-        
-        /// Creates an instance.
-        ///
-        /// - Parameters:
-        ///   - responseType: the response type
-        ///   - responseLength: the response length, in bytes
-        ///   - connection: the connection
-        private init(responseType: Character, responseLength: Int, connection: Connection) {
-            
-            self.responseType = responseType
-            
-            // responseLength includes the 4-byte response length
-            self.bytesRemaining = responseLength - 4
-            
-            self.connection = connection
-        }
-        
-        internal let responseType: Character
-        private var bytesRemaining: Int
-        private let connection: Connection
-
-        /// Reads an unsigned 8-bit integer without consuming it.
-        ///
-        /// - Returns: the value
-        /// - Throws: `PostgresError` if the operation fails
-        internal func peekUInt8() throws -> UInt8 {
-            
-            if bytesRemaining == 0 {
-                throw PostgresError.serverError(description: "response too short")
-            }
-            
-            let byte = try connection.peekUInt8()
-            
-            return byte
-        }
-        
-        /// Reads an unsigned 8-bit integer.
-        ///
-        /// - Returns: the value
-        /// - Throws: `PostgresError` if the operation fails
-        internal func readUInt8() throws -> UInt8 {
-            
-            if bytesRemaining == 0 {
-                throw PostgresError.serverError(description: "response too short")
-            }
-            
-            let byte = try connection.readUInt8()
-            bytesRemaining -= 1
-            
-            return byte
-        }
-        
-        /// Reads the specified number of bytes.
-        ///
-        /// - Parameter count: the number of bytes to read
-        /// - Returns: the data
-        /// - Throws: `PostgresError` if the operation fails
-        internal func readData(count: Int) throws -> Data {
-            
-            if bytesRemaining < count {
-                throw PostgresError.serverError(description: "response too short")
-            }
-            
-            let data = try connection.readData(count: count)
-            bytesRemaining -= data.count
-            
-            assert(data.count == count)
-            
-            return data
-        }
-        
-        /// Verifies the response body has been fully consumed.
-        ///
-        /// - Throws: `PostgresError` if not fully consumed
-        internal func verifyFullyConsumed() throws {
-            if bytesRemaining != 0 {
-                throw PostgresError.serverError(description: "response too long")
-            }
-        }
-    }
     
-
     //
     // MARK: CustomStringConvertible
     //
