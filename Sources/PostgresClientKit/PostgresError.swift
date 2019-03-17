@@ -32,6 +32,9 @@ public enum PostgresError: Error {
     /// The Postgres server reported a SQL error.
     case sqlError(notice: Notice)
     
+    /// The Postgres server does not support SSL/TLS.
+    case sslNotSupported
+    
     /// The authentication type required by the Postgres server is not supported by
     /// PostgresClientKit.
     case unsupportedAuthenticationType(authenticationType: String)

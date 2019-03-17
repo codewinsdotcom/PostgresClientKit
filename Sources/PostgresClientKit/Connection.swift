@@ -19,6 +19,7 @@
 
 import Foundation
 import Socket
+import SSLService
 
 public class Connection: CustomStringConvertible {
     
@@ -35,6 +36,8 @@ public class Connection: CustomStringConvertible {
     public init(configuration: ConnectionConfiguration,
                 delegate: ConnectionDelegate? = nil) throws {
         
+        var success = false
+        
         self.delegate = delegate
         
         let host = configuration.host
@@ -42,6 +45,19 @@ public class Connection: CustomStringConvertible {
 
         do {
             socket = try Socket.create()
+            log(.finer, "Created socket")
+        } catch {
+            throw PostgresError.socketError(cause: error)
+        }
+
+        defer {
+            if !success {
+                log(.finer, "Closing socket")
+                socket.close()
+            }
+        }
+
+        do {
             log(.fine, "Opening connection to port \(port) on host \(host)")
             try socket.connect(to: host, port: Int32(port))
         } catch {
@@ -49,7 +65,23 @@ public class Connection: CustomStringConvertible {
         }
         
         if configuration.ssl {
-            fatalError("FIXME: SSL not supported")
+            log(.finer, "Requesting SSL/TLS encryption")
+
+            let sslRequest = SSLRequest()
+            try sendRequest(sslRequest)
+            let sslCode = try readASCIICharacter()
+            
+            guard sslCode == "S" else {
+                throw PostgresError.sslNotSupported
+            }
+            
+            let sslConfig = SSLService.Configuration()
+            let sslService = try SSLService(usingConfiguration: sslConfig)!
+            socket.delegate = sslService
+            try sslService.initialize(asServer: false)
+            try sslService.onConnect(socket: socket)
+            
+            log(.fine, "Successfully negotiated SSL/TLS encryption")
         }
         
         let user = configuration.user
@@ -78,6 +110,8 @@ public class Connection: CustomStringConvertible {
         }
         
         try receiveResponse(type: ReadyForQueryResponse.self)
+        
+        success = true
     }
     
     public weak var delegate: ConnectionDelegate?
@@ -122,7 +156,7 @@ public class Connection: CustomStringConvertible {
     
     private func sendRequest(_ request: Request) throws {
         
-        log(.finer, "Sending \(request))")
+        log(.finer, "Sending \(request)")
 
         do {
             try socket.write(from: request.data())

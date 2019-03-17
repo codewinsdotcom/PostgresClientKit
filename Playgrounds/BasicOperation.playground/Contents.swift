@@ -4,7 +4,8 @@ import PostgresClientKit
 do {
     PostgresClientKit.Postgres.logger.level = .finest
     var configuration = PostgresClientKit.ConnectionConfiguration()
-    configuration.ssl = false
+    configuration.host = "127.0.0.1"
+    configuration.ssl = true
     configuration.user = "dbp"
 
     let connection = try PostgresClientKit.Connection(configuration: configuration)
