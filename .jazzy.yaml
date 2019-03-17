@@ -1,5 +1,5 @@
 output: Docs
 clean: true
 copyright: Copyright 2019 David Pitfield and the PostgresClientKit contributors. Licensed under the Apache License, Version 2.0.
-module: Postgres
+module: PostgresClientKit
 xcodebuild_arguments: [-derivedDataPath,.jazzybuild,-scheme,PostgresClientKit-Package]

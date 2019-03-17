@@ -42,10 +42,42 @@ public class Connection: CustomStringConvertible {
 
         do {
             socket = try Socket.create()
+            log(.fine, "Opening connection to port \(port) on host \(host)")
             try socket.connect(to: host, port: Int32(port))
         } catch {
             throw PostgresError.socketError(cause: error)
         }
+        
+        if configuration.ssl {
+            fatalError("FIXME: SSL not supported")
+        }
+        
+        let user = configuration.user
+        let database = configuration.database
+        
+        log(.fine, "Connecting to database \(database) as user \(user)")
+        
+        let startupRequest = StartupRequest(user: user, database: database)
+        try sendRequest(startupRequest)
+        
+        authentication:
+        while true {
+            let authenticationResponse = try receiveResponse(type: AuthenticationResponse.self)
+            
+            switch authenticationResponse {
+                
+            case is AuthenticationOKResponse:
+                break authentication
+                
+            // FIXME: AuthenticationCleartextPasswordResponse
+            // FIXME: AuthenticationMD5Response
+                
+            default:
+                fatalError("\(authenticationResponse) not handled when connecting")
+            }
+        }
+        
+        try receiveResponse(type: ReadyForQueryResponse.self)
     }
     
     public weak var delegate: ConnectionDelegate?
@@ -54,10 +86,12 @@ public class Connection: CustomStringConvertible {
         return false
     }
     
-    public func close() { }
+    public func close() {
+        fatalError("FIXME: implement")
+    }
     
     deinit {
-        close()
+        // FIXME: implement
     }
     
 
@@ -66,24 +100,101 @@ public class Connection: CustomStringConvertible {
     //
     
     public func prepareStatement(text: String) throws -> Statement {
-        fatalError()
+        fatalError("FIXME: implement")
     }
     
-    public func beginTransaction() throws { }
-    public func commitTransaction() throws { }
-    public func rollbackTransaction() throws { }
+    public func beginTransaction() throws {
+        fatalError("FIXME: implement")
+    }
+    
+    public func commitTransaction() throws {
+        fatalError("FIXME: implement")
+    }
+    
+    public func rollbackTransaction() throws {
+        fatalError("FIXME: implement")
+    }
     
     
     //
     // MARK: Request processing
     //
     
-    // FIXME: to do
+    private func sendRequest(_ request: Request) throws {
+        
+        log(.finer, "Sending \(request))")
+
+        do {
+            try socket.write(from: request.data())
+        } catch {
+            throw PostgresError.socketError(cause: error)
+        }
+    }
     
     
     //
     // MARK: Response processing
     //
+    
+    @discardableResult private func receiveResponse<T: Response>(type: T.Type? = nil) throws -> T {
+        
+        while true {
+            
+            let responseType = try readASCIICharacter()
+            
+            // The response length includes itself (4 bytes) but excludes the response type (1 byte).
+            let responseLength = try readUInt32()
+            
+            let responseBody = ResponseBody(responseType: responseType,
+                                            responseLength: Int(responseLength),
+                                            connection: self)
+            
+            let response: Response
+            
+            switch responseType {
+                
+            case "E": response = try ErrorResponse(responseBody: responseBody)
+            case "K": response = try BackendKeyDataResponse(responseBody: responseBody)
+            case "N": response = try NoticeResponse(responseBody: responseBody)
+            case "R": response = try AuthenticationResponse.parse(responseBody: responseBody)
+            case "S": response = try ParameterStatusResponse(responseBody: responseBody)
+            case "Z": response = try ReadyForQueryResponse(responseBody: responseBody)
+                
+            default:
+                throw PostgresError.serverError(
+                    description: "unrecognized response type '\(responseType)'")
+            }
+            
+            log(.finer, "Received \(response)")
+            
+            switch response {
+                
+            case is BackendKeyDataResponse:
+                continue // don't need this, since we don't support CancelRequest
+                
+            case let errorResponse as ErrorResponse:
+                throw PostgresError.sqlError(notice: errorResponse.notice)
+                
+            case let noticeResponse as NoticeResponse:
+                delegate?.connection(self, didReceiveNotice: noticeResponse.notice)
+                
+            case let parameterStatusResponse as ParameterStatusResponse:
+                
+                delegate?.connection(
+                    self,
+                    didReceiveParameterStatus: (name: parameterStatusResponse.name,
+                                                value: parameterStatusResponse.value))
+                
+                try Parameter.checkParameterStatusResponse(parameterStatusResponse)
+                
+            case is T:
+                return response as! T
+                
+            default:
+                throw PostgresError.serverError(description: "unexpected response type '\(responseType)'")
+            }
+        }
+    }
     
     /// The body of a response (everything after the bytes indicating the response length).
     internal class ResponseBody {
@@ -94,7 +205,7 @@ public class Connection: CustomStringConvertible {
         ///   - responseType: the response type
         ///   - responseLength: the response length, in bytes
         ///   - connection: the connection
-        private init(responseType: Character, responseLength: Int, connection: Connection) {
+        fileprivate init(responseType: Character, responseLength: Int, connection: Connection) {
             
             self.responseType = responseType
             
@@ -127,7 +238,7 @@ public class Connection: CustomStringConvertible {
         ///
         /// - Returns: the value
         /// - Throws: `PostgresError` if the operation fails
-        internal func readUInt8() throws -> UInt8 {
+        @discardableResult internal func readUInt8() throws -> UInt8 {
             
             if bytesRemaining == 0 {
                 throw PostgresError.serverError(description: "response too short")
@@ -139,6 +250,21 @@ public class Connection: CustomStringConvertible {
             return byte
         }
         
+        /// Reads an unsigned 32-bit integer.
+        ///
+        /// - Returns: the value
+        /// - Throws: `PostgresError` if the operation fails
+        internal func readUInt32() throws -> UInt32 {
+            
+            let value = try
+                UInt32(readUInt8()) << 24 +
+                UInt32(readUInt8()) << 16 +
+                UInt32(readUInt8()) << 8 +
+                UInt32(readUInt8())
+            
+            return value
+        }
+
         /// Reads the specified number of bytes.
         ///
         /// - Parameter count: the number of bytes to read
@@ -156,6 +282,42 @@ public class Connection: CustomStringConvertible {
             assert(data.count == count)
             
             return data
+        }
+        
+        /// Reads a single ASCII character.
+        ///
+        /// - Returns: the character
+        /// - Throws: `PostgresError` if the operation fails
+        internal func readASCIICharacter() throws -> Character {
+            
+            let c = try Character(Unicode.Scalar(readUInt8()))
+            
+            return c
+        }
+
+        /// Reads a null-terminated UTF8 string.
+        ///
+        /// - Returns: the string
+        /// - Throws: `PostgresError` if the operation fails
+        internal func readUTF8String() throws -> String {
+            
+            var data = Data()
+            
+            while true {
+                let b = try readUInt8()
+                
+                if b == 0 {
+                    break
+                }
+                
+                data.append(b)
+            }
+            
+            guard let s = String(data: data, encoding: .utf8) else {
+                throw PostgresError.serverError(description: "response contained invalid UTF8 string")
+            }
+            
+            return s
         }
         
         /// Verifies the response body has been fully consumed.
@@ -280,6 +442,25 @@ public class Connection: CustomStringConvertible {
         if readCount == 0 {
             throw PostgresError.serverError(description: "no data available from server")
         }
+    }
+    
+    
+    //
+    // MARK: Logging
+    //
+    
+    private func log(_ level: LogLevel,
+                    _ message: CustomStringConvertible,
+                    file: String = #file,
+                    function: String = #function,
+                    line: Int = #line) {
+        
+        Postgres.logger.log(level: level,
+                            message: message,
+                            context: self,
+                            file: file,
+                            function: function,
+                            line: line)
     }
     
     

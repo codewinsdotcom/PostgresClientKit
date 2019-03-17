@@ -20,11 +20,21 @@
 /// Errors thrown by PostgresClientKit.
 public enum PostgresError: Error {
     
+    /// The Postgres server has a parameter set to a value incompatible with PostgresClientKit.
+    case invalidParameterValue(name: String, value: String, requiredValue: String)
+        
+    /// The Postgres server reported an internal error or returned an invalid response.
+    case serverError(description: String)
+    
     /// A network error occurred in communicating with the Postgres server.
     case socketError(cause: Error)
     
-    /// The Postgres server reported an internal error or returned an invalid response.
-    case serverError(description: String)
+    /// The Postgres server reported a SQL error.
+    case sqlError(notice: Notice)
+    
+    /// The authentication type required by the Postgres server is not supported by
+    /// PostgresClientKit.
+    case unsupportedAuthenticationType(authenticationType: String)
 }
 
 // EOF

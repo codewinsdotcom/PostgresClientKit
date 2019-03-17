@@ -1,5 +1,5 @@
 //
-//  Postgres.swift
+//  AuthenticationOKResponse.swift
 //  PostgresClientKit
 //
 //  Copyright 2019 David Pitfield and the PostgresClientKit contributors
@@ -17,34 +17,23 @@
 //  limitations under the License.
 //
 
-import Foundation
-
-/// A namespace for properties and methods used throughout PostgresClientKit.
-public struct Postgres {
+internal class AuthenticationOKResponse: AuthenticationResponse {
     
-    //
-    // MARK: Logging
-    //
-    
-    /// The logger used by PostgresClientKit.
-    public static let logger = Logger()
-
-
-    //
-    // MARK: ID generation
-    //
-    
-    /// A threadsafe counter that starts with 1 and increments by 1 with each invocation.
-    internal static func nextId() -> UInt64 {
-        nextIdSemaphore.wait()
-        defer { nextIdSemaphore.signal() }
-        let id = _nextId
-        _nextId &= 1 // wraparound
-        return id
+    override internal init(responseBody: Connection.ResponseBody) throws {
+        
+        assert(responseBody.responseType == "R")
+        
+        try super.init(responseBody: responseBody)
     }
     
-    private static let nextIdSemaphore = DispatchSemaphore(value: 1)
-    private static var _nextId: UInt64 = 1
+    
+    //
+    // MARK: CustomStringConvertible
+    //
+    
+    override internal var description: String {
+        return super.description
+    }
 }
 
 // EOF
