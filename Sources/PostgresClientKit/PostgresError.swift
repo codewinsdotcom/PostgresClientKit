@@ -20,9 +20,15 @@
 /// Errors thrown by PostgresClientKit.
 public enum PostgresError: Error {
     
+    /// The Postgres server requires a `Credential.cleartextPassword` for authentication.
+    case cleartextPasswordCredentialRequired
+    
     /// The Postgres server has a parameter set to a value incompatible with PostgresClientKit.
     case invalidParameterValue(name: String, value: String, requiredValue: String)
         
+    /// The Postgres server requires a `Credential.md5Password` for authentication.
+    case md5PasswordCredentialRequired
+    
     /// The Postgres server reported an internal error or returned an invalid response.
     case serverError(description: String)
     

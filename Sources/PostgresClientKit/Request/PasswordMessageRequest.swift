@@ -1,5 +1,5 @@
 //
-//  SSLRequest.swift
+//  PasswordMessageRequest.swift
 //  PostgresClientKit
 //
 //  Copyright 2019 David Pitfield and the PostgresClientKit contributors
@@ -19,18 +19,25 @@
 
 import Foundation
 
-internal class SSLRequest: Request {
+internal class PasswordMessageRequest: Request {
+    
+    internal init(password: String) {
+        self.password = password
+    }
+    
+    private let password: String
+    
     
     //
     // MARK: Request
     //
     
     override var requestType: Character? {
-        return nil
+        return "p"
     }
     
     override var body: Data {
-        return UInt32(80877103).data // "SSL request code"
+        return password.dataZero
     }
     
     
@@ -39,7 +46,7 @@ internal class SSLRequest: Request {
     //
     
     override var description: String {
-        return super.description
+        return super.description + "(password: <masked>)"
     }
 }
 

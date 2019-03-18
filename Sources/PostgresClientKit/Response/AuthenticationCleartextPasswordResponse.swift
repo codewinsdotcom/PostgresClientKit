@@ -1,5 +1,5 @@
 //
-//  SSLRequest.swift
+//  AuthenticationCleartextPasswordResponse.swift
 //  PostgresClientKit
 //
 //  Copyright 2019 David Pitfield and the PostgresClientKit contributors
@@ -17,20 +17,13 @@
 //  limitations under the License.
 //
 
-import Foundation
-
-internal class SSLRequest: Request {
+internal class AuthenticationCleartextPasswordResponse: AuthenticationResponse {
     
-    //
-    // MARK: Request
-    //
-    
-    override var requestType: Character? {
-        return nil
-    }
-    
-    override var body: Data {
-        return UInt32(80877103).data // "SSL request code"
+    override internal init(responseBody: Connection.ResponseBody) throws {
+        
+        assert(responseBody.responseType == "R")
+        
+        try super.init(responseBody: responseBody)
     }
     
     
@@ -38,7 +31,7 @@ internal class SSLRequest: Request {
     // MARK: CustomStringConvertible
     //
     
-    override var description: String {
+    override internal var description: String {
         return super.description
     }
 }

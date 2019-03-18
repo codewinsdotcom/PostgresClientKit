@@ -101,7 +101,15 @@ public class Connection: CustomStringConvertible {
             case is AuthenticationOKResponse:
                 break authentication
                 
-            // FIXME: AuthenticationCleartextPasswordResponse
+            case is AuthenticationCleartextPasswordResponse:
+                
+                guard case let .cleartextPassword(password) = configuration.credential else {
+                    throw PostgresError.cleartextPasswordCredentialRequired
+                }
+                
+                let passwordMessageRequest = PasswordMessageRequest(password: password)
+                try sendRequest(passwordMessageRequest)
+                
             // FIXME: AuthenticationMD5Response
                 
             default:

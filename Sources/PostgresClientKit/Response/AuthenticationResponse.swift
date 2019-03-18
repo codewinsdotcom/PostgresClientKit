@@ -34,8 +34,7 @@ internal class AuthenticationResponse: Response {
                 authenticationType: "AuthenticationKerberosV5")
             
         case 3:
-            throw PostgresError.unsupportedAuthenticationType(
-                authenticationType: "AuthenticationCleartextPassword") // FIXME
+            return try AuthenticationCleartextPasswordResponse(responseBody: responseBody)
             
         case 5:
             throw PostgresError.unsupportedAuthenticationType(
