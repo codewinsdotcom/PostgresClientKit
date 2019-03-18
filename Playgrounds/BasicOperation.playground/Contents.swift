@@ -7,7 +7,7 @@ do {
     configuration.host = "127.0.0.1"
     configuration.ssl = true
     configuration.user = "dbp"
-    configuration.credential = Credential.cleartextPassword(password: "welcome1")
+    configuration.credential = Credential.md5Password(password: "welcome1")
 
     let connection = try PostgresClientKit.Connection(configuration: configuration)
 } catch {

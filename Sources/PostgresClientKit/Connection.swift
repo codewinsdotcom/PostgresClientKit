@@ -110,8 +110,27 @@ public class Connection: CustomStringConvertible {
                 let passwordMessageRequest = PasswordMessageRequest(password: password)
                 try sendRequest(passwordMessageRequest)
                 
-            // FIXME: AuthenticationMD5Response
+            case let response as AuthenticationMD5PasswordResponse:
                 
+                guard case let .md5Password(password) = configuration.credential else {
+                    throw PostgresError.md5PasswordCredentialRequired
+                }
+                
+                var passwordUser = password.data
+                passwordUser.append(user.data)
+                
+                let passwordUserHash = Postgres.md5(data: passwordUser)
+                    .map { String(format: "%02x", $0) }.joined()
+                
+                var salted = passwordUserHash.data
+                salted.append(response.salt.data)
+                
+                let saltedHash = Postgres.md5(data: salted)
+                    .map { String(format: "%02x", $0) }.joined()
+                
+                let passwordMessageRequest = PasswordMessageRequest(password: "md5" + saltedHash)
+                try sendRequest(passwordMessageRequest)
+
             default:
                 fatalError("\(authenticationResponse) not handled when connecting")
             }

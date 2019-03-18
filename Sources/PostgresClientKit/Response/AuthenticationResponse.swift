@@ -37,8 +37,7 @@ internal class AuthenticationResponse: Response {
             return try AuthenticationCleartextPasswordResponse(responseBody: responseBody)
             
         case 5:
-            throw PostgresError.unsupportedAuthenticationType(
-                authenticationType: "AuthenticationMD5Password") // FIXME
+            return try AuthenticationMD5PasswordResponse(responseBody: responseBody)
             
         case 6:
             throw PostgresError.unsupportedAuthenticationType(
