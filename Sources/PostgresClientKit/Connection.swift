@@ -138,21 +138,32 @@ public class Connection: CustomStringConvertible {
         
         try receiveResponse(type: ReadyForQueryResponse.self)
         
+        log(.fine, "Successfully connected")
         success = true
     }
     
     public weak var delegate: ConnectionDelegate?
     
     public var isClosed: Bool {
-        return false
+        return !socket.isConnected
     }
     
     public func close() {
-        fatalError("FIXME: implement")
+        
+        if !isClosed {
+            log(.fine, "Closing connection")
+            let terminateRequest = TerminateRequest()
+            try? sendRequest(terminateRequest) // consumes any Error
+            
+            log(.finer, "Closing socket")
+            socket.close()
+            
+            log(.fine, "Connection closed")
+        }
     }
     
     deinit {
-        // FIXME: implement
+        close()
     }
     
 
