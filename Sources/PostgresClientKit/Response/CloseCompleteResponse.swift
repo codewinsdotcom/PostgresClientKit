@@ -1,5 +1,5 @@
 //
-//  Statement.swift
+//  CloseCompleteResponse.swift
 //  PostgresClientKit
 //
 //  Copyright 2019 David Pitfield and the PostgresClientKit contributors
@@ -17,31 +17,13 @@
 //  limitations under the License.
 //
 
-public class Statement: CustomStringConvertible {
+internal class CloseCompleteResponse: Response {
     
-    internal init(connection: Connection, text: String) {
-        self.connection = connection
-        self.text = text
-    }
-    
-    public let connection: Connection
-    public let text: String
-    
-    @discardableResult public func execute(parameterValues: [ValueConvertible]? = nil)
-        throws -> Result {
+    override internal init(responseBody: Connection.ResponseBody) throws {
         
-        fatalError()
-    }
-    
-    public private(set) var isClosed = false
-
-    public func close() {
-        connection.closeStatement(self)
-        isClosed = true
-    }
-    
-    deinit {
-        close()
+        assert(responseBody.responseType == "3")
+        
+        try super.init(responseBody: responseBody)
     }
     
     
@@ -49,8 +31,9 @@ public class Statement: CustomStringConvertible {
     // MARK: CustomStringConvertible
     //
     
-    /// A short string that identifies this statement.
-    public let description = "Statement-\(Postgres.nextId())"
+    override internal var description: String {
+        return super.description
+    }
 }
 
 // EOF

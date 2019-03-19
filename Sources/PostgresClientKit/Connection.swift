@@ -144,6 +144,10 @@ public class Connection: CustomStringConvertible {
     
     public weak var delegate: ConnectionDelegate?
     
+    /// Whether the connection is closed.
+    ///
+    /// To close a connection, call `close()`.  A connection is also closed if an unrecoverable
+    /// error occurs (for example, if the connection is closed by the Postgres server).
     public var isClosed: Bool {
         return !socket.isConnected
     }
@@ -162,6 +166,12 @@ public class Connection: CustomStringConvertible {
         }
     }
     
+    private func verifyConnectionNotClosed() throws {
+        if isClosed {
+            throw PostgresError.connectionClosed
+        }
+    }
+    
     deinit {
         close()
     }
@@ -172,8 +182,72 @@ public class Connection: CustomStringConvertible {
     //
     
     public func prepareStatement(text: String) throws -> Statement {
-        fatalError("FIXME: implement")
+        
+        closeCurrentlyOpenResult()      // since this will close a failed connection...
+        try verifyConnectionNotClosed() // ...we check for that here
+        
+        let statement = Statement(connection: self, text: text)
+        
+        do {
+            let parseRequest = ParseRequest(statement: statement)
+            try sendRequest(parseRequest)
+            
+            let flushRequest = FlushRequest()
+            try sendRequest(flushRequest)
+            
+            try receiveResponse(type: ParseCompleteResponse.self)
+        } catch {
+            handleExtendedQueryError()  // first, try to recover from the error
+            statement.close()           // then, release any Postgres server resources
+            throw error
+        }
+        
+        return statement
     }
+    
+    internal func closeStatement(_ statement: Statement) {
+        
+        closeCurrentlyOpenResult() // this will close a failed connection
+        
+        if !isClosed {
+            if !statement.isClosed {
+                
+                do {
+                    let closeStatementRequest = CloseStatementRequest(statement: statement)
+                    try sendRequest(closeStatementRequest)
+                    
+                    let flushRequest = FlushRequest()
+                    try sendRequest(flushRequest)
+                    
+                    try receiveResponse(type: CloseCompleteResponse.self)
+                } catch {
+                    handleExtendedQueryError()
+                    log(.warning, "Error closing \(statement): \(error)")
+                }
+            }
+        }
+    }
+    
+    private func closeCurrentlyOpenResult() {
+        // FIXME
+    }
+    
+    private func handleExtendedQueryError() {
+        
+        do {
+            let syncRequest = SyncRequest()
+            try sendRequest(syncRequest)
+            try receiveResponse(type: ReadyForQueryResponse.self)
+        } catch {
+            log(.warning, "Closing connection due to unrecoverable error: \(error)")
+            close()
+        }
+    }
+    
+    
+    //
+    // MARK: Convenience methods
+    //
     
     public func beginTransaction() throws {
         fatalError("FIXME: implement")
@@ -225,6 +299,8 @@ public class Connection: CustomStringConvertible {
             
             switch responseType {
                 
+            case "1": response = try ParseCompleteResponse(responseBody: responseBody)
+            case "3": response = try CloseCompleteResponse(responseBody: responseBody)
             case "E": response = try ErrorResponse(responseBody: responseBody)
             case "K": response = try BackendKeyDataResponse(responseBody: responseBody)
             case "N": response = try NoticeResponse(responseBody: responseBody)

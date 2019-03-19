@@ -23,6 +23,9 @@ public enum PostgresError: Error {
     /// The Postgres server requires a `Credential.cleartextPassword` for authentication.
     case cleartextPasswordCredentialRequired
     
+    /// An attempt was made to operate on a closed connection.
+    case connectionClosed
+    
     /// The Postgres server has a parameter set to a value incompatible with PostgresClientKit.
     case invalidParameterValue(name: String, value: String, requiredValue: String)
         

@@ -66,6 +66,15 @@ internal class Request: CustomStringConvertible {
     }
 }
 
+internal extension UInt16 {
+    
+    /// The big-endian representation.
+    var data: Data {
+        var value = bigEndian
+        return Data(bytes: &value, count: 2)
+    }
+}
+
 internal extension UInt32 {
     
     /// The big-endian representation.

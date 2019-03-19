@@ -39,7 +39,7 @@ public struct Postgres {
         nextIdSemaphore.wait()
         defer { nextIdSemaphore.signal() }
         let id = _nextId
-        _nextId &= 1 // wraparound
+        _nextId &+= 1 // wraparound
         return id
     }
     

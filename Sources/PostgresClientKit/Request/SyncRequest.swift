@@ -1,5 +1,5 @@
 //
-//  Statement.swift
+//  SyncRequest.swift
 //  PostgresClientKit
 //
 //  Copyright 2019 David Pitfield and the PostgresClientKit contributors
@@ -17,31 +17,20 @@
 //  limitations under the License.
 //
 
-public class Statement: CustomStringConvertible {
-    
-    internal init(connection: Connection, text: String) {
-        self.connection = connection
-        self.text = text
-    }
-    
-    public let connection: Connection
-    public let text: String
-    
-    @discardableResult public func execute(parameterValues: [ValueConvertible]? = nil)
-        throws -> Result {
-        
-        fatalError()
-    }
-    
-    public private(set) var isClosed = false
+import Foundation
 
-    public func close() {
-        connection.closeStatement(self)
-        isClosed = true
+internal class SyncRequest: Request {
+    
+    //
+    // MARK: Request
+    //
+    
+    override var requestType: Character? {
+        return "S"
     }
     
-    deinit {
-        close()
+    override var body: Data {
+        return Data()
     }
     
     
@@ -49,8 +38,9 @@ public class Statement: CustomStringConvertible {
     // MARK: CustomStringConvertible
     //
     
-    /// A short string that identifies this statement.
-    public let description = "Statement-\(Postgres.nextId())"
+    override var description: String {
+        return super.description
+    }
 }
 
 // EOF

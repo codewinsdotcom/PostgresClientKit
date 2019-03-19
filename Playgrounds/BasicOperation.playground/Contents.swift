@@ -6,10 +6,12 @@ do {
     var configuration = PostgresClientKit.ConnectionConfiguration()
     configuration.host = "127.0.0.1"
     configuration.ssl = true
+    configuration.database = "dbp"
     configuration.user = "dbp"
     configuration.credential = Credential.md5Password(password: "welcome1")
 
     let connection = try PostgresClientKit.Connection(configuration: configuration)
+    let statement = try connection.prepareStatement(text: "SELECT * FROM weather;")
 } catch {
     print(error)
 }
@@ -29,7 +31,7 @@ func performQuery() throws {
         statement.close()
         connection.close()
     }
-    
+    	
     let result = try statement.execute(parameterValues: [ "RDM" ])
 
     for nextRow in result.rows {

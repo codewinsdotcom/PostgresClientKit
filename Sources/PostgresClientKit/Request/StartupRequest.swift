@@ -40,8 +40,7 @@ internal class StartupRequest: Request {
     
     override var body: Data {
         
-        var body = Data()
-        body.append(UInt32(196608).data) // protocol version number (0x030000)
+        var body = UInt32(196608).data // protocol version number (0x030000)
         
         body.append("user".dataZero)
         body.append(user.dataZero)
