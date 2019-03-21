@@ -1,5 +1,5 @@
 //
-//  Row.swift
+//  CommandCompleteResponse.swift
 //  PostgresClientKit
 //
 //  Copyright 2019 David Pitfield and the PostgresClientKit contributors
@@ -17,21 +17,26 @@
 //  limitations under the License.
 //
 
-public struct Row: CustomStringConvertible {
+internal class CommandCompleteResponse: Response {
     
-    internal init(columns: [Value]) {
-        self.columns = columns
+    override internal init(responseBody: Connection.ResponseBody) throws {
+        
+        assert(responseBody.responseType == "C")
+        
+        commandTag = try responseBody.readUTF8String()
+        
+        try super.init(responseBody: responseBody)
     }
     
-    public var columns: [Value]
+    internal let commandTag: String
     
     
     //
     // MARK: CustomStringConvertible
     //
     
-    public var description: String {
-        return "Row(columns: \(columns))"
+    override internal var description: String {
+        return super.description + "(commandTag: \(commandTag))"
     }
 }
 

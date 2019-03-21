@@ -1,5 +1,5 @@
 //
-//  Row.swift
+//  ExecuteRequest.swift
 //  PostgresClientKit
 //
 //  Copyright 2019 David Pitfield and the PostgresClientKit contributors
@@ -17,21 +17,38 @@
 //  limitations under the License.
 //
 
-public struct Row: CustomStringConvertible {
+import Foundation
+
+internal class ExecuteRequest: Request {
     
-    internal init(columns: [Value]) {
-        self.columns = columns
+    internal init(statement: Statement) {
+        self.statement = statement
     }
     
-    public var columns: [Value]
+    private let statement: Statement
+    
+    
+    //
+    // MARK: Request
+    //
+    
+    override var requestType: Character? {
+        return "E"
+    }
+    
+    override var body: Data {
+        var body = "".dataZero      // unnamed destination portal
+        body.append(UInt32(0).data) // no row limit
+        return body
+    }
     
     
     //
     // MARK: CustomStringConvertible
     //
     
-    public var description: String {
-        return "Row(columns: \(columns))"
+    override var description: String {
+        return super.description + "(statement: \(statement))"
     }
 }
 

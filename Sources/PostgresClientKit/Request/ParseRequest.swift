@@ -37,9 +37,9 @@ internal class ParseRequest: Request {
     }
     
     override var body: Data {
-        var body = statement.description.dataZero   // name of the prepared statement
+        var body = statement.id.dataZero        // name of the prepared statement
         body.append(statement.text.dataZero)
-        body.append(UInt16(0).data)                 // number of parameter data types
+        body.append(UInt16(0).data)             // number of parameter data types
         return body
     }
     

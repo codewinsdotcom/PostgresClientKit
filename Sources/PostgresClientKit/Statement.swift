@@ -26,11 +26,12 @@ public class Statement: CustomStringConvertible {
     
     public let connection: Connection
     public let text: String
-    
-    @discardableResult public func execute(parameterValues: [ValueConvertible]? = nil)
+    internal let id = "Statement-\(Postgres.nextId())"
+
+    @discardableResult public func execute(parameterValues: [ValueConvertible?] = [ ])
         throws -> Result {
         
-        fatalError()
+        return try connection.executeStatement(self, parameterValues: parameterValues)
     }
     
     public private(set) var isClosed = false
@@ -50,7 +51,7 @@ public class Statement: CustomStringConvertible {
     //
     
     /// A short string that identifies this statement.
-    public let description = "Statement-\(Postgres.nextId())"
+    public var description: String { return id }
 }
 
 // EOF

@@ -9,9 +9,14 @@ do {
     configuration.database = "dbp"
     configuration.user = "dbp"
     configuration.credential = Credential.md5Password(password: "welcome1")
-
+    
     let connection = try PostgresClientKit.Connection(configuration: configuration)
     let statement = try connection.prepareStatement(text: "SELECT * FROM weather;")
+    let result = try statement.execute()
+    
+    for nextRow in result.rows {
+        print(try nextRow())
+    }
 } catch {
     print(error)
 }

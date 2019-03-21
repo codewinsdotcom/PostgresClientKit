@@ -21,11 +21,11 @@ import Foundation
 
 public struct Value: ValueConvertible, CustomStringConvertible {
     
-    public init(_ rawValue: String?) { }
-    
-    public var isNull: Bool {
-        fatalError()
+    public init(_ rawValue: String?) {
+        self.rawValue = rawValue
     }
+    
+    internal let rawValue: String?
     
     public func optionalInt() throws -> Int? {
         fatalError()
@@ -36,11 +36,12 @@ public struct Value: ValueConvertible, CustomStringConvertible {
     }
     
     public func optionalString() throws -> String? {
-        fatalError()
+        return rawValue
     }
     
     public func string() throws -> String {
-        fatalError()
+        try verifyNotNil()
+        return try optionalString()!
     }
     
     public func optionalDate() throws -> Date? {
@@ -53,13 +54,19 @@ public struct Value: ValueConvertible, CustomStringConvertible {
     
     // ...similar conversions for other basic Swift types...
     
+    private func verifyNotNil() throws {
+        if rawValue == nil {
+            throw PostgresError.valueIsNil
+        }
+    }
+    
     
     //
     // MARK: ValueConvertible
     //
     
     public var postgresValue: Value {
-        fatalError()
+        return self
     }
     
 
@@ -68,7 +75,9 @@ public struct Value: ValueConvertible, CustomStringConvertible {
     //
     
     public var description: String {
-        return "FIXME"
+        return rawValue == nil ?
+            "nil" :
+            String(describing: rawValue!)
     }
 }
 

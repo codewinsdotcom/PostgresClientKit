@@ -1,5 +1,5 @@
 //
-//  Row.swift
+//  BindCompleteResponse.swift
 //  PostgresClientKit
 //
 //  Copyright 2019 David Pitfield and the PostgresClientKit contributors
@@ -17,21 +17,22 @@
 //  limitations under the License.
 //
 
-public struct Row: CustomStringConvertible {
+internal class BindCompleteResponse: Response {
     
-    internal init(columns: [Value]) {
-        self.columns = columns
+    override internal init(responseBody: Connection.ResponseBody) throws {
+        
+        assert(responseBody.responseType == "2")
+        
+        try super.init(responseBody: responseBody)
     }
-    
-    public var columns: [Value]
     
     
     //
     // MARK: CustomStringConvertible
     //
     
-    public var description: String {
-        return "Row(columns: \(columns))"
+    override internal var description: String {
+        return super.description
     }
 }
 

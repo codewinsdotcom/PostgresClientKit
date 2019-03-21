@@ -1,5 +1,5 @@
 //
-//  Row.swift
+//  ClosePortalRequest.swift
 //  PostgresClientKit
 //
 //  Copyright 2019 David Pitfield and the PostgresClientKit contributors
@@ -17,21 +17,31 @@
 //  limitations under the License.
 //
 
-public struct Row: CustomStringConvertible {
+import Foundation
+
+internal class ClosePortalRequest: Request {
     
-    internal init(columns: [Value]) {
-        self.columns = columns
+    //
+    // MARK: Request
+    //
+    
+    override var requestType: Character? {
+        return "C"
     }
     
-    public var columns: [Value]
+    override var body: Data {
+        var body = "P".data         // for "statement"
+        body.append("".dataZero)    // the unnamed portal
+        return body
+    }
     
     
     //
     // MARK: CustomStringConvertible
     //
     
-    public var description: String {
-        return "Row(columns: \(columns))"
+    override var description: String {
+        return super.description
     }
 }
 

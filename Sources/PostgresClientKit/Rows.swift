@@ -21,8 +21,22 @@ public class Rows: Sequence, IteratorProtocol {
     
     public typealias NextRow = () throws -> Row
     
+    internal init(result: Result) {
+        self.result = result
+    }
+    
+    internal let result: Result
+    
     public func next() -> NextRow? {
-        return nil
+        do {
+            if let row = try result.statement.connection.nextRowOfResult(result) {
+                return { row }
+            } else {
+                return nil
+            }
+        } catch {
+            return { throw error }
+        }
     }
 }
 

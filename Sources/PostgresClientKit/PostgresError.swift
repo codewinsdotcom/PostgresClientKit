@@ -32,6 +32,9 @@ public enum PostgresError: Error {
     /// The Postgres server requires a `Credential.md5Password` for authentication.
     case md5PasswordCredentialRequired
     
+    /// An attempt was made to operate on a closed result.
+    case resultClosed
+    
     /// The Postgres server reported an internal error or returned an invalid response.
     case serverError(description: String)
     
@@ -44,9 +47,15 @@ public enum PostgresError: Error {
     /// The Postgres server does not support SSL/TLS.
     case sslNotSupported
     
+    /// An attempt was made to operate on a closed statement.
+    case statementClosed
+    
     /// The authentication type required by the Postgres server is not supported by
     /// PostgresClientKit.
     case unsupportedAuthenticationType(authenticationType: String)
+    
+    /// The value is nil.
+    case valueIsNil
 }
 
 // EOF

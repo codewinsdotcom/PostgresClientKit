@@ -37,8 +37,8 @@ internal class CloseStatementRequest: Request {
     }
     
     override var body: Data {
-        var body = "S".data // for "statement"
-        body.append(statement.description.dataZero)
+        var body = "S".data                 // for "statement"
+        body.append(statement.id.dataZero)  // name of the prepared statement
         return body
     }
     

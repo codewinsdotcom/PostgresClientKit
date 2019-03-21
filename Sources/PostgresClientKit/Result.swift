@@ -19,21 +19,28 @@
 
 public class Result: CustomStringConvertible {
     
-    private init() {
-        fatalError()
+    internal init(statement: Statement) {
+        self.statement = statement
     }
     
     public let statement: Statement
     
-    public let rows: Rows
+    internal let id = "Result-\(Postgres.nextId())"
     
-    public private(set) var rowCount: Int?
-    
-    public var isClosed: Bool {
-        return false
+    public var rows: Rows {
+        return Rows(result: self)
     }
     
-    public func close() { }
+    public internal(set) var rowCount: Int? = nil
+    
+    public var isClosed: Bool {
+        return statement.connection.isResultClosed(self)
+    }
+    
+    public func close() {
+        statement.connection.closeResult(self)
+        assert(isClosed)
+    }
     
     deinit {
         close()
@@ -44,9 +51,8 @@ public class Result: CustomStringConvertible {
     // MARK: CustomStringConvertible
     //
     
-    public var description: String {
-        return "FIXME"
-    }
+    /// A short string that identifies this statement.
+    public var description: String { return id }
 }
 
 // EOF
