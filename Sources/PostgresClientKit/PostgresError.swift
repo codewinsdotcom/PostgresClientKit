@@ -54,6 +54,9 @@ public enum PostgresError: Error {
     /// PostgresClientKit.
     case unsupportedAuthenticationType(authenticationType: String)
     
+    /// The value could not be converted to the requested type.
+    case valueConversionError(value: Value, type: Any.Type)
+    
     /// The value is nil.
     case valueIsNil
 }

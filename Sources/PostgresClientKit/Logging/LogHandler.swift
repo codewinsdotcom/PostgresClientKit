@@ -69,7 +69,7 @@ public class ConsoleLogHandler: LogHandler {
     /// Formats timestamps in ISO8601 format.
     private static let timestampFormatter: DateFormatter = {
         let df = DateFormatter()
-        df.locale = Locale(identifier: "en_US_POSIX")
+        df.locale = Postgres.enUsPosixLocale
         df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
         df.timeZone = TimeZone(secondsFromGMT: 0)
         return df

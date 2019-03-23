@@ -21,12 +21,4 @@ public protocol ValueConvertible {
     var postgresValue: Value { get }
 }
 
-extension String: ValueConvertible {
-    public var postgresValue: Value {
-        return Value(self)
-    }
-}
-
-// ...similar extensions for other basic Swift types...
-
 // EOF

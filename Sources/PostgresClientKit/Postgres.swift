@@ -167,6 +167,14 @@ public struct Postgres {
         
         return output
     }
+    
+    
+    //
+    // MARK: Localization
+    //
+    
+    /// The locale for `en_US_POSIX`.
+    internal static let enUsPosixLocale = Locale(identifier: "en_US_POSIX")
 }
 
 // EOF
