@@ -163,7 +163,7 @@ extension Decimal: ValueConvertible {
 
 
 //
-// MARK: Boolean
+// MARK: Bool
 //
 
 public extension Value {

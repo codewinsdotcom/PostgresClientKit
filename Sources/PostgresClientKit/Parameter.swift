@@ -58,7 +58,7 @@ internal struct Parameter {
                   isCheckedUponParameterStatusResponse: true),
         
         // PostgresClientKit requires timestamps and times received from the Postgres server to be
-        // in the GMT/UTC time zone.
+        // in the UTC/GMT time zone.
         Parameter(name: "TimeZone",
                   value: "GMT",
                   isSetWhenConnecting: true,

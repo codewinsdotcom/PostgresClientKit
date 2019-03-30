@@ -173,8 +173,19 @@ public struct Postgres {
     // MARK: Localization
     //
     
-    /// The locale for `en_US_POSIX`.
+    /// The `en_US_POSIX` locale.
     internal static let enUsPosixLocale = Locale(identifier: "en_US_POSIX")
+    
+    /// The UTC/GMT time zone.
+    internal static let utcTimeZone = TimeZone(secondsFromGMT: 0)!
+    
+    /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
+    internal static let enUsPosixUtcCalendar: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = enUsPosixLocale
+        calendar.timeZone = utcTimeZone
+        return calendar
+    }()
 }
 
 // EOF
