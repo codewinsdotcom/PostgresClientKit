@@ -192,4 +192,124 @@ extension Bool: ValueConvertible {
     }
 }
 
+
+//
+// MARK: PostgresTimestampWithTimeZone
+//
+
+public extension Value {
+    
+    public func timestampWithTimeZone() throws -> PostgresTimestampWithTimeZone {
+        try verifyNotNil()
+        return try optionalTimestampWithTimeZone()!
+    }
+    
+    public func optionalTimestampWithTimeZone() throws -> PostgresTimestampWithTimeZone? {
+        
+        guard let rawValue = rawValue else { return nil }
+        
+        guard let timestampWithTimeZone = PostgresTimestampWithTimeZone(rawValue) else {
+            throw conversionError(PostgresTimestampWithTimeZone.self)
+        }
+        
+        return timestampWithTimeZone
+    }
+}
+
+
+//
+// MARK: PostgresTimestamp
+//
+
+public extension Value {
+    
+    public func timestamp() throws -> PostgresTimestamp {
+        try verifyNotNil()
+        return try optionalTimestamp()!
+    }
+    
+    public func optionalTimestamp() throws -> PostgresTimestamp? {
+        
+        guard let rawValue = rawValue else { return nil }
+        
+        guard let timestamp = PostgresTimestamp(rawValue) else {
+            throw conversionError(PostgresTimestamp.self)
+        }
+        
+        return timestamp
+    }
+}
+
+
+//
+// MARK: PostgresDate
+//
+
+public extension Value {
+    
+    public func date() throws -> PostgresDate {
+        try verifyNotNil()
+        return try optionalDate()!
+    }
+    
+    public func optionalDate() throws -> PostgresDate? {
+        
+        guard let rawValue = rawValue else { return nil }
+        
+        guard let date = PostgresDate(rawValue) else {
+            throw conversionError(PostgresDate.self)
+        }
+        
+        return date
+    }
+}
+
+
+//
+// MARK: PostgresTime
+//
+
+public extension Value {
+    
+    public func time() throws -> PostgresTime {
+        try verifyNotNil()
+        return try optionalTime()!
+    }
+    
+    public func optionalTime() throws -> PostgresTime? {
+        
+        guard let rawValue = rawValue else { return nil }
+        
+        guard let time = PostgresTime(rawValue) else {
+            throw conversionError(PostgresTime.self)
+        }
+        
+        return time
+    }
+}
+
+
+//
+// MARK: PostgresTimeWithTimeZone
+//
+
+public extension Value {
+    
+    public func timeWithTimeZone() throws -> PostgresTimeWithTimeZone {
+        try verifyNotNil()
+        return try optionalTimeWithTimeZone()!
+    }
+    
+    public func optionalTimeWithTimeZone() throws -> PostgresTimeWithTimeZone? {
+        
+        guard let rawValue = rawValue else { return nil }
+        
+        guard let timeWithTimeZone = PostgresTimeWithTimeZone(rawValue) else {
+            throw conversionError(PostgresTimeWithTimeZone.self)
+        }
+        
+        return timeWithTimeZone
+    }
+}
+
 // EOF
