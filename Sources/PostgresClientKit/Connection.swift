@@ -577,15 +577,21 @@ public class Connection: CustomStringConvertible {
     //
     
     public func beginTransaction() throws {
-        fatalError("FIXME: implement")
+        let statement = try prepareStatement(text: "BEGIN")
+        defer { statement.close() }
+        try statement.execute()
     }
     
     public func commitTransaction() throws {
-        fatalError("FIXME: implement")
+        let statement = try prepareStatement(text: "COMMIT")
+        defer { statement.close() }
+        try statement.execute()
     }
     
     public func rollbackTransaction() throws {
-        fatalError("FIXME: implement")
+        let statement = try prepareStatement(text: "ROLLBACK")
+        defer { statement.close() }
+        try statement.execute()
     }
     
     
