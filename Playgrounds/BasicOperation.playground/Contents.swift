@@ -25,7 +25,7 @@ do {
     
     for nextRow in cursor.rows {
         
-        let row = try nextRow()
+        let row = try nextRow.get()
         let columns = row.columns
         
         let city = try columns[0].string()

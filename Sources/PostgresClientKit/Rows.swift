@@ -19,23 +19,21 @@
 
 public class Rows: Sequence, IteratorProtocol {
     
-    public typealias NextRow = () throws -> Row
-    
     internal init(cursor: Cursor) {
         self.cursor = cursor
     }
     
     internal let cursor: Cursor
     
-    public func next() -> NextRow? {
+    public func next() -> Result<Row, Error>? {
         do {
             if let row = try cursor.statement.connection.nextRowOfCursor(cursor) {
-                return { row }
+                return .success(row)
             } else {
                 return nil
             }
         } catch {
-            return { throw error }
+            return .failure(error)
         }
     }
 }
