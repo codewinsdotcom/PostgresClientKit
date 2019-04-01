@@ -139,7 +139,7 @@ public struct PostgresTimestampWithTimeZone: ValueConvertible, CustomStringConve
 
 public extension Date {
     
-    public var postgresTimestampWithTimeZone: PostgresTimestampWithTimeZone {
+    var postgresTimestampWithTimeZone: PostgresTimestampWithTimeZone {
         return PostgresTimestampWithTimeZone(date: self)
     }
 }

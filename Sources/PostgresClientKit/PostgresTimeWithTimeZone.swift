@@ -205,7 +205,7 @@ public struct PostgresTimeWithTimeZone: ValueConvertible, CustomStringConvertibl
 
 public extension Date {
     
-    public func postgresTimeWithTimeZone(in timeZone: TimeZone) -> PostgresTimeWithTimeZone? {
+    func postgresTimeWithTimeZone(in timeZone: TimeZone) -> PostgresTimeWithTimeZone? {
         return PostgresTimeWithTimeZone(date: self, in: timeZone)
     }
 }

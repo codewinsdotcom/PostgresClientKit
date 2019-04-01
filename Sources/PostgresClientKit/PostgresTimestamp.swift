@@ -159,7 +159,7 @@ public struct PostgresTimestamp: ValueConvertible, CustomStringConvertible {
 
 public extension Date {
     
-    public func postgresTimestamp(in timeZone: TimeZone) -> PostgresTimestamp {
+    func postgresTimestamp(in timeZone: TimeZone) -> PostgresTimestamp {
         return PostgresTimestamp(date: self, in: timeZone)
     }
 }

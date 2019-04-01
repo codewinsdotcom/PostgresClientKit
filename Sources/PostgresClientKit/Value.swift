@@ -65,12 +65,12 @@ public struct Value: ValueConvertible, CustomStringConvertible {
 
 public extension Value {
     
-    public func string() throws -> String {
+    func string() throws -> String {
         try verifyNotNil()
         return try optionalString()!
     }
     
-    public func optionalString() throws -> String? {
+    func optionalString() throws -> String? {
         return rawValue
     }
 }
@@ -88,12 +88,12 @@ extension String: ValueConvertible {
 
 public extension Value {
     
-    public func int() throws -> Int {
+    func int() throws -> Int {
         try verifyNotNil()
         return try optionalInt()!
     }
 
-    public func optionalInt() throws -> Int? {
+    func optionalInt() throws -> Int? {
         guard let rawValue = rawValue else { return nil }
         guard let v = Int(rawValue) else { throw conversionError(Int.self) }
         return v
@@ -113,12 +113,12 @@ extension Int: ValueConvertible {
 
 public extension Value {
     
-    public func double() throws -> Double {
+    func double() throws -> Double {
         try verifyNotNil()
         return try optionalDouble()!
     }
     
-    public func optionalDouble() throws -> Double? {
+    func optionalDouble() throws -> Double? {
         guard let rawValue = rawValue else { return nil }
         guard let v = Double(rawValue) else { throw conversionError(Double.self) }
         return v
@@ -138,12 +138,12 @@ extension Double: ValueConvertible {
 
 public extension Value {
     
-    public func decimal() throws -> Decimal {
+    func decimal() throws -> Decimal {
         try verifyNotNil()
         return try optionalDecimal()!
     }
     
-    public func optionalDecimal() throws -> Decimal? {
+    func optionalDecimal() throws -> Decimal? {
         
         guard let rawValue = rawValue else { return nil }
         
@@ -168,12 +168,12 @@ extension Decimal: ValueConvertible {
 
 public extension Value {
     
-    public func bool() throws -> Bool {
+    func bool() throws -> Bool {
         try verifyNotNil()
         return try optionalBool()!
     }
     
-    public func optionalBool() throws -> Bool? {
+    func optionalBool() throws -> Bool? {
         
         guard let rawValue = rawValue else { return nil }
         
@@ -199,12 +199,12 @@ extension Bool: ValueConvertible {
 
 public extension Value {
     
-    public func timestampWithTimeZone() throws -> PostgresTimestampWithTimeZone {
+    func timestampWithTimeZone() throws -> PostgresTimestampWithTimeZone {
         try verifyNotNil()
         return try optionalTimestampWithTimeZone()!
     }
     
-    public func optionalTimestampWithTimeZone() throws -> PostgresTimestampWithTimeZone? {
+    func optionalTimestampWithTimeZone() throws -> PostgresTimestampWithTimeZone? {
         
         guard let rawValue = rawValue else { return nil }
         
@@ -223,12 +223,12 @@ public extension Value {
 
 public extension Value {
     
-    public func timestamp() throws -> PostgresTimestamp {
+    func timestamp() throws -> PostgresTimestamp {
         try verifyNotNil()
         return try optionalTimestamp()!
     }
     
-    public func optionalTimestamp() throws -> PostgresTimestamp? {
+    func optionalTimestamp() throws -> PostgresTimestamp? {
         
         guard let rawValue = rawValue else { return nil }
         
@@ -247,12 +247,12 @@ public extension Value {
 
 public extension Value {
     
-    public func date() throws -> PostgresDate {
+    func date() throws -> PostgresDate {
         try verifyNotNil()
         return try optionalDate()!
     }
     
-    public func optionalDate() throws -> PostgresDate? {
+    func optionalDate() throws -> PostgresDate? {
         
         guard let rawValue = rawValue else { return nil }
         
@@ -271,12 +271,12 @@ public extension Value {
 
 public extension Value {
     
-    public func time() throws -> PostgresTime {
+    func time() throws -> PostgresTime {
         try verifyNotNil()
         return try optionalTime()!
     }
     
-    public func optionalTime() throws -> PostgresTime? {
+    func optionalTime() throws -> PostgresTime? {
         
         guard let rawValue = rawValue else { return nil }
         
@@ -295,12 +295,12 @@ public extension Value {
 
 public extension Value {
     
-    public func timeWithTimeZone() throws -> PostgresTimeWithTimeZone {
+    func timeWithTimeZone() throws -> PostgresTimeWithTimeZone {
         try verifyNotNil()
         return try optionalTimeWithTimeZone()!
     }
     
-    public func optionalTimeWithTimeZone() throws -> PostgresTimeWithTimeZone? {
+    func optionalTimeWithTimeZone() throws -> PostgresTimeWithTimeZone? {
         
         guard let rawValue = rawValue else { return nil }
         
@@ -319,12 +319,12 @@ public extension Value {
 
 public extension Value {
     
-    public func byteA() throws -> PostgresByteA {
+    func byteA() throws -> PostgresByteA {
         try verifyNotNil()
         return try optionalByteA()!
     }
     
-    public func optionalByteA() throws -> PostgresByteA? {
+    func optionalByteA() throws -> PostgresByteA? {
         
         guard let rawValue = rawValue else { return nil }
         
