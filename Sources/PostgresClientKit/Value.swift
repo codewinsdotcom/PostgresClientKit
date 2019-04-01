@@ -312,4 +312,28 @@ public extension Value {
     }
 }
 
+
+//
+// MARK: PostgresByteA
+//
+
+public extension Value {
+    
+    public func byteA() throws -> PostgresByteA {
+        try verifyNotNil()
+        return try optionalByteA()!
+    }
+    
+    public func optionalByteA() throws -> PostgresByteA? {
+        
+        guard let rawValue = rawValue else { return nil }
+        
+        guard let byteA = PostgresByteA(rawValue) else {
+            throw conversionError(PostgresByteA.self)
+        }
+        
+        return byteA
+    }
+}
+
 // EOF
