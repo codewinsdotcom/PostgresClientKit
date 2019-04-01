@@ -1,55 +1,46 @@
 import PostgresClientKit
 
-// FIXME
 do {
-    PostgresClientKit.Postgres.logger.level = .finest
     var configuration = PostgresClientKit.ConnectionConfiguration()
     configuration.host = "127.0.0.1"
     configuration.ssl = true
-    configuration.database = "dbp"
+    configuration.database = "example"
     configuration.user = "dbp"
-    configuration.credential = Credential.md5Password(password: "welcome1")
+    configuration.credential = .md5Password(password: "welcome1")
     
     let connection = try PostgresClientKit.Connection(configuration: configuration)
-    let statement = try connection.prepareStatement(text: "SELECT * FROM weather;")
-    let result = try statement.execute()
     
-    for nextRow in result.rows {
-        print(try nextRow())
+    defer {
+        connection.close()
     }
-} catch {
-    print(error)
-}
-
-func performQuery() throws {
-    
-    var configuration = PostgresClientKit.ConnectionConfiguration()
-    configuration.user = "dbp"
-    configuration.credential = .md5Password(password: "foo")
-    
-    let connection = try PostgresClientKit.Connection(configuration: configuration)
     
     let statement = try connection.prepareStatement(
-        text: "SELECT * FROM project WHERE airport = $1;")
+        text: "SELECT city, temp_lo, temp_hi, prcp, date FROM Weather WHERE city = $1;")
     
     defer {
         statement.close()
-        connection.close()
     }
-    	
-    let result = try statement.execute(parameterValues: [ "RDM" ])
-
+    
+    let result = try statement.execute(parameterValues: [ "San Francisco" ])
+    
     for nextRow in result.rows {
         
         let row = try nextRow()
         let columns = row.columns
         
-        let name = try columns[0].string()
-        let airport = try columns[1].string()
-        let completed = try columns[2].date()
+        let city = try columns[0].string()
+        let tempLo = try columns[1].int()
+        let tempHi = try columns[2].int()
+        let prcp = try columns[3].optionalDouble()
+        let date = try columns[4].date()
         
-        print("\(name) \(airport) \(completed)")
+        print("""
+            \(city) on \(date): low: \(tempLo), high: \(tempHi), \
+            precipitation: \(String(describing: prcp))
+            """)
     }
+} catch {
+    print(error)
 }
 
 // EOF

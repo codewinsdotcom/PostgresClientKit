@@ -304,10 +304,10 @@ public class Connection: CustomStringConvertible {
     /// - Parameter statement: the statement
     internal func closeStatement(_ statement: Statement) {
         
-        do {
-            try performExtendedQueryOperation(
-                operation: {
-                    if !statement.isClosed {
+        if !statement.isClosed {
+            do {
+                try performExtendedQueryOperation(
+                    operation: {
                         let closeStatementRequest = CloseStatementRequest(statement: statement)
                         try sendRequest(closeStatementRequest)
                         
@@ -315,11 +315,11 @@ public class Connection: CustomStringConvertible {
                         try sendRequest(flushRequest)
                         
                         try receiveResponse(type: CloseCompleteResponse.self)
-                    }
                 }
-            )
-        } catch {
-            log(.warning, "Error closing \(statement): \(error)")
+                )
+            } catch {
+                log(.warning, "Error closing \(statement): \(error)")
+            }
         }
     }
     
