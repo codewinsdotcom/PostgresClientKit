@@ -19,11 +19,11 @@
 
 public struct Row: CustomStringConvertible {
     
-    internal init(columns: [Value]) {
+    internal init(columns: [PostgresValue]) {
         self.columns = columns
     }
     
-    public var columns: [Value]
+    public var columns: [PostgresValue]
     
     
     //

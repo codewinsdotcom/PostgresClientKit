@@ -1,5 +1,5 @@
 //
-//  Value.swift
+//  PostgresValue.swift
 //  PostgresClientKit
 //
 //  Copyright 2019 David Pitfield and the PostgresClientKit contributors
@@ -19,7 +19,7 @@
 
 import Foundation
 
-public struct Value: ValueConvertible, CustomStringConvertible {
+public struct PostgresValue: PostgresValueConvertible, CustomStringConvertible {
     
     public init(_ rawValue: String?) {
         self.rawValue = rawValue
@@ -39,10 +39,10 @@ public struct Value: ValueConvertible, CustomStringConvertible {
 
     
     //
-    // MARK: ValueConvertible
+    // MARK: PostgresValueConvertible
     //
     
-    public var postgresValue: Value {
+    public var postgresValue: PostgresValue {
         return self
     }
     
@@ -63,7 +63,7 @@ public struct Value: ValueConvertible, CustomStringConvertible {
 // MARK: String
 //
 
-public extension Value {
+public extension PostgresValue {
     
     func string() throws -> String {
         try verifyNotNil()
@@ -75,9 +75,9 @@ public extension Value {
     }
 }
 
-extension String: ValueConvertible {
-    public var postgresValue: Value {
-        return Value(self)
+extension String: PostgresValueConvertible {
+    public var postgresValue: PostgresValue {
+        return PostgresValue(self)
     }
 }
 
@@ -86,7 +86,7 @@ extension String: ValueConvertible {
 // MARK: Int
 //
 
-public extension Value {
+public extension PostgresValue {
     
     func int() throws -> Int {
         try verifyNotNil()
@@ -100,9 +100,9 @@ public extension Value {
     }
 }
 
-extension Int: ValueConvertible {
-    public var postgresValue: Value {
-        return Value(String(describing: self))
+extension Int: PostgresValueConvertible {
+    public var postgresValue: PostgresValue {
+        return PostgresValue(String(describing: self))
     }
 }
 
@@ -111,7 +111,7 @@ extension Int: ValueConvertible {
 // MARK: Double
 //
 
-public extension Value {
+public extension PostgresValue {
     
     func double() throws -> Double {
         try verifyNotNil()
@@ -125,9 +125,9 @@ public extension Value {
     }
 }
 
-extension Double: ValueConvertible {
-    public var postgresValue: Value {
-        return Value(String(describing: self))
+extension Double: PostgresValueConvertible {
+    public var postgresValue: PostgresValue {
+        return PostgresValue(String(describing: self))
     }
 }
 
@@ -136,7 +136,7 @@ extension Double: ValueConvertible {
 // MARK: Decimal
 //
 
-public extension Value {
+public extension PostgresValue {
     
     func decimal() throws -> Decimal {
         try verifyNotNil()
@@ -155,9 +155,9 @@ public extension Value {
     }
 }
 
-extension Decimal: ValueConvertible {
-    public var postgresValue: Value {
-        return Value(String(describing: self))
+extension Decimal: PostgresValueConvertible {
+    public var postgresValue: PostgresValue {
+        return PostgresValue(String(describing: self))
     }
 }
 
@@ -166,7 +166,7 @@ extension Decimal: ValueConvertible {
 // MARK: Bool
 //
 
-public extension Value {
+public extension PostgresValue {
     
     func bool() throws -> Bool {
         try verifyNotNil()
@@ -186,9 +186,9 @@ public extension Value {
     }
 }
 
-extension Bool: ValueConvertible {
-    public var postgresValue: Value {
-        return Value(self ? "t" : "f")
+extension Bool: PostgresValueConvertible {
+    public var postgresValue: PostgresValue {
+        return PostgresValue(self ? "t" : "f")
     }
 }
 
@@ -197,7 +197,7 @@ extension Bool: ValueConvertible {
 // MARK: PostgresTimestampWithTimeZone
 //
 
-public extension Value {
+public extension PostgresValue {
     
     func timestampWithTimeZone() throws -> PostgresTimestampWithTimeZone {
         try verifyNotNil()
@@ -221,7 +221,7 @@ public extension Value {
 // MARK: PostgresTimestamp
 //
 
-public extension Value {
+public extension PostgresValue {
     
     func timestamp() throws -> PostgresTimestamp {
         try verifyNotNil()
@@ -245,7 +245,7 @@ public extension Value {
 // MARK: PostgresDate
 //
 
-public extension Value {
+public extension PostgresValue {
     
     func date() throws -> PostgresDate {
         try verifyNotNil()
@@ -269,7 +269,7 @@ public extension Value {
 // MARK: PostgresTime
 //
 
-public extension Value {
+public extension PostgresValue {
     
     func time() throws -> PostgresTime {
         try verifyNotNil()
@@ -293,7 +293,7 @@ public extension Value {
 // MARK: PostgresTimeWithTimeZone
 //
 
-public extension Value {
+public extension PostgresValue {
     
     func timeWithTimeZone() throws -> PostgresTimeWithTimeZone {
         try verifyNotNil()
@@ -317,7 +317,7 @@ public extension Value {
 // MARK: PostgresByteA
 //
 
-public extension Value {
+public extension PostgresValue {
     
     func byteA() throws -> PostgresByteA {
         try verifyNotNil()

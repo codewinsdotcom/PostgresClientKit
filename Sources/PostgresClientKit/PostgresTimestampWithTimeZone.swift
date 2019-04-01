@@ -41,7 +41,7 @@ import Foundation
 /// to [a bug](https://stackoverflow.com/questions/23684727/nsdateformatter-milliseconds-bug)
 /// in the Foundation `DateFormatter` class, `PostgresTimestampWithTimeZone` preserves only 3
 /// digits (millisecond resolution) in converting to and from string representations.
-public struct PostgresTimestampWithTimeZone: ValueConvertible, CustomStringConvertible {
+public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStringConvertible {
     
     /// Creates an instance from components.
     ///
@@ -143,11 +143,11 @@ public struct PostgresTimestampWithTimeZone: ValueConvertible, CustomStringConve
     
     
     //
-    // MARK: ValueConvertible
+    // MARK: PostgresValueConvertible
     //
     
     /// A `Value` for this instance.
-    public var postgresValue: Value {
+    public var postgresValue: PostgresValue {
         return inner.postgresValue
     }
     
@@ -201,7 +201,7 @@ public struct PostgresTimestampWithTimeZone: ValueConvertible, CustomStringConve
                 .nanosecond,
                 .timeZone], from: date)
         
-        fileprivate lazy var postgresValue: Value = Value(
+        fileprivate lazy var postgresValue: PostgresValue = PostgresValue(
             PostgresTimestampWithTimeZone.formatter.string(from: date))
     }
 }

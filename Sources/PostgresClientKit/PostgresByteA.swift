@@ -19,7 +19,7 @@
 
 import Foundation
 
-public struct PostgresByteA: ValueConvertible, CustomStringConvertible {
+public struct PostgresByteA: PostgresValueConvertible, CustomStringConvertible {
     
     public init(data: Data) {
         self.data = data
@@ -45,11 +45,11 @@ public struct PostgresByteA: ValueConvertible, CustomStringConvertible {
     
     
     //
-    // MARK: ValueConvertible
+    // MARK: PostgresValueConvertible
     //
     
-    public var postgresValue: Value {
-        return Value(PostgresByteA.dataToHexEncodedString(data, prefix: "\\x"))
+    public var postgresValue: PostgresValue {
+        return PostgresValue(PostgresByteA.dataToHexEncodedString(data, prefix: "\\x"))
     }
     
     

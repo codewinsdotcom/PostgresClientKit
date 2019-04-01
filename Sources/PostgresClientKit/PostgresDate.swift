@@ -26,7 +26,7 @@ import Foundation
 /// - day
 ///
 /// For example, `2019-03-14`.
-public struct PostgresDate: ValueConvertible, CustomStringConvertible {
+public struct PostgresDate: PostgresValueConvertible, CustomStringConvertible {
     
     public init?(year: Int,
                  month: Int,
@@ -81,7 +81,7 @@ public struct PostgresDate: ValueConvertible, CustomStringConvertible {
         return Postgres.enUsPosixUtcCalendar.date(from: dc)! // validated components on the way in
     }
     
-    public var postgresValue: Value {
+    public var postgresValue: PostgresValue {
         return inner.postgresValue
     }
     
@@ -110,13 +110,13 @@ public struct PostgresDate: ValueConvertible, CustomStringConvertible {
         
         fileprivate let dateComponents: DateComponents
         
-        fileprivate lazy var postgresValue: Value = {
+        fileprivate lazy var postgresValue: PostgresValue = {
             var dc = dateComponents
             dc.calendar = Postgres.enUsPosixUtcCalendar
             dc.timeZone = Postgres.utcTimeZone
             let d = Postgres.enUsPosixUtcCalendar.date(from: dc)!
             let s = PostgresDate.formatter.string(from: d)
-            return Value(s)
+            return PostgresValue(s)
         }()
     }
 }

@@ -21,13 +21,13 @@ import Foundation
 
 internal class BindRequest: Request {
     
-    internal init(statement: Statement, parameterValues: [ValueConvertible?]) {
+    internal init(statement: Statement, parameterValues: [PostgresValueConvertible?]) {
         self.statement = statement
         self.parameterValues = parameterValues
     }
     
     private let statement: Statement
-    private let parameterValues: [ValueConvertible?]
+    private let parameterValues: [PostgresValueConvertible?]
 
     
     //

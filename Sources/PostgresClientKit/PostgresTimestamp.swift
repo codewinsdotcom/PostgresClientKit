@@ -44,7 +44,7 @@ import Foundation
 /// to [a bug](https://stackoverflow.com/questions/23684727/nsdateformatter-milliseconds-bug)
 /// in the Foundation `DateFormatter` class, `PostgresTimestamp` preserves only 3 digits
 /// (millisecond resolution) in converting to and from string representations.
-public struct PostgresTimestamp: ValueConvertible, CustomStringConvertible {
+public struct PostgresTimestamp: PostgresValueConvertible, CustomStringConvertible {
     
     public init?(year: Int,
                  month: Int,
@@ -117,7 +117,7 @@ public struct PostgresTimestamp: ValueConvertible, CustomStringConvertible {
         return Postgres.enUsPosixUtcCalendar.date(from: dc)! // validated components on the way in
     }
     
-    public var postgresValue: Value {
+    public var postgresValue: PostgresValue {
         return inner.postgresValue
     }
     
@@ -146,13 +146,13 @@ public struct PostgresTimestamp: ValueConvertible, CustomStringConvertible {
         
         fileprivate let dateComponents: DateComponents
         
-        fileprivate lazy var postgresValue: Value = {
+        fileprivate lazy var postgresValue: PostgresValue = {
             var dc = dateComponents
             dc.calendar = Postgres.enUsPosixUtcCalendar
             dc.timeZone = Postgres.utcTimeZone
             let d = Postgres.enUsPosixUtcCalendar.date(from: dc)!
             let s = PostgresTimestamp.formatter.string(from: d)
-            return Value(s)
+            return PostgresValue(s)
         }()
     }
 }

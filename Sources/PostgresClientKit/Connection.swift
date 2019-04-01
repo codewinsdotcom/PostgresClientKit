@@ -254,7 +254,7 @@ public class Connection: CustomStringConvertible {
     /// - Returns: the cursor
     /// - Throws: `PostgresError` is the operation fails
     internal func executeStatement(_ statement: Statement,
-                                   parameterValues: [ValueConvertible?] = []) throws -> Cursor {
+                                   parameterValues: [PostgresValueConvertible?] = []) throws -> Cursor {
         
         try performExtendedQueryOperation(
             operation: {

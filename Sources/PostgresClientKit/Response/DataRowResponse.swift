@@ -24,7 +24,7 @@ internal class DataRowResponse: Response {
         assert(responseBody.responseType == "D")
         
         let columnCount = try responseBody.readUInt16()
-        var columns = [Value]()
+        var columns = [PostgresValue]()
         
         for _ in 0..<columnCount {
             let byteCount = try responseBody.readUInt32()
@@ -33,7 +33,7 @@ internal class DataRowResponse: Response {
                 nil :
                 try responseBody.readUTF8String(byteCount: Int(byteCount))
             
-            columns.append(Value(rawValue))
+            columns.append(PostgresValue(rawValue))
         }
         
         self.columns = columns
@@ -41,7 +41,7 @@ internal class DataRowResponse: Response {
         try super.init(responseBody: responseBody)
     }
     
-    internal let columns: [Value]
+    internal let columns: [PostgresValue]
     
     
     //

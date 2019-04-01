@@ -36,7 +36,7 @@ import Foundation
 /// to [a bug](https://stackoverflow.com/questions/23684727/nsdateformatter-milliseconds-bug)
 /// in the Foundation `DateFormatter` class, `PostgresTimeWithTimeZone` preserves only 3 digits
 /// (millisecond resolution) in converting to and from string representations.
-public struct PostgresTimeWithTimeZone: ValueConvertible, CustomStringConvertible {
+public struct PostgresTimeWithTimeZone: PostgresValueConvertible, CustomStringConvertible {
     
     public init?(hour: Int,
                  minute: Int,
@@ -145,7 +145,7 @@ public struct PostgresTimeWithTimeZone: ValueConvertible, CustomStringConvertibl
         return inner.dateComponents.timeZone!
     }
     
-    public var postgresValue: Value {
+    public var postgresValue: PostgresValue {
         return inner.postgresValue
     }
     
@@ -183,7 +183,7 @@ public struct PostgresTimeWithTimeZone: ValueConvertible, CustomStringConvertibl
             return Postgres.enUsPosixUtcCalendar.date(from: dc)! // validated components on the way in
         }()
         
-        fileprivate lazy var postgresValue: Value = {
+        fileprivate lazy var postgresValue: PostgresValue = {
             
             var dc = dateComponents
             dc.calendar = Postgres.enUsPosixUtcCalendar
@@ -198,7 +198,7 @@ public struct PostgresTimeWithTimeZone: ValueConvertible, CustomStringConvertibl
             let offsetMM = (offset % 3600) / 60
             timeZoneString += String(format: "%02d:%02d", offsetHH, offsetMM)
             
-            return Value(s + timeZoneString)
+            return PostgresValue(s + timeZoneString)
         }()
     }
 }

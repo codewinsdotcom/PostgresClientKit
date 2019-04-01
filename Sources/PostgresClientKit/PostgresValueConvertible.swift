@@ -1,5 +1,5 @@
 //
-//  ValueConvertible.swift
+//  PostgresValueConvertible.swift
 //  PostgresClientKit
 //
 //  Copyright 2019 David Pitfield and the PostgresClientKit contributors
@@ -17,8 +17,8 @@
 //  limitations under the License.
 //
 
-public protocol ValueConvertible {
-    var postgresValue: Value { get }
+public protocol PostgresValueConvertible {
+    var postgresValue: PostgresValue { get }
 }
 
 // EOF
