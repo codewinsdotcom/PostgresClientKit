@@ -23,16 +23,15 @@ do {
     
     let cursor = try statement.execute(parameterValues: [ "San Francisco" ])
     
-    for nextRow in cursor.rows {
+    for weatherResult in cursor {
         
-        let row = try nextRow.get()
-        let columns = row.columns
+        let weather = try weatherResult.get()
         
-        let city = try columns[0].string()
-        let tempLo = try columns[1].int()
-        let tempHi = try columns[2].int()
-        let prcp = try columns[3].optionalDouble()
-        let date = try columns[4].date()
+        let city = try weather.columns[0].string()
+        let tempLo = try weather.columns[1].int()
+        let tempHi = try weather.columns[2].int()
+        let prcp = try weather.columns[3].optionalDouble()
+        let date = try weather.columns[4].date()
         
         print("""
             \(city) on \(date): low: \(tempLo), high: \(tempHi), \

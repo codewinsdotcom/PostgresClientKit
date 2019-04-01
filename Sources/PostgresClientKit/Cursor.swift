@@ -17,7 +17,7 @@
 //  limitations under the License.
 //
 
-public class Cursor: CustomStringConvertible {
+public class Cursor: Sequence, IteratorProtocol {
     
     internal init(statement: Statement) {
         self.statement = statement
@@ -26,10 +26,6 @@ public class Cursor: CustomStringConvertible {
     public let statement: Statement
     
     internal let id = "Cursor-\(Postgres.nextId())"
-    
-    public var rows: Rows {
-        return Rows(cursor: self)
-    }
     
     public internal(set) var rowCount: Int? = nil
     
@@ -47,6 +43,23 @@ public class Cursor: CustomStringConvertible {
     }
     
     
+    //
+    // MARK: IteratorProtocol
+    //
+    
+    public func next() -> Result<Row, Error>? {
+        do {
+            if let row = try statement.connection.nextRowOfCursor(self) {
+                return .success(row)
+            } else {
+                return nil
+            }
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+
     //
     // MARK: CustomStringConvertible
     //
