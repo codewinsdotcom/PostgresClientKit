@@ -30,7 +30,7 @@ import Foundation
 /// - seconds (and fractional seconds)
 /// - time zone (expressed as a fixed offset from UTC/GMT)
 ///
-/// For example, `2019-03-14 16:25:19.365-07`.
+/// For example, `2019-03-14 16:25:19.365+00:00`.
 ///
 /// Like Postgres itself, PostgresClientKit normalizes `TIMESTAMP WITH TIME ZONE` values by
 /// converting them to UTC/GMT.  The values are thus simply moments in time and representable
@@ -43,6 +43,28 @@ import Foundation
 /// digits (millisecond resolution) in converting to and from string representations.
 public struct PostgresTimestampWithTimeZone: ValueConvertible, CustomStringConvertible {
     
+    /// Creates an instance from components.
+    ///
+    /// For example, to represent `2019-03-14 16:25:19.365+00:00`:
+    ///
+    ///     let moment = PostgresTimestampWithTimeZone(year: 2019,
+    ///                                                month: 3,
+    ///                                                day: 14,
+    ///                                                hour: 16,
+    ///                                                minute: 25,
+    ///                                                second: 19,
+    ///                                                nanosecond: 365000000,
+    ///                                                timeZone: TimeZone(secondsFromGMT: 0)!)
+    ///
+    /// - Parameters:
+    ///   - year: the year value
+    ///   - month: the month value (1 for January, 2 for February, and so on)
+    ///   - day: the day value
+    ///   - hour: the hour value
+    ///   - minute: the minute value
+    ///   - second: the second value
+    ///   - nanosecond: the nanosecond value
+    ///   - timeZone: the time zone in which to interpret these components
     public init?(year: Int,
                  month: Int,
                  day: Int,
@@ -70,10 +92,22 @@ public struct PostgresTimestampWithTimeZone: ValueConvertible, CustomStringConve
         inner = Inner(date: date)
     }
 
+    /// Create an instance from a `Date`.
+    ///
+    /// (Foundation `Date` instances represent a moment in time, not a year/month/day tuple.)
+    ///
+    /// - Parameter date: the date
     public init(date: Date) {
         inner = Inner(date: date)
     }
     
+    /// Creates an instance from a string.
+    ///
+    /// The string must conform to the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `"yyyy-MM-dd HH:mm:ss.SSSxxxxx"`.  For example, `"2019-03-14 16:25:19.365+00:00"`.
+    ///
+    /// - Parameter string: the string
     public init?(_ string: String) {
         
         guard let date = PostgresTimestampWithTimeZone.formatter.date(from: string) else {
@@ -83,21 +117,56 @@ public struct PostgresTimestampWithTimeZone: ValueConvertible, CustomStringConve
         inner = Inner(date: date)
     }
     
+    /// A `DateComponents` value for this instance.
+    ///
+    /// The returned value has the following components set:
+    ///
+    /// - `calendar`
+    /// - `year`
+    /// - `month`
+    /// - `day`
+    /// - `hour`
+    /// - `minute`
+    /// - `second`
+    /// - `nanosecond`
+    /// - `timeZone`
     public var dateComponents: DateComponents {
         return inner.dateComponents
     }
     
+    /// A `Date` value for this instance.
+    ///
+    /// (Foundation `Date` instances represent a moment in time, not a year/month/day tuple.)
     public var date: Date {
         return inner.date
     }
     
+    
+    //
+    // MARK: ValueConvertible
+    //
+    
+    /// A `Value` for this instance.
     public var postgresValue: Value {
         return inner.postgresValue
     }
     
+    
+    //
+    // MARK: CustomStringConvertible
+    //
+    
+    /// A string representation of this instance.
+    ///
+    /// Equivalent to `String(describing: postgresValue)`.
     public var description: String {
         return String(describing: postgresValue)
     }
+    
+    
+    //
+    // MARK: Implementation
+    //
 
     /// Formats Postgres `TIMESTAMP WITH TIME ZONE` values.
     private static let formatter: DateFormatter = {
@@ -139,6 +208,9 @@ public struct PostgresTimestampWithTimeZone: ValueConvertible, CustomStringConve
 
 public extension Date {
     
+    /// A `PostgresTimestampWithTimeZone` value for this date.
+    ///
+    /// Equivalent to `PostgresTimestampWithTimeZone(date: self)`.
     var postgresTimestampWithTimeZone: PostgresTimestampWithTimeZone {
         return PostgresTimestampWithTimeZone(date: self)
     }
