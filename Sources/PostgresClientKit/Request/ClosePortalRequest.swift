@@ -30,7 +30,7 @@ internal class ClosePortalRequest: Request {
     }
     
     override var body: Data {
-        var body = "P".data         // for "statement"
+        var body = "P".data         // for "portal"
         body.append("".dataZero)    // the unnamed portal
         return body
     }
