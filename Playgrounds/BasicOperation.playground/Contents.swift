@@ -21,9 +21,9 @@ do {
         statement.close()
     }
     
-    let result = try statement.execute(parameterValues: [ "San Francisco" ])
+    let cursor = try statement.execute(parameterValues: [ "San Francisco" ])
     
-    for nextRow in result.rows {
+    for nextRow in cursor.rows {
         
         let row = try nextRow()
         let columns = row.columns

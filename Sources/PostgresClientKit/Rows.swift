@@ -21,15 +21,15 @@ public class Rows: Sequence, IteratorProtocol {
     
     public typealias NextRow = () throws -> Row
     
-    internal init(result: Result) {
-        self.result = result
+    internal init(cursor: Cursor) {
+        self.cursor = cursor
     }
     
-    internal let result: Result
+    internal let cursor: Cursor
     
     public func next() -> NextRow? {
         do {
-            if let row = try result.statement.connection.nextRowOfResult(result) {
+            if let row = try cursor.statement.connection.nextRowOfCursor(cursor) {
                 return { row }
             } else {
                 return nil

@@ -1,5 +1,5 @@
 //
-//  Result.swift
+//  Cursor.swift
 //  PostgresClientKit
 //
 //  Copyright 2019 David Pitfield and the PostgresClientKit contributors
@@ -17,7 +17,7 @@
 //  limitations under the License.
 //
 
-public class Result: CustomStringConvertible {
+public class Cursor: CustomStringConvertible {
     
     internal init(statement: Statement) {
         self.statement = statement
@@ -25,20 +25,20 @@ public class Result: CustomStringConvertible {
     
     public let statement: Statement
     
-    internal let id = "Result-\(Postgres.nextId())"
+    internal let id = "Cursor-\(Postgres.nextId())"
     
     public var rows: Rows {
-        return Rows(result: self)
+        return Rows(cursor: self)
     }
     
     public internal(set) var rowCount: Int? = nil
     
     public var isClosed: Bool {
-        return statement.connection.isResultClosed(self)
+        return statement.connection.isCursorClosed(self)
     }
     
     public func close() {
-        statement.connection.closeResult(self)
+        statement.connection.closeCursor(self)
         assert(isClosed)
     }
     
@@ -51,7 +51,7 @@ public class Result: CustomStringConvertible {
     // MARK: CustomStringConvertible
     //
     
-    /// A short string that identifies this statement.
+    /// A short string that identifies this cursor.
     public var description: String { return id }
 }
 

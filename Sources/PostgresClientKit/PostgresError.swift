@@ -26,14 +26,14 @@ public enum PostgresError: Error {
     /// An attempt was made to operate on a closed connection.
     case connectionClosed
     
+    /// An attempt was made to operate on a closed cursor.
+    case cursorClosed
+    
     /// The Postgres server has a parameter set to a value incompatible with PostgresClientKit.
     case invalidParameterValue(name: String, value: String, requiredValue: String)
         
     /// The Postgres server requires a `Credential.md5Password` for authentication.
     case md5PasswordCredentialRequired
-    
-    /// An attempt was made to operate on a closed result.
-    case resultClosed
     
     /// The Postgres server reported an internal error or returned an invalid response.
     case serverError(description: String)

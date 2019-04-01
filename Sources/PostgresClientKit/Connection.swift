@@ -214,7 +214,7 @@ public class Connection: CustomStringConvertible {
     
     /// Prepares a SQL statement for execution.
     ///
-    /// Any previous `Result` instance for this connection is closed.
+    /// Any previous `Cursor` instance for this connection is closed.
     ///
     /// - Parameter text: the SQL text
     /// - Returns: the prepared statement
@@ -246,15 +246,15 @@ public class Connection: CustomStringConvertible {
     
     /// Called by `Statement.execute(parameterValues:)` to execute a statement.
     ///
-    /// Any previous `Result` instance for this connection is closed.
+    /// Any previous `Cursor` instance for this connection is closed.
     ///
     /// - Parameters:
     ///   - statement: the statement
     ///   - parameterValues: the values of the bind parameters
-    /// - Returns: the result
+    /// - Returns: the cursor
     /// - Throws: `PostgresError` is the operation fails
     internal func executeStatement(_ statement: Statement,
-                                   parameterValues: [ValueConvertible?] = []) throws -> Result {
+                                   parameterValues: [ValueConvertible?] = []) throws -> Cursor {
         
         try performExtendedQueryOperation(
             operation: {
@@ -280,24 +280,24 @@ public class Connection: CustomStringConvertible {
             }
         )
             
-        let result = Result(statement: statement)
+        let cursor = Cursor(statement: statement)
         
-        // (The ResultState enum cases capture the Result id, rather than the Result instance, to
+        // (The CursorState enum cases capture the Cursor id, rather than the Cursor instance, to
         // avoid a reference cycle).
-        resultState = .open(resultId: result.id, bufferedRow: nil)
+        cursorState = .open(cursorId: cursor.id, bufferedRow: nil)
         
-        // Retrieve and buffer the first row of the result, if any.  We do this to check whether
+        // Retrieve and buffer the first row of the cursor, if any.  We do this to check whether
         // the execution failed, so we can throw an error from this method.
-        if let firstRow = try nextRowOfResult(result) {
-            resultState = .open(resultId: result.id, bufferedRow: firstRow)
+        if let firstRow = try nextRowOfCursor(cursor) {
+            cursorState = .open(cursorId: cursor.id, bufferedRow: firstRow)
         }
         
-        return result
+        return cursor
     }
     
     /// Called by `Statement.close()` to close a statement.
     ///
-    /// Any previous `Result` instance for this connection is closed.
+    /// Any previous `Cursor` instance for this connection is closed.
     ///
     /// If an error occurs, it is logged but not thrown.
     ///
@@ -332,7 +332,7 @@ public class Connection: CustomStringConvertible {
         }
     }
     
-    /// Enumerates the result states of a connection.
+    /// Enumerates the cursor states of a connection.
     ///
     /// Between when it is created and when it is closed, a connection can perform a sequence of
     /// SQL statements.  Each statement is performed by an exchange between PostgresClientKit and
@@ -346,29 +346,29 @@ public class Connection: CustomStringConvertible {
     /// before returning the first row through the PostgresClientKit API.
     ///
     /// However, this approach makes `Connection` instances stateful, at least internally.  This
-    /// enumeration identifies the possible states.  The `resultState` property records the current
+    /// enumeration identifies the possible states.  The `cursorState` property records the current
     /// state of this connection.
-    private enum ResultState {
+    private enum CursorState {
         
-        /// There is no currently open result.
+        /// There is no currently open cursor.
         case closed
         
-        /// There is a currently open result, with an optional buffered row.
-        case open(resultId: String, bufferedRow: Row?)
+        /// There is a currently open cursor, with an optional buffered row.
+        case open(cursorId: String, bufferedRow: Row?)
         
-        /// There is a currently open result, but all rows have been retrieved.
-        case drained(resultId: String)
+        /// There is a currently open cursor, but all rows have been retrieved.
+        case drained(cursorId: String)
     }
     
-    /// The current result state of this connection.
-    private var resultState = ResultState.closed
+    /// The current cursor state of this connection.
+    private var cursorState = CursorState.closed
     
     /// Called by the implementations of the public APIs that prepare a new statement, bind
     /// parameter values to and execute a previously prepared statement, and close a statement.
     ///
     /// This method provides a consistent pattern for performing these operations.  It:
     ///
-    ///     - Transitions this connection to the `closed` `ResultState` (if not already in that
+    ///     - Transitions this connection to the `closed` `CursorState` (if not already in that
     ///       state)
     ///     - Verifies other preconditions for performing the operation
     ///     - Executes the operation
@@ -383,12 +383,12 @@ public class Connection: CustomStringConvertible {
                                                onError: () -> Void = { }) throws {
         
         do {
-            // If there is a currently open result, close it.  (If an unrecoverable error occurs,
+            // If there is a currently open cursor, close it.  (If an unrecoverable error occurs,
             // this will close this connection.)
-            closeCurrentlyOpenResult()
+            closeCurrentlyOpenCursor()
             
-            guard case .closed = resultState else {
-                preconditionFailure("resultState not closed after closeCurrentlyOpenResult()")
+            guard case .closed = cursorState else {
+                preconditionFailure("cursorState not closed after closeCurrentlyOpenCursor()")
             }
             
             // Verify this connection is still open.
@@ -412,35 +412,35 @@ public class Connection: CustomStringConvertible {
     
 
     //
-    // MARK: Result processing
+    // MARK: Cursor processing
     //
     
-    /// Returns the next row of the currently open result.
+    /// Returns the next row of the currently open cursor.
     ///
-    /// - Parameter result: the `Result` instance for the currently open result, or nil if not
+    /// - Parameter cursor: the `Cursor` instance for the currently open cursor, or nil if not
     ///     available
-    /// - Returns: the next row, or nil if there are no more rows in the result
+    /// - Returns: the next row, or nil if there are no more rows in the cursor
     /// - Throws: `PostgresError` if the operation fails
-    internal func nextRowOfResult(_ result: Result? = nil) throws -> Row? {
+    internal func nextRowOfCursor(_ cursor: Cursor? = nil) throws -> Row? {
         
         try verifyConnectionNotClosed()
         
-        if let result = result {
-            try verifyStatementNotClosed(result.statement)
-            try verifyResultNotClosed(result) // verify that *this specific* result is open
+        if let cursor = cursor {
+            try verifyStatementNotClosed(cursor.statement)
+            try verifyCursorNotClosed(cursor) // verify that *this specific* cursor is open
         }
         
         var row: Row?
         
-        switch resultState {
+        switch cursorState {
             
         case .closed:
-            throw PostgresError.resultClosed // verify that *any* result is open
+            throw PostgresError.cursorClosed // verify that *any* cursor is open
             
         case .drained:
             row = nil
             
-        case let .open(resultId: resultId, bufferedRow: bufferedRow):
+        case let .open(cursorId: cursorId, bufferedRow: bufferedRow):
             
             do {
                 // Do we have a row buffered?
@@ -448,7 +448,7 @@ public class Connection: CustomStringConvertible {
                     
                     // Yes, so return it.
                     row = bufferedRow
-                    resultState = .open(resultId: resultId, bufferedRow: nil)
+                    cursorState = .open(cursorId: cursorId, bufferedRow: nil)
                     
                 } else {
                     
@@ -457,9 +457,9 @@ public class Connection: CustomStringConvertible {
                     
                     switch response {
                         
-                    case is EmptyQueryResponse: // the result has no rows
-                        result?.rowCount = 0
-                        resultState = .drained(resultId: resultId)
+                    case is EmptyQueryResponse: // the cursor has no rows
+                        cursor?.rowCount = 0
+                        cursorState = .drained(cursorId: cursorId)
                         
                     case let commandCompleteResponse as CommandCompleteResponse: // no more rows
                         let tokens = commandCompleteResponse.commandTag.split(separator: " ")
@@ -467,16 +467,16 @@ public class Connection: CustomStringConvertible {
                         switch tokens[0] {
                             
                         case "INSERT":
-                            result?.rowCount = Int(tokens[2])
+                            cursor?.rowCount = Int(tokens[2])
                             
                         case "DELETE", "UPDATE", "SELECT", "MOVE", "FETCH", "COPY":
-                            result?.rowCount = Int(tokens[1])
+                            cursor?.rowCount = Int(tokens[1])
                             
                         default:
                             break
                         }
                         
-                        resultState = .drained(resultId: resultId)
+                        cursorState = .drained(cursorId: cursorId)
 
                     case let dataRowResponse as DataRowResponse:
                         row = Row(columns: dataRowResponse.columns)
@@ -487,7 +487,7 @@ public class Connection: CustomStringConvertible {
                     }
                 }
                 
-                if case .drained = resultState {
+                if case .drained = cursorState {
                     
                     // We just transitioned from .open to .drained.  Close the portal to release
                     // Postgres server resources.  Then perform a SyncRequest to close (commit or
@@ -519,55 +519,55 @@ public class Connection: CustomStringConvertible {
         return row
     }
     
-    /// Gets whether the specified result is closed.
+    /// Gets whether the specified cursor is closed.
     ///
-    /// - Parameter result: the result to test
+    /// - Parameter cursor: the cursor to test
     /// - Returns: whether closed
-    internal func isResultClosed(_ result: Result) -> Bool {
-        switch resultState {
+    internal func isCursorClosed(_ cursor: Cursor) -> Bool {
+        switch cursorState {
             
         case .closed:
             return true
             
-        case let .open(resultId: resultId, bufferedRow: _):
-            return resultId != result.id
+        case let .open(cursorId: cursorId, bufferedRow: _):
+            return cursorId != cursor.id
             
-        case let .drained(resultId: resultId):
-            return resultId != result.id
+        case let .drained(cursorId: cursorId):
+            return cursorId != cursor.id
         }
     }
     
-    /// Closes the specified result.
+    /// Closes the specified cursor.
     ///
-    /// - Parameter result: the result
-    internal func closeResult(_ result: Result) {
-        if !isResultClosed(result) {
-            closeCurrentlyOpenResult()
+    /// - Parameter cursor: the cursor
+    internal func closeCursor(_ cursor: Cursor) {
+        if !isCursorClosed(cursor) {
+            closeCurrentlyOpenCursor()
         }
     }
 
-    /// Closes any currently open result.
-    private func closeCurrentlyOpenResult() {
+    /// Closes any currently open cursor.
+    private func closeCurrentlyOpenCursor() {
         do {
             if !isClosed {
-                if case .open = resultState {
-                    while try nextRowOfResult() != nil { } // drain any remaining rows
+                if case .open = cursorState {
+                    while try nextRowOfCursor() != nil { } // drain any remaining rows
                 }
             }
             
-            resultState = .closed
+            cursorState = .closed
         } catch {
-            log(.warning, "Error closing result: \(error)")
+            log(.warning, "Error closing cursor: \(error)")
         }
     }
     
-    /// Verifies the specified result is not closed.
+    /// Verifies the specified cursor is not closed.
     ///
-    /// - Parameter result: the result
-    /// - Throws: `PostgresError.resultClosed` if closed
-    private func verifyResultNotClosed(_ result: Result) throws {
-        if isResultClosed(result) {
-            throw PostgresError.resultClosed
+    /// - Parameter cursor: the cursor
+    /// - Throws: `PostgresError.cursorClosed` if closed
+    private func verifyCursorNotClosed(_ cursor: Cursor) throws {
+        if isCursorClosed(cursor) {
+            throw PostgresError.cursorClosed
         }
     }
     

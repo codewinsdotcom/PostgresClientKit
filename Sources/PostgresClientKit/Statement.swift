@@ -29,7 +29,7 @@ public class Statement: CustomStringConvertible {
     internal let id = "Statement-\(Postgres.nextId())"
 
     @discardableResult public func execute(parameterValues: [ValueConvertible?] = [ ])
-        throws -> Result {
+        throws -> Cursor {
         
         return try connection.executeStatement(self, parameterValues: parameterValues)
     }
