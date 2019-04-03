@@ -24,20 +24,40 @@ import Foundation
 /// - hour
 /// - minute
 /// - seconds (and fractional seconds)
-/// - time zone (expressed as a fixed offset from UTC/GMT)
+/// - time zone (expressed as an offset from UTC/GMT)
 ///
-/// For example, `16:25:19.365-07`.
+/// For example, `20:10:05.128-07:00`.
 ///
 /// Unlike `TIMESTAMP WITH TIME ZONE`, a `TIME WITH TIME ZONE` value is not normalized to UTC/GMT;
 /// the time zone in which it is specified is preserved.
 ///
-/// Although `Date` supports 9 digits in the fractional seconds component (nanosecond resolution),
-/// Postgres does not support more than 6 digits (microsecond resolution).  Additionally, due
-/// to [a bug](https://stackoverflow.com/questions/23684727/nsdateformatter-milliseconds-bug)
-/// in the Foundation `DateFormatter` class, `PostgresTimeWithTimeZone` preserves only 3 digits
-/// (millisecond resolution) in converting to and from string representations.
+/// Like Foundation `Date`, PostgresClientKit records fractional seconds in nanoseconds.  However,
+/// [due to a bug](https://stackoverflow.com/questions/23684727) in the Foundation `DateFormatter`
+/// class, only 3 fractional digits are preserved (millisecond resolution) in values sent to and
+/// received from the Postgres server.
 public struct PostgresTimeWithTimeZone: PostgresValueConvertible, CustomStringConvertible {
     
+    /// Creates a PostgresTimeWithTimeZone from components.
+    ///
+    /// For example, to represent `20:10:05.128-07:00`:
+    ///
+    ///     let time = PostgresTimeWithTimeZone(hour: 20,
+    ///                                         minute: 10,
+    ///                                         second: 05,
+    ///                                         nanosecond: 128000000,
+    ///                                         timeZone: TimeZone(secondsFromGMT: -7 * 60 * 60)!)
+    ///
+    /// The specified time zone must have a fixed offset from UTC/GMT; its offset must not change
+    /// due to daylight savings time.  (This requirement is a consequence of `TIME WITH TIME ZONE`
+    /// values not having the year, month, and day components required to determine whether daylight
+    /// savings time is in effect.)
+    ///
+    /// - Parameters:
+    ///   - hour: the hour value
+    ///   - minute: the minute value
+    ///   - second: the second value
+    ///   - nanosecond: the nanosecond value
+    ///   - timeZone: the time zone in which to interpret these components
     public init?(hour: Int,
                  minute: Int,
                  second: Int,
@@ -46,7 +66,7 @@ public struct PostgresTimeWithTimeZone: PostgresValueConvertible, CustomStringCo
         
         guard timeZone.nextDaylightSavingTimeTransition == nil else {
             Postgres.logger.info(
-                "timeZone must not adopt daylight savings time; use TimeZone(secondsFromGMT:)")
+                "timeZone must not observe daylight savings time; use TimeZone(secondsFromGMT:)")
             return nil
         }
         
@@ -64,6 +84,15 @@ public struct PostgresTimeWithTimeZone: PostgresValueConvertible, CustomStringCo
         inner = Inner(dateComponents: dc)
     }
     
+    /// Creates a PostgresTimeWithTimeZone by interpreting a `Date` in a specified time zone to
+    /// obtain the hour, minute, second, and fractional second components, discarding the year,
+    /// month, and day components.
+    ///
+    /// (Foundation `Date` instances represent moments in time, not *(year, month, day)* tuples.)
+    ///
+    /// - Parameters:
+    ///   - date: the moment in time
+    ///   - timeZone: the time zone in which to interpret that moment
     public init?(date: Date, in timeZone: TimeZone) {
         
         let dc = Postgres.enUsPosixUtcCalendar.dateComponents(in: timeZone, from: date)
@@ -83,6 +112,13 @@ public struct PostgresTimeWithTimeZone: PostgresValueConvertible, CustomStringCo
                   timeZone: timeZone)
     }
     
+    /// Creates a PostgresTimeWithTimeZone from a string.
+    ///
+    /// The string must conform to the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `HH:mm:ss.SSSxxxxx`.  For example, `20:10:05.128-07:00`.
+    ///
+    /// - Parameter string: the string
     public init?(_ string: String) {
         
         var string = string.trimmingCharacters(in: [ " " ])
@@ -133,26 +169,52 @@ public struct PostgresTimeWithTimeZone: PostgresValueConvertible, CustomStringCo
         self.init(date: date, in: timeZone)
     }
     
+    /// A `DateComponents` for this PostgresTimeWithTimeZone.
+    ///
+    /// The returned value has the following components set:
+    ///
+    /// - `hour`
+    /// - `minute`
+    /// - `second`
+    /// - `nanosecond`
+    /// - `timeZone`
     public var dateComponents: DateComponents {
         return inner.dateComponents
     }
 
+    /// A `Date` for this PostgresTimeWithTimeZone, created by setting the year component to 2000
+    /// and the month and day components to 1.
+    ///
+    /// (Foundation `Date` instances represent moments in time, not *(year, month, day)* tuples.)
+    ///
+    /// - Parameter timeZone: the time zone
+    /// - Returns: the moment in time
     public var date: Date {
         return inner.date
     }
     
+    /// The time zone in which this PostgresTimeWithTimeZone was specified.
     public var timeZone: TimeZone {
         return inner.dateComponents.timeZone!
     }
     
+    /// A `PostgresValue` for this PostgresTimeWithTimeZone.
     public var postgresValue: PostgresValue {
         return inner.postgresValue
     }
     
+    /// A string representation of this PostgresTimeWithTimeZone.
+    ///
+    /// Equivalent to `String(describing: postgresValue)`.
     public var description: String {
         return String(describing: postgresValue)
     }
-
+    
+    
+    //
+    // MARK: Implementation
+    //
+    
     /// Formats Postgres `TIME WITH TIME ZONE` values.
     private static let formatter: DateFormatter = {
         let df = DateFormatter()
@@ -205,6 +267,12 @@ public struct PostgresTimeWithTimeZone: PostgresValueConvertible, CustomStringCo
 
 public extension Date {
     
+    /// Creates a `PostgresTimeWithTimeZone` by interpreting this Date in a specified time zone.
+    ///
+    /// Equivalent to `PostgresTimeWithTimeZone(date: self, in: timeZone)`.
+    ///
+    /// - Parameter timeZone: the time zone
+    /// - Returns: the `PostgresTimeWithTimeZone`
     func postgresTimeWithTimeZone(in timeZone: TimeZone) -> PostgresTimeWithTimeZone? {
         return PostgresTimeWithTimeZone(date: self, in: timeZone)
     }

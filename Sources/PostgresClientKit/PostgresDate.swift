@@ -28,6 +28,18 @@ import Foundation
 /// For example, `2019-03-14`.
 public struct PostgresDate: PostgresValueConvertible, CustomStringConvertible {
     
+    /// Creates a PostgresDate from components.
+    ///
+    /// For example, to represent `2019-03-14`:
+    ///
+    ///     let date = PostgresDate(year: 2019,
+    ///                             month: 3,
+    ///                             day: 14)
+    ///
+    /// - Parameters:
+    ///   - year: the year value
+    ///   - month: the month value (1 for January, 2 for February, and so on)
+    ///   - day: the day value
     public init?(year: Int,
                  month: Int,
                  day: Int) {
@@ -44,6 +56,15 @@ public struct PostgresDate: PostgresValueConvertible, CustomStringConvertible {
         inner = Inner(dateComponents: dc)
     }
     
+    /// Creates a PostgresDate by interpreting a `Date` in a specified time zone to obtain the year,
+    /// month, and day components, and discarding the hour, minute, second, and fractional second
+    /// components.
+    ///
+    /// (Foundation `Date` instances represent moments in time, not *(year, month, day)* tuples.)
+    ///
+    /// - Parameters:
+    ///   - date: the moment in time
+    ///   - timeZone: the time zone in which to interpret that moment
     public init(date: Date, in timeZone: TimeZone) {
         
         let dc = Postgres.enUsPosixUtcCalendar.dateComponents(in: timeZone, from: date)
@@ -61,6 +82,13 @@ public struct PostgresDate: PostgresValueConvertible, CustomStringConvertible {
 
     }
     
+    /// Creates a PostgresDate from a string.
+    ///
+    /// The string must conform to the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `yyyy-MM-dd`.  For example, `2019-03-14`.
+    ///
+    /// - Parameter string: the string
     public init?(_ string: String) {
         
         guard let date = PostgresDate.formatter.date(from: string) else {
@@ -70,10 +98,24 @@ public struct PostgresDate: PostgresValueConvertible, CustomStringConvertible {
         self.init(date: date, in: PostgresDate.formatter.timeZone)
     }
     
+    /// A `DateComponents` value for this PostgresDate.
+    ///
+    /// The returned value has the following components set:
+    ///
+    /// - `year`
+    /// - `month`
+    /// - `day`
     public var dateComponents: DateComponents {
         return inner.dateComponents
     }
     
+    /// Creates a `Date` by interpreting this PostgresDate in a specified time zone, setting the
+    /// hour, minute, second, and fractional second components to 0.
+    ///
+    /// (Foundation `Date` instances represent moments in time, not *(year, month, day)* tuples.)
+    ///
+    /// - Parameter timeZone: the time zone
+    /// - Returns: the moment in time
     public func date(in timeZone: TimeZone) -> Date {
         var dc = inner.dateComponents
         dc.calendar = Postgres.enUsPosixUtcCalendar
@@ -81,14 +123,23 @@ public struct PostgresDate: PostgresValueConvertible, CustomStringConvertible {
         return Postgres.enUsPosixUtcCalendar.date(from: dc)! // validated components on the way in
     }
     
+    /// A `PostgresValue` for this PostgresDate.
     public var postgresValue: PostgresValue {
         return inner.postgresValue
     }
     
+    /// A string representation of this PostgresDate.
+    ///
+    /// Equivalent to `String(describing: postgresValue)`.
     public var description: String {
         return String(describing: postgresValue)
     }
-
+    
+    
+    //
+    // MARK: Implementation
+    //
+    
     /// Formats Postgres `DATE` values.
     private static let formatter: DateFormatter = {
         let df = DateFormatter()
@@ -123,6 +174,12 @@ public struct PostgresDate: PostgresValueConvertible, CustomStringConvertible {
 
 public extension Date {
     
+    /// Creates a `PostgresDate` by interpreting this Date in a specified time zone.
+    ///
+    /// Equivalent to `PostgresDate(date: self, in: timeZone)`.
+    ///
+    /// - Parameter timeZone: the time zone
+    /// - Returns: the `PostgresDate`
     func postgresDate(in timeZone: TimeZone) -> PostgresDate {
         return PostgresDate(date: self, in: timeZone)
     }

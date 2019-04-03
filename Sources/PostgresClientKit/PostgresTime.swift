@@ -26,8 +26,27 @@ import Foundation
 /// - seconds (and fractional seconds)
 ///
 /// For example, `16:25:19.365`.
+///
+/// Like Foundation `Date`, PostgresClientKit records fractional seconds in nanoseconds.  However,
+/// [due to a bug](https://stackoverflow.com/questions/23684727) in the Foundation `DateFormatter`
+/// class, only 3 fractional digits are preserved (millisecond resolution) in values sent to and
+/// received from the Postgres server.
 public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
     
+    /// Creates a PostgresTime from components.
+    ///
+    /// For example, to represent `16:25:19.365`:
+    ///
+    ///     let time = PostgresTime(hour: 16,
+    ///                             minute: 25,
+    ///                             second: 19,
+    ///                             nanosecond: 365000000)
+    ///
+    /// - Parameters:
+    ///   - hour: the hour value
+    ///   - minute: the minute value
+    ///   - second: the second value
+    ///   - nanosecond: the nanosecond value
     public init?(hour: Int,
                  minute: Int,
                  second: Int,
@@ -46,6 +65,15 @@ public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
         inner = Inner(dateComponents: dc)
     }
     
+    /// Creates a PostgresTime by interpreting a `Date` in a specified time zone to obtain the hour,
+    /// minute, second, and fractional second components, and discarding the year, month, and day
+    /// components.
+    ///
+    /// (Foundation `Date` instances represent moments in time, not *(year, month, day)* tuples.)
+    ///
+    /// - Parameters:
+    ///   - date: the moment in time
+    ///   - timeZone: the time zone in which to interpret that moment
     public init(date: Date, in timeZone: TimeZone) {
         
         let dc = Postgres.enUsPosixUtcCalendar.dateComponents(in: timeZone, from: date)
@@ -64,6 +92,13 @@ public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
                   nanosecond: nanosecond)!
     }
     
+    /// Creates a PostgresTime from a string.
+    ///
+    /// The string must conform to the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `HH:mm:ss.SSS`.  For example, `16:25:19.365`.
+    ///
+    /// - Parameter string: the string
     public init?(_ string: String) {
         
         guard let date = PostgresTime.formatter.date(from: string) else {
@@ -73,10 +108,25 @@ public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
         self.init(date: date, in: PostgresTime.formatter.timeZone)
     }
     
+    /// A `DateComponents` for this PostgresTime.
+    ///
+    /// The returned value has the following components set:
+    ///
+    /// - `hour`
+    /// - `minute`
+    /// - `second`
+    /// - `nanosecond`
     public var dateComponents: DateComponents {
         return inner.dateComponents
     }
     
+    /// Creates a `Date` by interpreting this PostgresTime in a specified time zone, setting the
+    /// year component to 2000 and the month and day components to 1.
+    ///
+    /// (Foundation `Date` instances represent moments in time, not *(year, month, day)* tuples.)
+    ///
+    /// - Parameter timeZone: the time zone
+    /// - Returns: the moment in time
     public func date(in timeZone: TimeZone) -> Date {
         var dc = inner.dateComponents
         dc.calendar = Postgres.enUsPosixUtcCalendar
@@ -87,14 +137,23 @@ public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
         return Postgres.enUsPosixUtcCalendar.date(from: dc)! // validated components on the way in
     }
     
+    /// A `PostgresValue` for this PostgresTime.
     public var postgresValue: PostgresValue {
         return inner.postgresValue
     }
     
+    /// A string representation of this PostgresTime.
+    ///
+    /// Equivalent to `String(describing: postgresValue)`.
     public var description: String {
         return String(describing: postgresValue)
     }
     
+    
+    //
+    // MARK: Implementation
+    //
+
     /// Formats Postgres `TIME` values.
     private static let formatter: DateFormatter = {
         let df = DateFormatter()
@@ -129,6 +188,12 @@ public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
 
 public extension Date {
     
+    /// Creates a `PostgresTime` by interpreting this Date in a specified time zone.
+    ///
+    /// Equivalent to `PostgresTime(date: self, in: timeZone)`.
+    ///
+    /// - Parameter timeZone: the time zone
+    /// - Returns: the `PostgresTime`
     func postgresTime(in timeZone: TimeZone) -> PostgresTime {
         return PostgresTime(date: self, in: timeZone)
     }
