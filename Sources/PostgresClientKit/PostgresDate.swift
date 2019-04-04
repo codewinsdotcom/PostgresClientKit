@@ -123,10 +123,20 @@ public struct PostgresDate: PostgresValueConvertible, CustomStringConvertible {
         return Postgres.enUsPosixUtcCalendar.date(from: dc)! // validated components on the way in
     }
     
+    
+    //
+    // MARK: PostgresValueConvertible
+    //
+    
     /// A `PostgresValue` for this PostgresDate.
     public var postgresValue: PostgresValue {
         return inner.postgresValue
     }
+    
+    
+    //
+    // MARK: CustomStringConvertible
+    //
     
     /// A string representation of this PostgresDate.
     ///

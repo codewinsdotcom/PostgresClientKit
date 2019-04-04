@@ -198,10 +198,20 @@ public struct PostgresTimeWithTimeZone: PostgresValueConvertible, CustomStringCo
         return inner.dateComponents.timeZone!
     }
     
+    
+    //
+    // MARK: PostgresValueConvertible
+    //
+    
     /// A `PostgresValue` for this PostgresTimeWithTimeZone.
     public var postgresValue: PostgresValue {
         return inner.postgresValue
     }
+    
+    
+    //
+    // MARK: CustomStringConvertible
+    //
     
     /// A string representation of this PostgresTimeWithTimeZone.
     ///

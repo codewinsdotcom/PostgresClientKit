@@ -167,10 +167,20 @@ public struct PostgresTimestamp: PostgresValueConvertible, CustomStringConvertib
         return Postgres.enUsPosixUtcCalendar.date(from: dc)! // validated components on the way in
     }
     
+    
+    //
+    // MARK: PostgresValueConvertible
+    //
+    
     /// A `PostgresValue` for this PostgresTimestamp.
     public var postgresValue: PostgresValue {
         return inner.postgresValue
     }
+    
+    
+    //
+    // MARK: CustomStringConvertible
+    //
     
     /// A string representation of this PostgresTimestamp.
     ///

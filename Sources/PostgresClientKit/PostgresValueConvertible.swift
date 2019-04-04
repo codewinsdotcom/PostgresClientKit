@@ -17,7 +17,10 @@
 //  limitations under the License.
 //
 
+/// A type whose instances can be the values of parameters in executing a `Statement`.
 public protocol PostgresValueConvertible {
+    
+    /// A `PostgresValue` for this instance.
     var postgresValue: PostgresValue { get }
 }
 
