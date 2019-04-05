@@ -22,7 +22,7 @@ import Foundation
 /// Describes an event to be logged.
 public struct LogRecord {
     
-    /// Creates an instance.
+    /// Creates a `LogRecord`.
     ///
     /// - Parameters:
     ///   - level: the log level that reflects the importance of the event

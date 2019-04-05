@@ -33,7 +33,7 @@ import Foundation
 /// received from the Postgres server.
 public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
     
-    /// Creates a PostgresTime from components.
+    /// Creates a `PostgresTime` from components.
     ///
     /// For example, to represent `16:25:19.365`:
     ///
@@ -65,9 +65,9 @@ public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
         inner = Inner(dateComponents: dc)
     }
     
-    /// Creates a PostgresTime by interpreting a `Date` in a specified time zone to obtain the hour,
-    /// minute, second, and fractional second components, and discarding the year, month, and day
-    /// components.
+    /// Creates a `PostgresTime` by interpreting a `Date` in a specified time zone to obtain the
+    /// hour, minute, second, and fractional second components, and discarding the year, month,
+    /// and day components.
     ///
     /// (Foundation `Date` instances represent moments in time, not *(year, month, day)* tuples.)
     ///
@@ -92,7 +92,7 @@ public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
                   nanosecond: nanosecond)!
     }
     
-    /// Creates a PostgresTime from a string.
+    /// Creates a `PostgresTime` from a string.
     ///
     /// The string must conform to the [date format pattern](
     /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
@@ -108,7 +108,7 @@ public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
         self.init(date: date, in: PostgresTime.formatter.timeZone)
     }
     
-    /// A `DateComponents` for this PostgresTime.
+    /// A `DateComponents` for this `PostgresTime`.
     ///
     /// The returned value has the following components set:
     ///
@@ -120,7 +120,7 @@ public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
         return inner.dateComponents
     }
     
-    /// Creates a `Date` by interpreting this PostgresTime in a specified time zone, setting the
+    /// Creates a `Date` by interpreting this `PostgresTime` in a specified time zone, setting the
     /// year component to 2000 and the month and day components to 1.
     ///
     /// (Foundation `Date` instances represent moments in time, not *(year, month, day)* tuples.)
@@ -142,7 +142,7 @@ public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
     // MARK: PostgresValueConvertible
     //
     
-    /// A `PostgresValue` for this PostgresTime.
+    /// A `PostgresValue` for this `PostgresTime`.
     public var postgresValue: PostgresValue {
         return inner.postgresValue
     }
@@ -152,7 +152,7 @@ public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
     // MARK: CustomStringConvertible
     //
     
-    /// A string representation of this PostgresTime.
+    /// A string representation of this `PostgresTime`.
     ///
     /// Equivalent to `String(describing: postgresValue)`.
     public var description: String {
@@ -198,7 +198,7 @@ public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
 
 public extension Date {
     
-    /// Creates a `PostgresTime` by interpreting this Date in a specified time zone.
+    /// Creates a `PostgresTime` by interpreting this `Date` in a specified time zone.
     ///
     /// Equivalent to `PostgresTime(date: self, in: timeZone)`.
     ///

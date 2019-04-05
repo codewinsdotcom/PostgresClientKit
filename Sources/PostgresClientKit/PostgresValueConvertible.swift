@@ -18,6 +18,21 @@
 //
 
 /// A type whose instances can be the values of parameters in executing a `Statement`.
+///
+/// The following types conform to `PostgresValueConvertible`:
+///
+/// - `Bool`
+/// - `Decimal`
+/// - `Double`
+/// - `Int`
+/// - `PostgresByteA`
+/// - `PostgresDate`
+/// - `PostgresTime`
+/// - `PostgresTimeWithTimeZone`
+/// - `PostgresTimestamp`
+/// - `PostgresTimestampWithTimeZone`
+/// - `PostgresValue`
+/// - `String`
 public protocol PostgresValueConvertible {
     
     /// A `PostgresValue` for this instance.

@@ -26,6 +26,8 @@ import Foundation
 ///
 /// A log handler might print the log record on the console, write it to a log file, forward it
 /// to an external logging system, or otherwise process the log record.
+///
+/// - SeeAlso: `ConsoleLogHandler`
 public protocol LogHandler {
     
     /// Called by a `Logger` to request this log handler process the specified log record.
@@ -39,7 +41,7 @@ public protocol LogHandler {
 /// A log handler that prints log records to standard output.
 public class ConsoleLogHandler: LogHandler {
     
-    /// Creates an instance.
+    /// Creates a `ConsoleLogHandler`.
     public init() { }
     
     /// A queue used to make this class threadsafe.

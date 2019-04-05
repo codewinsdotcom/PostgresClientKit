@@ -22,14 +22,14 @@ import Foundation
 /// Represents a Postgres `BYTEA` value (a byte array).
 public struct PostgresByteA: PostgresValueConvertible, CustomStringConvertible {
     
-    /// Creates a PostgresByteA from the specified `Data`.
+    /// Creates a `PostgresByteA` from the specified `Data`.
     ///
     /// - Parameter data: the data
     public init(data: Data) {
         self.data = data
     }
     
-    /// Creates a PostgresByteA from the specified hex format string.
+    /// Creates a `PostgresByteA` from the specified hex format string.
     ///
     /// The Postgres hex format encodes binary data as `\x` followed by two hex digits per byte,
     /// most significant nibble first.  Hex digits `a` to `f` can be uppercase or lowercase.
@@ -59,7 +59,7 @@ public struct PostgresByteA: PostgresValueConvertible, CustomStringConvertible {
     // MARK: PostgresValueConvertible
     //
     
-    /// A `PostgresValue` for this PostgresByteA.
+    /// A `PostgresValue` for this `PostgresByteA.`
     public var postgresValue: PostgresValue {
         return PostgresValue(PostgresByteA.dataToHexEncodedString(data, prefix: "\\x"))
     }
@@ -69,7 +69,7 @@ public struct PostgresByteA: PostgresValueConvertible, CustomStringConvertible {
     // MARK: CustomStringConvertible
     //
     
-    /// A short string that describes this PostgresByteA.
+    /// A short string that describes this `PostgresByteA`.
     public var description: String {
         return "PostgresByteA(count=\(data.count))"
     }

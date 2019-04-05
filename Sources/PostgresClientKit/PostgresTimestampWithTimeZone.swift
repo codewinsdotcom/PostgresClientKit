@@ -42,7 +42,7 @@ import Foundation
 /// received from the Postgres server.
 public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStringConvertible {
     
-    /// Creates a PostgresTimestampWithTimeZone from components.
+    /// Creates a `PostgresTimestampWithTimeZone` from components.
     ///
     /// For example, to represent `2019-03-14 16:25:19.365+00:00`:
     ///
@@ -91,7 +91,7 @@ public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStr
         inner = Inner(date: date)
     }
 
-    /// Creates a PostgresTimestampWithTimeZone from a `Date`.
+    /// Creates a `PostgresTimestampWithTimeZone` from a `Date`.
     ///
     /// (Foundation `Date` instances represent moments in time, not *(year, month, day)* tuples.)
     ///
@@ -100,7 +100,7 @@ public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStr
         inner = Inner(date: date)
     }
     
-    /// Creates a PostgresTimestampWithTimeZone from a string.
+    /// Creates a `PostgresTimestampWithTimeZone` from a string.
     ///
     /// The string must conform to the [date format pattern](
     /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
@@ -116,7 +116,7 @@ public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStr
         inner = Inner(date: date)
     }
     
-    /// A `DateComponents` for this PostgresTimestampWithTimeZone.
+    /// A `DateComponents` for this `PostgresTimestampWithTimeZone`.
     ///
     /// The returned value has the following components set:
     ///
@@ -133,7 +133,7 @@ public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStr
         return inner.dateComponents
     }
     
-    /// A `Date` for this PostgresTimestampWithTimeZone.
+    /// A `Date` for this `PostgresTimestampWithTimeZone`.
     ///
     /// (Foundation `Date` instances represent moments in time, not *(year, month, day)* tuples.)
     public var date: Date {
@@ -145,7 +145,7 @@ public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStr
     // MARK: PostgresValueConvertible
     //
     
-    /// A `PostgresValue` for this PostgresTimestampWithTimeZone.
+    /// A `PostgresValue` for this `PostgresTimestampWithTimeZone`.
     public var postgresValue: PostgresValue {
         return inner.postgresValue
     }
@@ -155,7 +155,7 @@ public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStr
     // MARK: CustomStringConvertible
     //
     
-    /// A string representation of this PostgresTimestampWithTimeZone.
+    /// A string representation of this `PostgresTimestampWithTimeZone`.
     ///
     /// Equivalent to `String(describing: postgresValue)`.
     public var description: String {
@@ -207,7 +207,7 @@ public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStr
 
 public extension Date {
     
-    /// A `PostgresTimestampWithTimeZone` for this Date.
+    /// A `PostgresTimestampWithTimeZone` for this `Date`.
     ///
     /// Equivalent to `PostgresTimestampWithTimeZone(date: self)`.
     var postgresTimestampWithTimeZone: PostgresTimestampWithTimeZone {

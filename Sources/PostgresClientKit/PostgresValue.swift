@@ -22,21 +22,21 @@ import Foundation
 /// A value to be sent to or returned from the Postgres server.
 ///
 /// PostgresClientKit extends standard Swift types to conform to the `PostgresValueConvertible`
-/// protocol, making it easy to convert instances of those types to PostgresValue.  For example:
+/// protocol, making it easy to convert instances of those types to `PostgresValue`.  For example:
 ///
 ///     // Convert String to PostgresValue.
 ///     let greeting = "Hello, world!"
-///     var greetingValue = greeting.postgresValue
+///     let greetingValue = greeting.postgresValue
 ///
 ///     // Convert Double to PostgresValue.
 ///     let pi = 3.14
-///     var piValue = pi.postgresValue
+///     let piValue = pi.postgresValue
 ///
 ///     // Convert an optional Int to PostgresValue.
 ///     let score: Int? = nil
-///     var scoreValue = score.postgresValue
+///     let scoreValue = score.postgresValue
 ///
-/// Use PostgresValue methods to convert PostgresValue instances back to standard Swift types.
+/// Use `PostgresValue` methods to convert `PostgresValue` instances back to standard Swift types.
 /// These methods throw errors if the conversion fails.
 ///
 ///     try greetingValue.string()      // "Hello, world!"
@@ -50,16 +50,16 @@ import Foundation
 ///
 public struct PostgresValue: PostgresValueConvertible, CustomStringConvertible {
     
-    /// Creates a PostgresValue from the raw value used in the Postgres network protocol.
+    /// Creates a `PostgresValue` from the raw value used in the Postgres network protocol.
     ///
-    /// - Parameter rawValue: the raw value, or nil to represent a SQL NULL value
+    /// - Parameter rawValue: the raw value, or nil to represent a SQL `NULL` value
     public init(_ rawValue: String?) {
         self.rawValue = rawValue
     }
     
     internal let rawValue: String?
     
-    /// Whether this PostgresValue represents a SQL NULL value.
+    /// Whether this `PostgresValue` represents a SQL `NULL` value.
     public var isNull: Bool {
         return rawValue == nil
     }
@@ -82,18 +82,18 @@ public struct PostgresValue: PostgresValueConvertible, CustomStringConvertible {
 
 public extension PostgresValue {
     
-    /// Converts this PostgresValue to a String.
+    /// Converts this `PostgresValue` to a `String`.
     ///
-    /// - Returns: the String
+    /// - Returns: the `String`
     /// - Throws: if the conversion fails
     func string() throws -> String {
         try verifyNotNil()
         return try optionalString()!
     }
     
-    /// Converts this PostgresValue to an optional String.
+    /// Converts this `PostgresValue` to an optional `String`.
     ///
-    /// - Returns: the optional String
+    /// - Returns: the optional `String`
     /// - Throws: if the conversion fails
     func optionalString() throws -> String? {
         return rawValue
@@ -102,7 +102,7 @@ public extension PostgresValue {
 
 extension String: PostgresValueConvertible {
     
-    /// A `PostgresValue` for this String.
+    /// A `PostgresValue` for this `String`.
     public var postgresValue: PostgresValue {
         return PostgresValue(self)
     }
@@ -115,18 +115,18 @@ extension String: PostgresValueConvertible {
 
 public extension PostgresValue {
     
-    /// Converts this PostgresValue to an Int.
+    /// Converts this `PostgresValue` to an `Int`.
     ///
-    /// - Returns: the Int
+    /// - Returns: the `Int`
     /// - Throws: if the conversion fails
     func int() throws -> Int {
         try verifyNotNil()
         return try optionalInt()!
     }
 
-    /// Converts this PostgresValue to an optional Int.
+    /// Converts this `PostgresValue` to an optional `Int`.
     ///
-    /// - Returns: the optional Int
+    /// - Returns: the optional `Int`
     /// - Throws: if the conversion fails
     func optionalInt() throws -> Int? {
         guard let rawValue = rawValue else { return nil }
@@ -137,7 +137,7 @@ public extension PostgresValue {
 
 extension Int: PostgresValueConvertible {
     
-    /// A `PostgresValue` for this Int.
+    /// A `PostgresValue` for this `Int`.
     public var postgresValue: PostgresValue {
         return PostgresValue(String(describing: self))
     }
@@ -150,18 +150,18 @@ extension Int: PostgresValueConvertible {
 
 public extension PostgresValue {
     
-    /// Converts this PostgresValue to a Double.
+    /// Converts this `PostgresValue` to a `Double`.
     ///
-    /// - Returns: the Double
+    /// - Returns: the `Double`
     /// - Throws: if the conversion fails
     func double() throws -> Double {
         try verifyNotNil()
         return try optionalDouble()!
     }
     
-    /// Converts this PostgresValue to an optional Double.
+    /// Converts this `PostgresValue` to an optional `Double`.
     ///
-    /// - Returns: the optional Double
+    /// - Returns: the optional `Double`
     /// - Throws: if the conversion fails
     func optionalDouble() throws -> Double? {
         guard let rawValue = rawValue else { return nil }
@@ -172,7 +172,7 @@ public extension PostgresValue {
 
 extension Double: PostgresValueConvertible {
     
-    /// A `PostgresValue` for this Double.
+    /// A `PostgresValue` for this `Double`.
     public var postgresValue: PostgresValue {
         return PostgresValue(String(describing: self))
     }
@@ -185,18 +185,18 @@ extension Double: PostgresValueConvertible {
 
 public extension PostgresValue {
     
-    /// Converts this PostgresValue to a Decimal.
+    /// Converts this `PostgresValue` to a `Decimal`.
     ///
-    /// - Returns: the Decimal
+    /// - Returns: the `Decimal`
     /// - Throws: if the conversion fails
     func decimal() throws -> Decimal {
         try verifyNotNil()
         return try optionalDecimal()!
     }
     
-    /// Converts this PostgresValue to an optional Decimal.
+    /// Converts this `PostgresValue` to an optional `Decimal`.
     ///
-    /// - Returns: the optional Decimal
+    /// - Returns: the optional `Decimal`
     /// - Throws: if the conversion fails
     func optionalDecimal() throws -> Decimal? {
         
@@ -212,7 +212,7 @@ public extension PostgresValue {
 
 extension Decimal: PostgresValueConvertible {
     
-    /// A `PostgresValue` for this Decimal.
+    /// A `PostgresValue` for this `Decimal`.
     public var postgresValue: PostgresValue {
         return PostgresValue(String(describing: self))
     }
@@ -225,18 +225,18 @@ extension Decimal: PostgresValueConvertible {
 
 public extension PostgresValue {
     
-    /// Converts this PostgresValue to a Bool.
+    /// Converts this `PostgresValue` to a `Bool`.
     ///
-    /// - Returns: the Bool
+    /// - Returns: the `Bool`
     /// - Throws: if the conversion fails
     func bool() throws -> Bool {
         try verifyNotNil()
         return try optionalBool()!
     }
     
-    /// Converts this PostgresValue to an optional Bool
+    /// Converts this `PostgresValue` to an optional `Bool`
     ///
-    /// - Returns: the optional Bool
+    /// - Returns: the optional `Bool`
     /// - Throws: if the conversion fails
     func optionalBool() throws -> Bool? {
         
@@ -253,7 +253,7 @@ public extension PostgresValue {
 
 extension Bool: PostgresValueConvertible {
     
-    /// A `PostgresValue` for this Bool.
+    /// A `PostgresValue` for this `Bool`.
     public var postgresValue: PostgresValue {
         return PostgresValue(self ? "t" : "f")
     }
@@ -266,18 +266,18 @@ extension Bool: PostgresValueConvertible {
 
 public extension PostgresValue {
     
-    /// Converts this PostgresValue to a `PostgresTimestampWithTimeZone`.
+    /// Converts this `PostgresValue` to a `PostgresTimestampWithTimeZone`.
     ///
-    /// - Returns: the PostgresTimestampWithTimeZone
+    /// - Returns: the `PostgresTimestampWithTimeZone`
     /// - Throws: if the conversion fails
     func timestampWithTimeZone() throws -> PostgresTimestampWithTimeZone {
         try verifyNotNil()
         return try optionalTimestampWithTimeZone()!
     }
     
-    /// Converts this PostgresValue to an optional `PostgresTimestampWithTimeZone`.
+    /// Converts this `PostgresValue` to an optional `PostgresTimestampWithTimeZone`.
     ///
-    /// - Returns: the optional PostgresTimestampWithTimeZone
+    /// - Returns: the optional `PostgresTimestampWithTimeZone`
     /// - Throws: if the conversion fails
     func optionalTimestampWithTimeZone() throws -> PostgresTimestampWithTimeZone? {
         
@@ -298,18 +298,18 @@ public extension PostgresValue {
 
 public extension PostgresValue {
     
-    /// Converts this PostgresValue to a `PostgresTimestamp`.
+    /// Converts this `PostgresValue` to a `PostgresTimestamp`.
     ///
-    /// - Returns: the PostgresTimestamp
+    /// - Returns: the `PostgresTimestamp`
     /// - Throws: if the conversion fails
     func timestamp() throws -> PostgresTimestamp {
         try verifyNotNil()
         return try optionalTimestamp()!
     }
     
-    /// Converts this PostgresValue to an optional `PostgresTimestamp`.
+    /// Converts this `PostgresValue` to an optional `PostgresTimestamp`.
     ///
-    /// - Returns: the optional PostgresTimestamp
+    /// - Returns: the optional `PostgresTimestamp`
     /// - Throws: if the conversion fails
     func optionalTimestamp() throws -> PostgresTimestamp? {
         
@@ -330,18 +330,18 @@ public extension PostgresValue {
 
 public extension PostgresValue {
     
-    /// Converts this PostgresValue to a `PostgresDate`.
+    /// Converts this `PostgresValue` to a `PostgresDate`.
     ///
-    /// - Returns: the PostgresDate
+    /// - Returns: the `PostgresDate`
     /// - Throws: if the conversion fails
     func date() throws -> PostgresDate {
         try verifyNotNil()
         return try optionalDate()!
     }
     
-    /// Converts this PostgresValue to an optional `PostgresDate`.
+    /// Converts this `PostgresValue` to an optional `PostgresDate`.
     ///
-    /// - Returns: the optional PostgresDate
+    /// - Returns: the optional `PostgresDate`
     /// - Throws: if the conversion fails
     func optionalDate() throws -> PostgresDate? {
         
@@ -362,18 +362,18 @@ public extension PostgresValue {
 
 public extension PostgresValue {
     
-    /// Converts this PostgresValue to a `PostgresTime`.
+    /// Converts this `PostgresValue` to a `PostgresTime`.
     ///
-    /// - Returns: the PostgresTime
+    /// - Returns: the `PostgresTime`
     /// - Throws: if the conversion fails
     func time() throws -> PostgresTime {
         try verifyNotNil()
         return try optionalTime()!
     }
     
-    /// Converts this PostgresValue to an optional `PostgresTime`.
+    /// Converts this `PostgresValue` to an optional `PostgresTime`.
     ///
-    /// - Returns: the optional PostgresTime
+    /// - Returns: the optional `PostgresTime`
     /// - Throws: if the conversion fails
     func optionalTime() throws -> PostgresTime? {
         
@@ -394,18 +394,18 @@ public extension PostgresValue {
 
 public extension PostgresValue {
     
-    /// Converts this PostgresValue to a `PostgresTimeWithTimeZone`.
+    /// Converts this `PostgresValue` to a `PostgresTimeWithTimeZone`.
     ///
-    /// - Returns: the PostgresTimeWithTimeZone
+    /// - Returns: the `PostgresTimeWithTimeZone`
     /// - Throws: if the conversion fails
     func timeWithTimeZone() throws -> PostgresTimeWithTimeZone {
         try verifyNotNil()
         return try optionalTimeWithTimeZone()!
     }
     
-    /// Converts this PostgresValue to an optional `PostgresTimeWithTimeZone`.
+    /// Converts this `PostgresValue` to an optional `PostgresTimeWithTimeZone`.
     ///
-    /// - Returns: the optional PostgresTimeWithTimeZone
+    /// - Returns: the optional `PostgresTimeWithTimeZone`
     /// - Throws: if the conversion fails
     func optionalTimeWithTimeZone() throws -> PostgresTimeWithTimeZone? {
         
@@ -426,18 +426,18 @@ public extension PostgresValue {
 
 public extension PostgresValue {
     
-    /// Converts this PostgresValue to a `PostgresByteA`.
+    /// Converts this `PostgresValue` to a `PostgresByteA`.
     ///
-    /// - Returns: the PostgresByteaA
+    /// - Returns: the `PostgresByteA`
     /// - Throws: if the conversion fails
     func byteA() throws -> PostgresByteA {
         try verifyNotNil()
         return try optionalByteA()!
     }
     
-    /// Converts this PostgresValue to an optional `PostgresByteA`.
+    /// Converts this `PostgresValue` to an optional `PostgresByteA`.
     ///
-    /// - Returns: the optional PostgresByteA
+    /// - Returns: the optional `PostgresByteA`
     /// - Throws: if the conversion fails
     func optionalByteA() throws -> PostgresByteA? {
         
@@ -458,7 +458,7 @@ public extension PostgresValue {
 
 public extension PostgresValue {
     
-    /// The PostgresValue itself.
+    /// The `PostgresValue` itself.
     var postgresValue: PostgresValue {
         return self
     }
@@ -471,7 +471,7 @@ public extension PostgresValue {
 
 public extension PostgresValue {
     
-    /// A short string that describes this PostgresValue.
+    /// A short string that describes this `PostgresValue`.
     var description: String {
         return rawValue == nil ?
             "nil" :

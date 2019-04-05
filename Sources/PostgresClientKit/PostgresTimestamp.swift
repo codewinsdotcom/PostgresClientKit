@@ -45,7 +45,7 @@ import Foundation
 /// received from the Postgres server.
 public struct PostgresTimestamp: PostgresValueConvertible, CustomStringConvertible {
     
-    /// Creates a PostgresTimestamp from components.
+    /// Creates a `PostgresTimestamp` from components.
     ///
     /// For example, to represent `2019-03-14 16:25:19.365`:
     ///
@@ -92,7 +92,7 @@ public struct PostgresTimestamp: PostgresValueConvertible, CustomStringConvertib
         inner = Inner(dateComponents: dc)
     }
     
-    /// Creates a PostgresTimestamp by interpreting a `Date` in a specified time zone.
+    /// Creates a `PostgresTimestamp` by interpreting a `Date` in a specified time zone.
     ///
     /// (Foundation `Date` instances represent moments in time, not *(year, month, day)* tuples.)
     ///
@@ -123,7 +123,7 @@ public struct PostgresTimestamp: PostgresValueConvertible, CustomStringConvertib
                   nanosecond: nanosecond)!
     }
     
-    /// Creates a PostgresTimestamp from a string.
+    /// Creates a `PostgresTimestamp` from a string.
     ///
     /// The string must conform to the [date format pattern](
     /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
@@ -139,7 +139,7 @@ public struct PostgresTimestamp: PostgresValueConvertible, CustomStringConvertib
         self.init(date: date, in: PostgresTimestamp.formatter.timeZone)
     }
     
-    /// A `DateComponents` for this PostgresTimestamp.
+    /// A `DateComponents` for this `PostgresTimestamp`.
     ///
     /// The returned value has the following components set:
     ///
@@ -154,7 +154,7 @@ public struct PostgresTimestamp: PostgresValueConvertible, CustomStringConvertib
         return inner.dateComponents
     }
 
-    /// Creates a `Date` by interpreting this PostgresTimestamp in a specified time zone.
+    /// Creates a `Date` by interpreting this `PostgresTimestamp` in a specified time zone.
     ///
     /// (Foundation `Date` instances represent moments in time, not *(year, month, day)* tuples.)
     ///
@@ -172,7 +172,7 @@ public struct PostgresTimestamp: PostgresValueConvertible, CustomStringConvertib
     // MARK: PostgresValueConvertible
     //
     
-    /// A `PostgresValue` for this PostgresTimestamp.
+    /// A `PostgresValue` for this `PostgresTimestamp`.
     public var postgresValue: PostgresValue {
         return inner.postgresValue
     }
@@ -182,7 +182,7 @@ public struct PostgresTimestamp: PostgresValueConvertible, CustomStringConvertib
     // MARK: CustomStringConvertible
     //
     
-    /// A string representation of this PostgresTimestamp.
+    /// A string representation of this `PostgresTimestamp`.
     ///
     /// Equivalent to `String(describing: postgresValue)`.
     public var description: String {
@@ -228,7 +228,7 @@ public struct PostgresTimestamp: PostgresValueConvertible, CustomStringConvertib
 
 public extension Date {
     
-    /// Creates a `PostgresTimestamp` by interpreting this Date in a specified time zone.
+    /// Creates a `PostgresTimestamp` by interpreting this `Date` in a specified time zone.
     ///
     /// Equivalent to `PostgresTimestamp(date: self, in: timeZone)`.
     ///

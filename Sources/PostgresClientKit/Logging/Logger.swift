@@ -33,7 +33,7 @@ import Foundation
 ///
 ///     let record = LogRecord(level: .warning,
 ///                            message: "Watch out!",
-///                            context: "Session14",
+///                            context: "Session-14",
 ///                            timestamp: Date(),
 ///                            file: #file,
 ///                            function: #function,
@@ -42,16 +42,18 @@ import Foundation
 ///     logger.log(record) // the record is logged (because LogLevel.warning >= logger.level)
 ///
 ///     // Convenience methods make logging more concise.
-///     logger.warning("Watch out!", context: "Session14")
+///     logger.warning("Watch out!", context: "Session-14")
 ///
 ///     // Examples of other log levels:
 ///     logger.severe("This is also logged") // because LogLevel.severe >= logger.level
 ///     logger.info("This is not logged")    // because LogLevel.info < logger.level
 ///
 /// `Logger` is threadsafe.
+///
+/// - SeeAlso: `Postgres.logger`
 public class Logger {
     
-    /// Creates an instance.
+    /// Creates a `Logger`.
     public init() { }
     
     /// Used to make this logger instance threadsafe.
@@ -87,7 +89,7 @@ public class Logger {
     }
     private var _handler: LogHandler = ConsoleLogHandler()
 
-    /// Gets whether a `LogRecord` instance with the specified log level would be logged.
+    /// Gets whether a `LogRecord` with the specified log level would be logged.
     ///
     /// - Parameter level: the log level
     /// - Returns: whether logged
