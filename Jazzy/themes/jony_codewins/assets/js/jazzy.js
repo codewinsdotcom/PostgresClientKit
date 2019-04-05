@@ -32,8 +32,8 @@ $(".token").click(function(event) {
 
   // Keeps the document from jumping to the hash.
   var href = $(this).attr('href');
-  if (history.pushState) {
-    history.pushState({}, '', href);
+  if (history.replaceState) {
+    history.replaceState({}, '', href);
   } else {
     location.hash = href;
   }
