@@ -20,8 +20,10 @@
 /// A credential for authenticating to the Postgres server.
 ///
 /// PostgresClientKit supports `trust`, `password`, and `md5` authentication.  The configuration of
-/// the Postgres server determines which authentication types are allowed.  Refer to the [PostgreSQL
-/// documentation](https://www.postgresql.org/docs/11/client-authentication.html).
+/// the Postgres server determines which authentication types are allowed.
+///
+/// - SeeAlso: [Postgres:
+///     Client Authentication](https://www.postgresql.org/docs/11/client-authentication.html).
 public enum Credential {
     
     /// Connects without authenticating.

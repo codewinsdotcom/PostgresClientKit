@@ -52,7 +52,7 @@ public struct PostgresValue: PostgresValueConvertible, CustomStringConvertible {
     
     /// Creates a `PostgresValue` from the raw value used in the Postgres network protocol.
     ///
-    /// - Parameter rawValue: the raw value, or nil to represent a SQL `NULL` value
+    /// - Parameter rawValue: the raw value, or `nil` to represent a SQL `NULL` value
     public init(_ rawValue: String?) {
         self.rawValue = rawValue
     }

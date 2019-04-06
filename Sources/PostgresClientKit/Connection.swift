@@ -30,14 +30,13 @@ import SSLService
 /// Connections are used to perform SQL statements.  To perform a SQL statement:
 ///
 /// - Call `Connection.prepareStatement(text:)` to parse the SQL text and return a `Statement`.
-/// - Call `Statement.execute(parameterValues:)`, specifying the values of any bound parameters,
-///   to execute the statement and return a `Cursor`.
+/// - Call `Statement.execute(parameterValues:)` to execute the statement and return a `Cursor`.
 /// - Iterate over the `Cursor` to retrieve the rows in the result.
 /// - Close the `Cursor` and the `Statement` to release resources on the Postgres server.
 ///
-/// A `Statement` can be repeatedly executed, and the values of its bound parameters can be
-/// different each time.  This is more efficient than having the Postgres server repeatedly
-/// parse the same SQL text.
+/// A `Statement` can be repeatedly executed, and the values of its parameters can be different
+/// each time.  This is more efficient than having the Postgres server repeatedly parse the same
+/// SQL text.
 ///
 /// A `Connection` performs no more than one SQL statement at a time.  When
 /// `Connection.prepareStatement(text:)` or `Statement.execute(parameterValues:)` is called, any
@@ -306,7 +305,7 @@ public class Connection: CustomStringConvertible {
     ///
     /// - Parameters:
     ///   - statement: the `Statement`
-    ///   - parameterValues: the values of the bind parameters
+    ///   - parameterValues: the values of the statement's parameters
     /// - Returns: the `Cursor` containing the result
     /// - Throws: `PostgresError` is the operation fails
     internal func executeStatement(_ statement: Statement,
@@ -473,9 +472,9 @@ public class Connection: CustomStringConvertible {
     
     /// Returns the next row of the currently open cursor.
     ///
-    /// - Parameter cursor: the `Cursor` instance for the currently open cursor, or nil if not
+    /// - Parameter cursor: the `Cursor` instance for the currently open cursor, or `nil` if not
     ///     available
-    /// - Returns: the next `Row`, or nil if there are no more rows in the cursor
+    /// - Returns: the next `Row`, or `nil` if there are no more rows in the cursor
     /// - Throws: `PostgresError` if the operation fails
     internal func nextRowOfCursor(_ cursor: Cursor? = nil) throws -> Row? {
         

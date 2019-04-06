@@ -37,7 +37,8 @@ public struct Notice: CustomStringConvertible {
     
     /// The SQLSTATE code for the error.  Not localizable.
     ///
-    /// - SeeAlso: [PostgreSQL Error Codes](https://www.postgresql.org/docs/11/static/errcodes-appendix.html)
+    /// - SeeAlso: [Postgres:
+    ///     Error Codes](https://www.postgresql.org/docs/11/static/errcodes-appendix.html)
     public var code: String? { return fields["C"] }
     
     ///  The primary human-readable error message.  Accurate but terse (typically one line).
@@ -105,7 +106,7 @@ public struct Notice: CustomStringConvertible {
     // MARK: CustomStringConvertible
     //
     
-    /// A string representation of this notice.
+    /// A string representation of this `Notice`.
     public var description: String {
         
         var s = "Notice("

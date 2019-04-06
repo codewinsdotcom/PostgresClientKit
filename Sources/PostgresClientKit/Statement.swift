@@ -17,30 +17,68 @@
 //  limitations under the License.
 //
 
+/// A prepared SQL statement.
+///
+/// Use `Connection.prepareStatement(text:)` to create a `Statement`.
+///
+/// Call `Statement.execute(parameterValues:)` to execute the `Statement`, specifying the values
+/// of any parameters.
+///
+/// A `Statement` can be repeatedly executed, and the values of its parameters can be different
+/// each time.
+///
+/// When a `Statement` is no longer required, call `Statement.close()` to release its Postgres
+/// server resources.
 public class Statement: CustomStringConvertible {
     
+    /// Creates a `Statement`.
+    ///
+    /// - Parameters:
+    ///   - connection: the `Connection`
+    ///   - text: the SQL text
     internal init(connection: Connection, text: String) {
         self.connection = connection
         self.text = text
     }
     
+    /// The `Connection` to which this `Statement` belongs.
     public let connection: Connection
+    
+    /// The SQL text.
     public let text: String
+    
+    /// Uniquely identifies this `Statement`.  Used in logging.
     internal let id = "Statement-\(Postgres.nextId())"
 
+    /// Executes this `Statement`.
+    ///
+    /// Any previous `Cursor` for this `Connection` is closed.
+    ///
+    /// - Parameter parameterValues: the values of the statement's parameters.  Index 0 is the
+    ///     value of `$1`, index 1 is the value of `$2`, and so on.  A `nil` element represents
+    ///     SQL `NULL`.
+    /// - Returns: a `Cursor` containing the result
+    /// - Throws: `PostgresError` if the operation fails
     @discardableResult public func execute(parameterValues: [PostgresValueConvertible?] = [ ])
         throws -> Cursor {
         
         return try connection.executeStatement(self, parameterValues: parameterValues)
     }
     
+    /// Whether this `Statement` is closed.
+    ///
+    /// To close a `Statement`, call `close()`.
     public private(set) var isClosed = false
 
+    /// Closes this `Statement`.
+    ///
+    /// Has no effect if this `Statement` is already closed.
     public func close() {
         connection.closeStatement(self)
         isClosed = true
     }
     
+    /// Invokes `close()`.
     deinit {
         close()
     }
@@ -50,7 +88,7 @@ public class Statement: CustomStringConvertible {
     // MARK: CustomStringConvertible
     //
     
-    /// A short string that identifies this statement.
+    /// A short string that identifies this `Statement`.
     public var description: String { return id }
 }
 

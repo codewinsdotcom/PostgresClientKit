@@ -17,11 +17,28 @@
 //  limitations under the License.
 //
 
+
+/// A delegate for `Connection` instances.
 public protocol ConnectionDelegate: AnyObject {
     
+    /// Called upon a notification event from the Postgres server.
+    ///
+    /// - SeeAlso: [Postgres: `NOTIFY` command](https://www.postgresql.org/docs/11/sql-notify.html)
+    ///
+    /// - Parameters:
+    ///   - connection: the `Connection`
+    ///   - notice: the notification event
     func connection(_ connection: Connection,
                     didReceiveNotice notice: Notice)
     
+    /// Called upon a change in the value of certain Postgres server parameters.
+    ///
+    /// - SeeAlso: [Postgres: Message Flow - Asynchronous
+    ///     Opererations](https://www.postgresql.org/docs/11/protocol-flow.html#PROTOCOL-ASYNC)
+    ///
+    /// - Parameters:
+    ///   - connection: the `Connection`
+    ///   - parameterStatus: the parameter name and new value
     func connection(_ connection: Connection,
                     didReceiveParameterStatus parameterStatus: (name: String, value: String))
 }

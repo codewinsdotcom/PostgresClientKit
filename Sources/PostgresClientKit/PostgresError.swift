@@ -57,7 +57,7 @@ public enum PostgresError: Error {
     /// The value could not be converted to the requested type.
     case valueConversionError(value: PostgresValue, type: Any.Type)
     
-    /// The value is nil.
+    /// The value is `nil`.
     case valueIsNil
 }
 

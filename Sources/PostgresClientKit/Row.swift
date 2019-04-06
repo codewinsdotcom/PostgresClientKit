@@ -17,12 +17,17 @@
 //  limitations under the License.
 //
 
+/// A `Row` exposed by a `Cursor`.
 public struct Row: CustomStringConvertible {
     
+    /// Creates a `Row`.
+    ///
+    /// - Parameter columns: the column values
     internal init(columns: [PostgresValue]) {
         self.columns = columns
     }
     
+    /// The values of the columns for this `Row`.
     public var columns: [PostgresValue]
     
     
@@ -30,6 +35,7 @@ public struct Row: CustomStringConvertible {
     // MARK: CustomStringConvertible
     //
     
+    /// A string representation of this `Row`.
     public var description: String {
         return "Row(columns: \(columns))"
     }

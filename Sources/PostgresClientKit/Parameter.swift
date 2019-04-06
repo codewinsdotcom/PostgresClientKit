@@ -19,7 +19,7 @@
 
 /// A Postgres server configuration parameter.
 ///
-/// In creating a connection to the Postgres server, PostgresClientKit sets the values of certain
+/// In creating a `Connection` to the Postgres server, PostgresClientKit sets the values of certain
 /// parameters.
 ///
 /// Additionally, when PostgresClientKit receives a `ParameterStatusResponse` from the Postgres
@@ -34,7 +34,7 @@ internal struct Parameter {
     /// The parameter value desired by PostgresClientKit.
     internal let value: String
     
-    /// Whether PostgresClientKit sets the value of this parameter in creating a connection.
+    /// Whether PostgresClientKit sets the value of this parameter in creating a `Connection`.
     internal let isSetWhenConnecting: Bool
     
     /// Whether PostgresClientKit checks the value of this parameter when it receives a
@@ -76,7 +76,8 @@ internal struct Parameter {
     /// PostgresClientKit to have a certain value and, if so, whether it has that value.
     ///
     /// - Parameter response: the response to check
-    /// - Throws: `PostgresError` if the parameter does not have the required value
+    /// - Throws: `PostgresError.invalidParameterValue` if the parameter does not have the required
+    ///     value
     internal static func checkParameterStatusResponse(_ response: ParameterStatusResponse) throws {
         
         if let parameter = values.first(where: {
