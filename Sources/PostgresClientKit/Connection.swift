@@ -21,17 +21,70 @@ import Foundation
 import Socket
 import SSLService
 
+/// A connection to a Postgres server.
+///
+/// The `ConnectionConfiguration` used to create a `Connection` specifies the hostname and port
+/// number of the Postgres server, the user name and database to use, and other characteristics
+/// of the connection.
+///
+/// Connections are used to perform SQL statements.  To perform a SQL statement:
+///
+/// - Call `Connection.prepareStatement(text:)` to parse the SQL text and return a `Statement`.
+/// - Call `Statement.execute(parameterValues:)`, specifying the values of any bound parameters,
+///   to execute the statement and return a `Cursor`.
+/// - Iterate over the `Cursor` to retrieve the rows in the result.
+/// - Close the `Cursor` and the `Statement` to release resources on the Postgres server.
+///
+/// A `Statement` can be repeatedly executed, and the values of its bound parameters can be
+/// different each time.  This is more efficient than having the Postgres server repeatedly
+/// parse the same SQL text.
+///
+/// A `Connection` performs no more than one SQL statement at a time.  When
+/// `Connection.prepareStatement(text:)` or `Statement.execute(parameterValues:)` is called, any
+/// previous `Cursor` for the `Connection` is closed.
+///
+/// The following methods also close any previous `Cursor` for the `Connection`:
+///
+/// - `Connection.beginTransaction()`
+/// - `Connection.commitTransaction()`
+/// - `Connection.rollbackTransaction()`
+/// - `Statement.close()`
+/// - `Cursor.close()`
+///
+/// To concurrently perform more than one SQL statement, use multiple connections.
+///
+/// By default, each `Statement` is executed in its own transaction.  The statement's transaction is
+/// automatically rolled back if an error occurs in executing the statement, and is automatically
+/// commited upon any of the following events:
+///
+/// - if there are no rows in the result: upon completion of `Statement.execute()`
+/// - if the result has one or more rows: after the final row has been retrieved (in other words,
+///   when `Cursor.next()` returns `nil`)
+/// - when the `Cursor` is closed (in any of the ways listed above)
+///
+/// Alternately, transactions can be explicitly demarcated by performing the SQL `BEGIN`, `COMMIT`,
+/// and `ROLLBACK` commands (or equivalently, the `Connection.beginTransaction()`,
+/// `Connection.commitTransaction()`, and `Connection.rollbackTransaction()` methods).
+///
+/// No more than one thread may concurrently operate against a `Connection` (including its
+/// `Statement` and `Cursor` instances).  However, multiple threads may concurrently operate
+/// against different connections.
+///
+/// When a `Connection` is no longer required, call `Connection.close()` to release its Postgres
+/// server resources and close the network socket.  A `Connection` is automatically closed if an
+/// unrecoverable error occurs (for example, if the Postgres server closes the network socket).
+/// Use `Connection.isClosed` to test whether a `Connection` is closed.
 public class Connection: CustomStringConvertible {
     
     //
     // MARK: Connection lifecycle
     //
     
-    /// Creates a connection.
+    /// Creates a `Connection`.
     ///
     /// - Parameters:
-    ///   - configuration: the connection configuration
-    ///   - delegate: the optional delegate for the connection
+    ///   - configuration: the configuration for the `Connection`
+    ///   - delegate: an optional delegate for the `Connection`
     /// - Throws: `PostgresError` if the operation fails
     public init(configuration: ConnectionConfiguration,
                 delegate: ConnectionDelegate? = nil) throws {
@@ -143,28 +196,30 @@ public class Connection: CustomStringConvertible {
         success = true
     }
     
-    /// An optional delegate for this connection.
+    /// An optional delegate for this `Connection`.
     ///
     /// - Note: `Connection` holds a `weak` reference to the delegate.
     public weak var delegate: ConnectionDelegate?
     
-    /// Uniquely identifies this connection.  Used in logging.
+    /// Uniquely identifies this `Connection`.  Used in logging.
     private let id = "Connection-\(Postgres.nextId())"
 
-    /// Whether this connection is closed.
+    /// Whether this `Connection` is closed.
     ///
-    /// To close a connection, call `close()`.  A connection is also closed if an unrecoverable
-    /// error occurs (for example, if the connection is closed by the Postgres server).
+    /// To close a `Connection`, call `close()`.  A `Connection` is also closed if an unrecoverable
+    /// error occurs (for example, if the Postgres server closes the network socket).
     public var isClosed: Bool {
         return !socket.isConnected
     }
     
-    /// Closes this connection.
+    /// Closes this `Connection`.
     ///
-    /// Has not effect if this connection is already closed.
+    /// Has no effect if this `Connection` is already closed.
     public func close() {
         if !isClosed {
             log(.fine, "Closing connection")
+            cursorState = .closed
+            
             let terminateRequest = TerminateRequest()
             try? sendRequest(terminateRequest) // consumes any Error
             
@@ -175,7 +230,7 @@ public class Connection: CustomStringConvertible {
         }
     }
     
-    /// Verifies this connection is not closed.
+    /// Verifies this `Connection` is not closed.
     ///
     /// - Throws: `PostgresError.connectionClosed` if closed
     private func verifyConnectionNotClosed() throws {
@@ -184,17 +239,19 @@ public class Connection: CustomStringConvertible {
         }
     }
     
+    /// Invokes `close()`.
     deinit {
         close()
     }
     
-    /// Attempts to resynchronize this collection, closing this connection if resynchronization
-    /// fails.
+    /// Attempts to resynchronize this `Connection`, closing it if resynchronization fails.
     ///
     /// The Postgres server requires resynchronization to be performed after reporting an
     /// `ErrorResponse`.
     private func resyncOrCloseConnection() {
         if !isClosed {
+            cursorState = .closed
+            
             do {
                 let syncRequest = SyncRequest()
                 try sendRequest(syncRequest)
@@ -211,13 +268,12 @@ public class Connection: CustomStringConvertible {
     // MARK: Statement execution
     //
     
-    
     /// Prepares a SQL statement for execution.
     ///
-    /// Any previous `Cursor` instance for this connection is closed.
+    /// Any previous `Cursor` for this `Connection` is closed.
     ///
     /// - Parameter text: the SQL text
-    /// - Returns: the prepared statement
+    /// - Returns: the prepared `Statement`
     /// - Throws: `PostgresError` if the operation fails
     public func prepareStatement(text: String) throws -> Statement {
         
@@ -244,14 +300,14 @@ public class Connection: CustomStringConvertible {
         return statement
     }
     
-    /// Called by `Statement.execute(parameterValues:)` to execute a statement.
+    /// Called by `Statement.execute(parameterValues:)` to execute a `Statement`.
     ///
-    /// Any previous `Cursor` instance for this connection is closed.
+    /// Any previous `Cursor` for this `Connection` is closed.
     ///
     /// - Parameters:
-    ///   - statement: the statement
+    ///   - statement: the `Statement`
     ///   - parameterValues: the values of the bind parameters
-    /// - Returns: the cursor
+    /// - Returns: the `Cursor` containing the result
     /// - Throws: `PostgresError` is the operation fails
     internal func executeStatement(_ statement: Statement,
                                    parameterValues: [PostgresValueConvertible?] = []) throws -> Cursor {
@@ -283,7 +339,7 @@ public class Connection: CustomStringConvertible {
         let cursor = Cursor(statement: statement)
         
         // (The CursorState enum cases capture the Cursor id, rather than the Cursor instance, to
-        // avoid a reference cycle).
+        // avoid a reference cycle.)
         cursorState = .open(cursorId: cursor.id, bufferedRow: nil)
         
         // Retrieve and buffer the first row of the cursor, if any.  We do this to check whether
@@ -295,9 +351,9 @@ public class Connection: CustomStringConvertible {
         return cursor
     }
     
-    /// Called by `Statement.close()` to close a statement.
+    /// Called by `Statement.close()` to close a `Statement`.
     ///
-    /// Any previous `Cursor` instance for this connection is closed.
+    /// Any previous `Cursor` for this `Connection` is closed.
     ///
     /// If an error occurs, it is logged but not thrown.
     ///
@@ -315,7 +371,7 @@ public class Connection: CustomStringConvertible {
                         try sendRequest(flushRequest)
                         
                         try receiveResponse(type: CloseCompleteResponse.self)
-                }
+                    }
                 )
             } catch {
                 log(.warning, "Error closing \(statement): \(error)")
@@ -323,7 +379,7 @@ public class Connection: CustomStringConvertible {
         }
     }
     
-    /// Verifies the specified statement is not closed.
+    /// Verifies the specified `Statement` is not closed.
     ///
     /// - Throws: `PostgresError.statementClosed` if closed
     private func verifyStatementNotClosed(_ statement: Statement) throws {
@@ -332,7 +388,7 @@ public class Connection: CustomStringConvertible {
         }
     }
     
-    /// Enumerates the cursor states of a connection.
+    /// Enumerates the cursor states of a `Connection`.
     ///
     /// Between when it is created and when it is closed, a connection can perform a sequence of
     /// SQL statements.  Each statement is performed by an exchange between PostgresClientKit and
@@ -347,7 +403,7 @@ public class Connection: CustomStringConvertible {
     ///
     /// However, this approach makes `Connection` instances stateful, at least internally.  This
     /// enumeration identifies the possible states.  The `cursorState` property records the current
-    /// state of this connection.
+    /// state of this `Connection`.
     private enum CursorState {
         
         /// There is no currently open cursor.
@@ -360,20 +416,20 @@ public class Connection: CustomStringConvertible {
         case drained(cursorId: String)
     }
     
-    /// The current cursor state of this connection.
+    /// The current cursor state of this `Connection`.
     private var cursorState = CursorState.closed
     
-    /// Called by the implementations of the public APIs that prepare a new statement, bind
-    /// parameter values to and execute a previously prepared statement, and close a statement.
+    /// Called by the implementations of the public APIs that prepare a new `Statement`, bind
+    /// parameter values to and execute a previously prepared `Statement`, and close a `Statement`.
     ///
     /// This method provides a consistent pattern for performing these operations.  It:
     ///
-    ///     - Transitions this connection to the `closed` `CursorState` (if not already in that
+    ///     - Transitions this `Connection` to the `CursorState.closed` (if not already in that
     ///       state)
     ///     - Verifies other preconditions for performing the operation
     ///     - Executes the operation
-    ///     - Upon an error in any of the previous steps, attempts to resynchronize this connection
-    ///       with the Postgres server then executes an optional error recovery closure
+    ///     - Upon an error in any of the previous steps, attempts to resynchronize this
+    ///       `Connection` with the Postgres server then executes an optional error recovery closure
     ///
     /// - Parameters:
     ///   - operation: the operation to perform
@@ -419,7 +475,7 @@ public class Connection: CustomStringConvertible {
     ///
     /// - Parameter cursor: the `Cursor` instance for the currently open cursor, or nil if not
     ///     available
-    /// - Returns: the next row, or nil if there are no more rows in the cursor
+    /// - Returns: the next `Row`, or nil if there are no more rows in the cursor
     /// - Throws: `PostgresError` if the operation fails
     internal func nextRowOfCursor(_ cursor: Cursor? = nil) throws -> Row? {
         
@@ -427,7 +483,7 @@ public class Connection: CustomStringConvertible {
         
         if let cursor = cursor {
             try verifyStatementNotClosed(cursor.statement)
-            try verifyCursorNotClosed(cursor) // verify that *this specific* cursor is open
+            try verifyCursorNotClosed(cursor) // verifies that *this specific* cursor is open
         }
         
         var row: Row?
@@ -435,7 +491,7 @@ public class Connection: CustomStringConvertible {
         switch cursorState {
             
         case .closed:
-            throw PostgresError.cursorClosed // verify that *any* cursor is open
+            throw PostgresError.cursorClosed // verifies that *some* cursor is open
             
         case .drained:
             row = nil
@@ -519,9 +575,9 @@ public class Connection: CustomStringConvertible {
         return row
     }
     
-    /// Gets whether the specified cursor is closed.
+    /// Gets whether the specified `Cursor` is closed.
     ///
-    /// - Parameter cursor: the cursor to test
+    /// - Parameter cursor: the `Cursor` to test
     /// - Returns: whether closed
     internal func isCursorClosed(_ cursor: Cursor) -> Bool {
         switch cursorState {
@@ -537,33 +593,36 @@ public class Connection: CustomStringConvertible {
         }
     }
     
-    /// Closes the specified cursor.
+    /// Closes the specified `Cursor`.
     ///
-    /// - Parameter cursor: the cursor
+    /// - Parameter cursor: the `Cursor`
     internal func closeCursor(_ cursor: Cursor) {
         if !isCursorClosed(cursor) {
             closeCurrentlyOpenCursor()
         }
     }
 
-    /// Closes any currently open cursor.
+    /// Closes any currently open `Cursor`.
     private func closeCurrentlyOpenCursor() {
+        
+        defer {
+            cursorState = .closed // no matter what happens here
+        }
+        
         do {
             if !isClosed {
                 if case .open = cursorState {
                     while try nextRowOfCursor() != nil { } // drain any remaining rows
                 }
             }
-            
-            cursorState = .closed
         } catch {
             log(.warning, "Error closing cursor: \(error)")
         }
     }
     
-    /// Verifies the specified cursor is not closed.
+    /// Verifies the specified `Cursor` is not closed.
     ///
-    /// - Parameter cursor: the cursor
+    /// - Parameter cursor: the `Cursor`
     /// - Throws: `PostgresError.cursorClosed` if closed
     private func verifyCursorNotClosed(_ cursor: Cursor) throws {
         if isCursorClosed(cursor) {
@@ -576,18 +635,33 @@ public class Connection: CustomStringConvertible {
     // MARK: Convenience methods
     //
     
+    /// Performs a SQL `BEGIN` command to explicitly initiate a transaction block.
+    ///
+    /// Any previous `Cursor` for this `Connection` is closed.
+    ///
+    /// - Throws: `PostgresError` if the operation fails
     public func beginTransaction() throws {
         let statement = try prepareStatement(text: "BEGIN")
         defer { statement.close() }
         try statement.execute()
     }
     
+    /// Performs a SQL `COMMIT` command to commit the current transaction.
+    ///
+    /// Any previous `Cursor` for this `Connection` is closed.
+    ///
+    /// - Throws: `PostgresError` if the operation fails
     public func commitTransaction() throws {
         let statement = try prepareStatement(text: "COMMIT")
         defer { statement.close() }
         try statement.execute()
     }
     
+    /// Performs a SQL `ROLLBACK` command to rollback the current transaction.
+    ///
+    /// Any previous `Cursor` for this `Connection` is closed.
+    ///
+    /// - Throws: `PostgresError` if the operation fails
     public func rollbackTransaction() throws {
         let statement = try prepareStatement(text: "ROLLBACK")
         defer { statement.close() }
@@ -676,7 +750,8 @@ public class Connection: CustomStringConvertible {
                 return response as! T
                 
             default:
-                throw PostgresError.serverError(description: "unexpected response type '\(responseType)'")
+                throw PostgresError.serverError(
+                    description: "unexpected response type '\(responseType)'")
             }
         }
     }
@@ -684,12 +759,12 @@ public class Connection: CustomStringConvertible {
     /// The body of a response (everything after the bytes indicating the response length).
     internal class ResponseBody {
         
-        /// Creates an instance.
+        /// Creates an `ResponseBody`.
         ///
         /// - Parameters:
         ///   - responseType: the response type
         ///   - responseLength: the response length, in bytes
-        ///   - connection: the connection
+        ///   - connection: the `Connection`
         fileprivate init(responseType: Character, responseLength: Int, connection: Connection) {
             
             self.responseType = responseType
@@ -708,7 +783,7 @@ public class Connection: CustomStringConvertible {
         ///
         /// - Returns: the value
         /// - Throws: `PostgresError` if the operation fails
-        internal func peekUInt8() throws -> UInt8 {
+        @discardableResult internal func peekUInt8() throws -> UInt8 {
             
             if bytesRemaining == 0 {
                 throw PostgresError.serverError(description: "response too short")
@@ -735,11 +810,11 @@ public class Connection: CustomStringConvertible {
             return byte
         }
         
-        /// Reads an unsigned 16-bit integer.
+        /// Reads an unsigned big-endian 16-bit integer.
         ///
         /// - Returns: the value
         /// - Throws: `PostgresError` if the operation fails
-        internal func readUInt16() throws -> UInt16 {
+        @discardableResult internal func readUInt16() throws -> UInt16 {
             
             let value = try
                 UInt16(readUInt8()) << 8 +
@@ -748,11 +823,11 @@ public class Connection: CustomStringConvertible {
             return value
         }
         
-        /// Reads an unsigned 32-bit integer.
+        /// Reads an unsigned big-endian 32-bit integer.
         ///
         /// - Returns: the value
         /// - Throws: `PostgresError` if the operation fails
-        internal func readUInt32() throws -> UInt32 {
+        @discardableResult internal func readUInt32() throws -> UInt32 {
             
             let value = try
                 UInt32(readUInt8()) << 24 +
@@ -768,7 +843,7 @@ public class Connection: CustomStringConvertible {
         /// - Parameter count: the number of bytes to read
         /// - Returns: the data
         /// - Throws: `PostgresError` if the operation fails
-        internal func readData(count: Int) throws -> Data {
+        @discardableResult internal func readData(count: Int) throws -> Data {
             
             if bytesRemaining < count {
                 throw PostgresError.serverError(description: "response too short")
@@ -786,7 +861,7 @@ public class Connection: CustomStringConvertible {
         ///
         /// - Returns: the character
         /// - Throws: `PostgresError` if the operation fails
-        internal func readASCIICharacter() throws -> Character {
+        @discardableResult internal func readASCIICharacter() throws -> Character {
             
             let c = try Character(Unicode.Scalar(readUInt8()))
             
@@ -797,7 +872,7 @@ public class Connection: CustomStringConvertible {
         ///
         /// - Returns: the string
         /// - Throws: `PostgresError` if the operation fails
-        internal func readUTF8String() throws -> String {
+        @discardableResult internal func readUTF8String() throws -> String {
             
             var data = Data()
             
@@ -836,7 +911,7 @@ public class Connection: CustomStringConvertible {
         
         /// Verifies the response body has been fully consumed.
         ///
-        /// - Throws: `PostgresError` if not fully consumed
+        /// - Throws: `PostgresError.serverError` if not fully consumed
         internal func verifyFullyConsumed() throws {
             if bytesRemaining != 0 {
                 throw PostgresError.serverError(description: "response too long")
@@ -982,7 +1057,7 @@ public class Connection: CustomStringConvertible {
     // MARK: CustomStringConvertible
     //
     
-    /// A short string that identifies this connection.
+    /// A short string that identifies this `Connection`.
     public var description: String { return id }
 }
 

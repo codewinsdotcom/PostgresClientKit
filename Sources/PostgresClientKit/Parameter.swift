@@ -44,7 +44,7 @@ internal struct Parameter {
     /// The parameters of interest to PostgresClientKit.
     internal static let values = [
         
-        // PostgresClientKit requires strings received from the Postgres server to be UTF-8 format.
+        // PostgresClientKit requires strings received from the Postgres server to be UTF8 format.
         Parameter(name: "client_encoding",
                   value: "UTF8",
                   isSetWhenConnecting: true,

@@ -85,7 +85,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to a `String`.
     ///
     /// - Returns: the `String`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func string() throws -> String {
         try verifyNotNil()
         return try optionalString()!
@@ -94,7 +94,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to an optional `String`.
     ///
     /// - Returns: the optional `String`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func optionalString() throws -> String? {
         return rawValue
     }
@@ -118,7 +118,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to an `Int`.
     ///
     /// - Returns: the `Int`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func int() throws -> Int {
         try verifyNotNil()
         return try optionalInt()!
@@ -127,7 +127,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to an optional `Int`.
     ///
     /// - Returns: the optional `Int`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func optionalInt() throws -> Int? {
         guard let rawValue = rawValue else { return nil }
         guard let v = Int(rawValue) else { throw conversionError(Int.self) }
@@ -153,7 +153,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to a `Double`.
     ///
     /// - Returns: the `Double`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func double() throws -> Double {
         try verifyNotNil()
         return try optionalDouble()!
@@ -162,7 +162,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to an optional `Double`.
     ///
     /// - Returns: the optional `Double`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func optionalDouble() throws -> Double? {
         guard let rawValue = rawValue else { return nil }
         guard let v = Double(rawValue) else { throw conversionError(Double.self) }
@@ -188,7 +188,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to a `Decimal`.
     ///
     /// - Returns: the `Decimal`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func decimal() throws -> Decimal {
         try verifyNotNil()
         return try optionalDecimal()!
@@ -197,7 +197,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to an optional `Decimal`.
     ///
     /// - Returns: the optional `Decimal`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func optionalDecimal() throws -> Decimal? {
         
         guard let rawValue = rawValue else { return nil }
@@ -228,7 +228,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to a `Bool`.
     ///
     /// - Returns: the `Bool`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func bool() throws -> Bool {
         try verifyNotNil()
         return try optionalBool()!
@@ -237,7 +237,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to an optional `Bool`
     ///
     /// - Returns: the optional `Bool`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func optionalBool() throws -> Bool? {
         
         guard let rawValue = rawValue else { return nil }
@@ -269,7 +269,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to a `PostgresTimestampWithTimeZone`.
     ///
     /// - Returns: the `PostgresTimestampWithTimeZone`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func timestampWithTimeZone() throws -> PostgresTimestampWithTimeZone {
         try verifyNotNil()
         return try optionalTimestampWithTimeZone()!
@@ -278,7 +278,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to an optional `PostgresTimestampWithTimeZone`.
     ///
     /// - Returns: the optional `PostgresTimestampWithTimeZone`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func optionalTimestampWithTimeZone() throws -> PostgresTimestampWithTimeZone? {
         
         guard let rawValue = rawValue else { return nil }
@@ -301,7 +301,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to a `PostgresTimestamp`.
     ///
     /// - Returns: the `PostgresTimestamp`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func timestamp() throws -> PostgresTimestamp {
         try verifyNotNil()
         return try optionalTimestamp()!
@@ -310,7 +310,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to an optional `PostgresTimestamp`.
     ///
     /// - Returns: the optional `PostgresTimestamp`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func optionalTimestamp() throws -> PostgresTimestamp? {
         
         guard let rawValue = rawValue else { return nil }
@@ -333,7 +333,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to a `PostgresDate`.
     ///
     /// - Returns: the `PostgresDate`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func date() throws -> PostgresDate {
         try verifyNotNil()
         return try optionalDate()!
@@ -342,7 +342,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to an optional `PostgresDate`.
     ///
     /// - Returns: the optional `PostgresDate`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func optionalDate() throws -> PostgresDate? {
         
         guard let rawValue = rawValue else { return nil }
@@ -365,7 +365,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to a `PostgresTime`.
     ///
     /// - Returns: the `PostgresTime`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func time() throws -> PostgresTime {
         try verifyNotNil()
         return try optionalTime()!
@@ -374,7 +374,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to an optional `PostgresTime`.
     ///
     /// - Returns: the optional `PostgresTime`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func optionalTime() throws -> PostgresTime? {
         
         guard let rawValue = rawValue else { return nil }
@@ -397,7 +397,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to a `PostgresTimeWithTimeZone`.
     ///
     /// - Returns: the `PostgresTimeWithTimeZone`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func timeWithTimeZone() throws -> PostgresTimeWithTimeZone {
         try verifyNotNil()
         return try optionalTimeWithTimeZone()!
@@ -406,7 +406,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to an optional `PostgresTimeWithTimeZone`.
     ///
     /// - Returns: the optional `PostgresTimeWithTimeZone`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func optionalTimeWithTimeZone() throws -> PostgresTimeWithTimeZone? {
         
         guard let rawValue = rawValue else { return nil }
@@ -429,7 +429,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to a `PostgresByteA`.
     ///
     /// - Returns: the `PostgresByteA`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func byteA() throws -> PostgresByteA {
         try verifyNotNil()
         return try optionalByteA()!
@@ -438,7 +438,7 @@ public extension PostgresValue {
     /// Converts this `PostgresValue` to an optional `PostgresByteA`.
     ///
     /// - Returns: the optional `PostgresByteA`
-    /// - Throws: if the conversion fails
+    /// - Throws: `PostgresError` if the conversion fails
     func optionalByteA() throws -> PostgresByteA? {
         
         guard let rawValue = rawValue else { return nil }

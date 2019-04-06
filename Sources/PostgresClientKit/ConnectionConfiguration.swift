@@ -17,10 +17,10 @@
 //  limitations under the License.
 //
 
-/// The configuration for a connection to the Postgres server.
+/// The configuration for a `Connection` to the Postgres server.
 public struct ConnectionConfiguration {
     
-    /// Creates an instance.
+    /// Creates an `ConnectionConfiguration`.
     public init() { }
     
     /// The hostname or IP address of the Postgres server.  Defaults to `localhost`.
