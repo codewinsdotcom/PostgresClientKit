@@ -19,7 +19,7 @@
 
 import Foundation
 
-/// An abstract request from the client to the Postgres server.
+/// An abstract request from PostgresClientKit to the Postgres server.
 internal class Request: CustomStringConvertible {
     
     /// The request type.

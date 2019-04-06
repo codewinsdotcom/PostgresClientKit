@@ -17,10 +17,10 @@
 //  limitations under the License.
 //
 
-/// An abstract response from the Postgres server to the client.
+/// An abstract response from the Postgres server to PostgresClientKit.
 internal class Response: CustomStringConvertible {
     
-    /// Creates an instance.
+    /// Creates a `Response`.
     ///
     /// - Parameter responseBody: the response body
     /// - Throws: `PostgresError` is the operation fails
