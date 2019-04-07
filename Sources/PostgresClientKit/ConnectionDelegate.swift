@@ -21,13 +21,14 @@
 /// A delegate for `Connection` instances.
 public protocol ConnectionDelegate: AnyObject {
     
-    /// Called upon a notification event from the Postgres server.
+    /// Called upon receiving a notice message from the Postgres server.
     ///
-    /// - SeeAlso: [Postgres: `NOTIFY` command](https://www.postgresql.org/docs/11/sql-notify.html)
+    /// - SeeAlso: [Postgres: Message Flow - Asynchronous
+    ///     Opererations](https://www.postgresql.org/docs/11/protocol-flow.html#PROTOCOL-ASYNC)
     ///
     /// - Parameters:
     ///   - connection: the `Connection`
-    ///   - notice: the notification event
+    ///   - notice: the notice message
     func connection(_ connection: Connection,
                     didReceiveNotice notice: Notice)
     
@@ -41,6 +42,39 @@ public protocol ConnectionDelegate: AnyObject {
     ///   - parameterStatus: the parameter name and new value
     func connection(_ connection: Connection,
                     didReceiveParameterStatus parameterStatus: (name: String, value: String))
+    
+    /// Called upon receiving a notification message from the Postgres server.
+    ///
+    /// - SeeAlso: [Postgres: NOTIFY command](https://www.postgresql.org/docs/11/sql-notify.html)
+    ///
+    /// - Parameters:
+    ///   - connection: the `Connection`
+    ///   - notice: the server process ID, channel, and payload of the notification
+    func connection(
+        _ connection: Connection,
+        didReceiveNotification notification: (processId: UInt32, channel: String, payload: String))
+}
+
+public extension ConnectionDelegate {
+    
+    /// Does nothing.
+    func connection(_ connection: Connection, didReceiveNotice notice: Notice) {
+        // NOP
+    }
+    
+    /// Does nothing.
+    func connection(
+        _ connection: Connection,
+        didReceiveParameterStatus parameterStatus: (name: String, value: String)) {
+        // NOP
+    }
+
+    /// Does nothing.
+    func connection(
+        _ connection: Connection,
+        didReceiveNotification notification: (processId: UInt32, channel: String, payload: String)) {
+        // NOP
+    }
 }
 
 // EOF

@@ -708,6 +708,7 @@ public class Connection: CustomStringConvertible {
             case "1": response = try ParseCompleteResponse(responseBody: responseBody)
             case "2": response = try BindCompleteResponse(responseBody: responseBody)
             case "3": response = try CloseCompleteResponse(responseBody: responseBody)
+            case "A": response = try NotificationResponse(responseBody: responseBody)
             case "C": response = try CommandCompleteResponse(responseBody: responseBody)
             case "D": response = try DataRowResponse(responseBody: responseBody)
             case "E": response = try ErrorResponse(responseBody: responseBody)
@@ -735,6 +736,13 @@ public class Connection: CustomStringConvertible {
                 
             case let noticeResponse as NoticeResponse:
                 delegate?.connection(self, didReceiveNotice: noticeResponse.notice)
+                
+            case let notificationResponse as NotificationResponse:
+                delegate?.connection(
+                    self,
+                    didReceiveNotification: (processId: notificationResponse.processId,
+                                             channel: notificationResponse.channel,
+                                             payload: notificationResponse.payload))
                 
             case let parameterStatusResponse as ParameterStatusResponse:
                 
