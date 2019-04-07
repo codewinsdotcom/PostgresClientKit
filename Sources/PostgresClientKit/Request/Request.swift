@@ -37,8 +37,7 @@ internal class Request: CustomStringConvertible {
     /// The entire request, including the bytes indicating its type and length.
     ///
     /// - Returns: the request
-    /// - Throws: `PostgresError` if the operation fails
-    final internal func data() throws -> Data {
+    final internal func data() -> Data {
         
         var request = Data()
         

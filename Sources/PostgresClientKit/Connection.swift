@@ -195,14 +195,16 @@ public class Connection: CustomStringConvertible {
         success = true
     }
     
+    /// Uniquely identifies this `Connection`.
+    ///
+    /// Used in logging and to formulate the `description`.
+    public let id = "Connection-\(Postgres.nextId())"
+    
     /// An optional delegate for this `Connection`.
     ///
     /// - Note: `Connection` holds a `weak` reference to the delegate.
     public weak var delegate: ConnectionDelegate?
     
-    /// Uniquely identifies this `Connection`.  Used in logging.
-    private let id = "Connection-\(Postgres.nextId())"
-
     /// Whether this `Connection` is closed.
     ///
     /// To close a `Connection`, call `close()`.  A `Connection` is also closed if an unrecoverable

@@ -23,6 +23,12 @@
 ///     command](https://www.postgresql.org/docs/11/sql-declare.html).  The `Cursor` class exposes
 ///     the result of executing a *single* SQL command.  A SQL cursor, on other other hand, exposes
 ///     a query's result by *repeated* execution of the SQL `FETCH` command.
+///
+/// A `Cursor` in PostgresClientKit corresponds to the unnamed portal of the connection on the
+/// Postgres server.
+///
+/// - SeeAlso: [Postgres: Message Flow - Extended
+///     Query](https://www.postgresql.org/docs/11/protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY)
 public class Cursor: Sequence, IteratorProtocol {
     
     /// Creates a `Cursor`.
@@ -32,11 +38,13 @@ public class Cursor: Sequence, IteratorProtocol {
         self.statement = statement
     }
     
+    /// Uniquely identifies this `Cursor`.
+    ///
+    /// Used in logging and to formulate the `description`.
+    public let id = "Cursor-\(Postgres.nextId())"
+    
     /// The `Statement` to which this `Cursor` belongs.
     public let statement: Statement
-    
-    /// Uniquely identifies this `Cursor`.  Used in logging.
-    internal let id = "Cursor-\(Postgres.nextId())"
     
     /// The number of rows affected by the `Statement`.
     ///

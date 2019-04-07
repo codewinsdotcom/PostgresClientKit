@@ -29,6 +29,9 @@
 ///
 /// When a `Statement` is no longer required, call `Statement.close()` to release its Postgres
 /// server resources.
+///
+/// A `Statement` in PostgresClientKit corresponds to a prepared statement on the Postgres server
+/// whose name is the `id` of the `Statement`.
 public class Statement: CustomStringConvertible {
     
     /// Creates a `Statement`.
@@ -41,15 +44,18 @@ public class Statement: CustomStringConvertible {
         self.text = text
     }
     
+    /// Uniquely identifies this `Statement`.
+    ///
+    /// The `id` of a `Statement` in PostgresClientKit is also the name of the prepared statement on
+    /// the Postgres server.  The `id` is also used in logging and to formulate the `description`.
+    public let id = "Statement-\(Postgres.nextId())"
+    
     /// The `Connection` to which this `Statement` belongs.
     public let connection: Connection
     
     /// The SQL text.
     public let text: String
     
-    /// Uniquely identifies this `Statement`.  Used in logging.
-    internal let id = "Statement-\(Postgres.nextId())"
-
     /// Executes this `Statement`.
     ///
     /// Any previous `Cursor` for this `Connection` is closed.
