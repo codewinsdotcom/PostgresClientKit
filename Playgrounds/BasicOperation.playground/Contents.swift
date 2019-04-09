@@ -9,29 +9,22 @@ do {
     configuration.credential = .md5Password(password: "welcome1")
     
     let connection = try PostgresClientKit.Connection(configuration: configuration)
+    defer { connection.close() }
     
-    defer {
-        connection.close()
-    }
-    
-    let statement = try connection.prepareStatement(
-        text: "SELECT city, temp_lo, temp_hi, prcp, date FROM Weather WHERE city = $1;")
-    
-    defer {
-        statement.close()
-    }
+    let text = "SELECT city, temp_lo, temp_hi, prcp, date FROM weather WHERE city = $1;"
+    let statement = try connection.prepareStatement(text: text)
+    defer { statement.close() }
     
     let cursor = try statement.execute(parameterValues: [ "San Francisco" ])
+    defer { cursor.close() }
     
-    for weatherResult in cursor {
-        
-        let weather = try weatherResult.get()
-        
-        let city = try weather.columns[0].string()
-        let tempLo = try weather.columns[1].int()
-        let tempHi = try weather.columns[2].int()
-        let prcp = try weather.columns[3].optionalDouble()
-        let date = try weather.columns[4].date()
+    for row in cursor {
+        let columns = try row.get().columns
+        let city = try columns[0].string()
+        let tempLo = try columns[1].int()
+        let tempHi = try columns[2].int()
+        let prcp = try columns[3].optionalDouble()
+        let date = try columns[4].date()
         
         print("""
             \(city) on \(date): low: \(tempLo), high: \(tempHi), \
@@ -39,7 +32,7 @@ do {
             """)
     }
 } catch {
-    print(error)
+    print(error) // better error handling goes here
 }
 
 // EOF
