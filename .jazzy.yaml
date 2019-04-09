@@ -1,5 +1,6 @@
 output: Docs/API
 clean: true
+readme: Jazzy/PostgresClientKit.md
 copyright: Copyright 2019 David Pitfield and the PostgresClientKit contributors. Licensed under the Apache License, Version 2.0.
 module: PostgresClientKit
 theme: Jazzy/themes/jony_codewins
