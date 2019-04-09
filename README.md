@@ -140,9 +140,9 @@ import PostgresClientKit
 
 ### Documentation
 
-- [API documentation](Docs/API/index.html)
+- [API documentation](Docs/API/index.html) [TODO: update with github.io URL]
 - [Troubleshooting](Docs/Troubleshooting.md)
-- [FAQ](Docs/FAQ.md) [TODO: update with github.io URL]
+- [FAQ](Docs/FAQ.md)
 
 ### Examples
 
