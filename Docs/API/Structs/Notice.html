@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Notice Structure Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+	<meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1.0" />
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Struct/Notice" class="dashAnchor"></a>
+    <a title="Notice Structure Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p>
+          <a href="../index.html">PostgresClientKit Docs</a>
+          <span class="no-mobile"> (100% documented)</span>
+        </p>
+    
+    
+      </div>
+    </header>
+    <div id="breadcrumbs-container">
+      <div class="content-wrapper">
+        <p id="breadcrumbs">
+          <span class="no-mobile">
+            <a href="../index.html">PostgresClientKit Reference</a>
+            <img id="carat" src="../img/carat.png" />
+          </span>
+          Notice Structure Reference
+        </p>
+      </div>
+    </div>
+    <div class="wrapper">
+      <div class="article-wrapper">
+        <article class="main-content">
+          <section>
+            <section class="section">
+              <h1>Notice</h1>
+                <div class="declaration">
+                  <div class="language">
+                    <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Notice</span> <span class="p">:</span> <span class="kt">CustomStringConvertible</span></code></pre>
+
+                  </div>
+                </div>
+              <p>A notice received from the Postgres server.</p>
+
+            </section>
+            <section class="section task-group-section">
+              <div class="task-group">
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV17localizedSeveritySSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/localizedSeverity" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV17localizedSeveritySSSgvp">localizedSeverity</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p><code>ERROR</code>, <code>FATAL</code>, or <code>PANIC</code> (in an error), or <code>WARNING</code>, <code>NOTICE</code>, <code>DEBUG</code>, <code>INFO</code>, or
+<code>LOG</code> (in a notice), or a localized translation of one of these.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">localizedSeverity</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV8severitySSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/severity" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV8severitySSSgvp">severity</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p><code>ERROR</code>, <code>FATAL</code>, or <code>PANIC</code> (in an error), or <code>WARNING</code>, <code>NOTICE</code>, <code>DEBUG</code>, <code>INFO</code>, or
+<code>LOG</code> (in a notice).  Identical to <code><a href="../Structs/Notice.html#/s:17PostgresClientKit6NoticeV17localizedSeveritySSSgvp">localizedSeverity</a></code> except that the contents are never
+localized.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">severity</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV4codeSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/code" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV4codeSSSgvp">code</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The SQLSTATE code for the error.  Not localizable.</p>
+<div class="aside aside-see-also">
+    <p class="aside-title">See also</p>
+    <a href="https://www.postgresql.org/docs/11/static/errcodes-appendix.html">Postgres:
+Error Codes</a>
+
+</div>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">code</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV7messageSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/message" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV7messageSSSgvp">message</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The primary human-readable error message.  Accurate but terse (typically one line).</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV6detailSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/detail" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV6detailSSSgvp">detail</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>A secondary error message carrying more detail about the problem.  Might run to multiple
+lines.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">detail</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV4hintSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/hint" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV4hintSSSgvp">hint</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>A suggestion of what to do about the problem.  This is intended to differ from <code><a href="../Structs/Notice.html#/s:17PostgresClientKit6NoticeV6detailSSSgvp">detail</a></code> in
+that it offers advice (potentially inappropriate) rather than hard facts.  Might run to
+multiple lines.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">hint</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV8positionSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/position" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV8positionSSSgvp">position</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>An index into the original query string.  The first character has index 1, and positions are
+measured in characters not bytes.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">position</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV16internalPositionSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/internalPosition" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV16internalPositionSSSgvp">internalPosition</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>An index into an internally generated command (<code><a href="../Structs/Notice.html#/s:17PostgresClientKit6NoticeV13internalQuerySSSgvp">internalQuery</a></code>) rather than the one
+submitted by the client.  The first character has index 1, and positions are measured in
+characters not bytes.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">internalPosition</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV13internalQuerySSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/internalQuery" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV13internalQuerySSSgvp">internalQuery</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The text of a failed internally-generated command.  This could be, for example, a SQL query
+issued by a PL/pgSQL function.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">internalQuery</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV7contextSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/context" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV7contextSSSgvp">context</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The context in which the error occurred.  Presently this includes a call stack traceback of
+active procedural language functions and internally-generated queries.  The trace is one
+entry per line, most recent first.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">context</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV6schemaSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/schema" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV6schemaSSSgvp">schema</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>If the error was associated with a specific database object, the name of the schema
+containing that object, if any.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">schema</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV5tableSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/table" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV5tableSSSgvp">table</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>If the error was associated with a specific table, the name of the table.  (Refer to
+<code><a href="../Structs/Notice.html#/s:17PostgresClientKit6NoticeV6schemaSSSgvp">schema</a></code> for the name of the table&rsquo;s schema.)</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">table</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV6columnSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/column" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV6columnSSSgvp">column</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>If the error was associated with a specific table column, the name of the column.  (Refer to
+<code><a href="../Structs/Notice.html#/s:17PostgresClientKit6NoticeV6schemaSSSgvp">schema</a></code> and <code><a href="../Structs/Notice.html#/s:17PostgresClientKit6NoticeV5tableSSSgvp">table</a></code> to identify the table.)</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">column</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV8dataTypeSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/dataType" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV8dataTypeSSSgvp">dataType</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>If the error was associated with a specific data type, the name of the data type.  (Refer to
+<code><a href="../Structs/Notice.html#/s:17PostgresClientKit6NoticeV6schemaSSSgvp">schema</a></code> for the name of the data type&rsquo;s schema.)</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">dataType</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV10constraintSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/constraint" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV10constraintSSSgvp">constraint</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>If the error was associated with a specific constraint, the name of the constraint.  Refer
+to the above properties for the associated table or domain.  (For this purpose, indexes are
+treated as constraints, even if they weren&rsquo;t created with constraint syntax.)</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">constraint</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV4fileSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/file" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV4fileSSSgvp">file</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The file name of the source-code location where the error was reported.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">file</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV4lineSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/line" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV4lineSSSgvp">line</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The line number of the source-code location where the error was reported.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">line</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV7routineSSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/routine" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV7routineSSSgvp">routine</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The name of the source-code routine reporting the error.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">routine</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/CustomStringConvertible"></a>
+                  <a name="//apple_ref/swift/Section/CustomStringConvertible" class="dashAnchor"></a>
+                  <a href="#/CustomStringConvertible">
+                    <h3 class="section-name">CustomStringConvertible</h3>
+                  </a>
+                </div>
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6NoticeV11descriptionSSvp"></a>
+                      <a name="//apple_ref/swift/Property/description" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6NoticeV11descriptionSSvp">description</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>A string representation of this <code>Notice</code>.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">description</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </section>
+          </section>
+        </article>
+      </div>
+      <div class="nav-wrapper">
+        <nav class="nav-bottom">
+          <ul class="nav-groups">
+            <li class="nav-group-name">
+              <a href="../Classes.html">Classes</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Classes/Connection.html">Connection</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/ConsoleLogHandler.html">ConsoleLogHandler</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/Cursor.html">Cursor</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/Logger.html">Logger</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/Statement.html">Statement</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Enums.html">Enumerations</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Enums/Credential.html">Credential</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Enums/LogLevel.html">LogLevel</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Enums/PostgresError.html">PostgresError</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Extensions.html">Extensions</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Extensions/Bool.html">Bool</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Extensions/Date.html">Date</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Extensions/Decimal.html">Decimal</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Extensions/Double.html">Double</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Extensions/Int.html">Int</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Extensions/Optional.html">Optional</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Extensions/String.html">String</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Protocols.html">Protocols</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Protocols/ConnectionDelegate.html">ConnectionDelegate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/LogHandler.html">LogHandler</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/PostgresValueConvertible.html">PostgresValueConvertible</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Structs.html">Structures</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Structs/ConnectionConfiguration.html">ConnectionConfiguration</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Structs/LogRecord.html">LogRecord</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Structs/Notice.html">Notice</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Structs/Postgres.html">Postgres</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Structs/PostgresByteA.html">PostgresByteA</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Structs/PostgresDate.html">PostgresDate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Structs/PostgresTime.html">PostgresTime</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Structs/PostgresTimeWithTimeZone.html">PostgresTimeWithTimeZone</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Structs/PostgresTimestamp.html">PostgresTimestamp</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Structs/PostgresTimestampWithTimeZone.html">PostgresTimestampWithTimeZone</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Structs/PostgresValue.html">PostgresValue</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Structs/Row.html">Row</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-wrapper">
+        <section id="footer">
+          <p>Copyright 2019 David Pitfield and the PostgresClientKit contributors. Licensed under the Apache License, Version 2.0.</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </div>
+    </div>
+  </body>
+</div>
+</html>

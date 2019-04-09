@@ -1,6 +1,5 @@
 .DS_Store
 /.build
 /.jazzybuild
-/Docs
 /Packages
 /*.xcodeproj

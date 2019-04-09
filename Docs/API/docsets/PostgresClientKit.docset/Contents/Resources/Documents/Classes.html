@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Classes  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+	<meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1.0" />
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Section/Classes" class="dashAnchor"></a>
+    <a title="Classes  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p>
+          <a href="index.html">PostgresClientKit Docs</a>
+          <span class="no-mobile"> (100% documented)</span>
+        </p>
+    
+    
+      </div>
+    </header>
+    <div id="breadcrumbs-container">
+      <div class="content-wrapper">
+        <p id="breadcrumbs">
+          <span class="no-mobile">
+            <a href="index.html">PostgresClientKit Reference</a>
+            <img id="carat" src="img/carat.png" />
+          </span>
+          Classes  Reference
+        </p>
+      </div>
+    </div>
+    <div class="wrapper">
+      <div class="article-wrapper">
+        <article class="main-content">
+          <section>
+            <section class="section">
+              <h1>Classes</h1>
+              <p>The following classes are available globally.</p>
+
+            </section>
+            <section class="section task-group-section">
+              <div class="task-group">
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit10ConnectionC"></a>
+                      <a name="//apple_ref/swift/Class/Connection" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit10ConnectionC">Connection</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>A connection to a Postgres server.</p>
+
+<p>The <code><a href="Structs/ConnectionConfiguration.html">ConnectionConfiguration</a></code> used to create a <code>Connection</code> specifies the hostname and port
+number of the Postgres server, the user name and database to use, and other characteristics
+of the connection.</p>
+
+<p>Connections are used to perform SQL statements.  To perform a SQL statement:</p>
+
+<ul>
+<li>Call <code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC16prepareStatement4textAA0F0CSS_tKF">Connection.prepareStatement(text:)</a></code> to parse the SQL text and return a <code><a href="Classes/Statement.html">Statement</a></code>.</li>
+<li>Call <code><a href="Classes/Statement.html#/s:17PostgresClientKit9StatementC7execute15parameterValuesAA6CursorCSayAA0A16ValueConvertible_pSgG_tKF">Statement.execute(parameterValues:)</a></code> to execute the statement and return a <code><a href="Classes/Cursor.html">Cursor</a></code>.</li>
+<li>Iterate over the <code><a href="Classes/Cursor.html">Cursor</a></code> to retrieve the rows in the result.</li>
+<li>Close the <code><a href="Classes/Cursor.html">Cursor</a></code> and the <code><a href="Classes/Statement.html">Statement</a></code> to release resources on the Postgres server.</li>
+</ul>
+
+<p>A <code><a href="Classes/Statement.html">Statement</a></code> can be repeatedly executed, and the values of its parameters can be different
+each time.  This is more efficient than having the Postgres server repeatedly parse the same
+SQL text.</p>
+
+<p>A <code>Connection</code> performs no more than one SQL statement at a time.  When
+<code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC16prepareStatement4textAA0F0CSS_tKF">Connection.prepareStatement(text:)</a></code> or <code><a href="Classes/Statement.html#/s:17PostgresClientKit9StatementC7execute15parameterValuesAA6CursorCSayAA0A16ValueConvertible_pSgG_tKF">Statement.execute(parameterValues:)</a></code> is called, any
+previous <code><a href="Classes/Cursor.html">Cursor</a></code> for the <code>Connection</code> is closed.</p>
+
+<p>The following methods also close any previous <code><a href="Classes/Cursor.html">Cursor</a></code> for the <code>Connection</code>:</p>
+
+<ul>
+<li><code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC16beginTransactionyyKF">Connection.beginTransaction()</a></code></li>
+<li><code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC17commitTransactionyyKF">Connection.commitTransaction()</a></code></li>
+<li><code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC19rollbackTransactionyyKF">Connection.rollbackTransaction()</a></code></li>
+<li><code><a href="Classes/Statement.html#/s:17PostgresClientKit9StatementC5closeyyF">Statement.close()</a></code></li>
+<li><code><a href="Classes/Cursor.html#/s:17PostgresClientKit6CursorC5closeyyF">Cursor.close()</a></code></li>
+</ul>
+
+<p>To concurrently perform more than one SQL statement, use multiple connections.</p>
+
+<p>By default, each <code><a href="Classes/Statement.html">Statement</a></code> is executed in its own transaction.  The statement&rsquo;s transaction is
+automatically rolled back if an error occurs in executing the statement, and is automatically
+commited upon any of the following events:</p>
+
+<ul>
+<li>if there are no rows in the result: upon completion of <code>Statement.execute()</code></li>
+<li>if the result has one or more rows: after the final row has been retrieved (in other words,
+when <code><a href="Classes/Cursor.html#/s:17PostgresClientKit6CursorC4nexts6ResultOyAA3RowVs5Error_pGSgyF">Cursor.next()</a></code> returns <code>nil</code>)</li>
+<li>when the <code><a href="Classes/Cursor.html">Cursor</a></code> is closed (in any of the ways listed above)</li>
+</ul>
+
+<p>Alternately, transactions can be explicitly demarcated by performing the SQL <code>BEGIN</code>, <code>COMMIT</code>,
+and <code>ROLLBACK</code> commands (or equivalently, the <code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC16beginTransactionyyKF">Connection.beginTransaction()</a></code>,
+<code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC17commitTransactionyyKF">Connection.commitTransaction()</a></code>, and <code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC19rollbackTransactionyyKF">Connection.rollbackTransaction()</a></code> methods).</p>
+
+<p>No more than one thread may concurrently operate against a <code>Connection</code> (including its
+<code><a href="Classes/Statement.html">Statement</a></code> and <code><a href="Classes/Cursor.html">Cursor</a></code> instances).  However, multiple threads may concurrently operate
+against different connections.</p>
+
+<p>When a <code>Connection</code> is no longer required, call <code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC5closeyyF">Connection.close()</a></code> to release its Postgres
+server resources and close the network socket.  A <code>Connection</code> is automatically closed if an
+unrecoverable error occurs (for example, if the Postgres server closes the network socket).
+Use <code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC8isClosedSbvp">Connection.isClosed</a></code> to test whether a <code>Connection</code> is closed.</p>
+
+                          <a href="Classes/Connection.html" class="slightly-smaller">See more</a>
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Connection</span> <span class="p">:</span> <span class="kt">CustomStringConvertible</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div class="task-group">
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6CursorC"></a>
+                      <a name="//apple_ref/swift/Class/Cursor" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6CursorC">Cursor</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The result of successfully executing a <code><a href="Classes/Statement.html">Statement</a></code>.</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    Do not confuse this <code>Cursor</code> class with the SQL cursors created by the <a href="https://www.postgresql.org/docs/11/sql-declare.html">SQL DECLARE
+command</a>.  The <code>Cursor</code> class exposes
+the result of executing a <em>single</em> SQL command.  A SQL cursor, on other other hand, exposes
+a query&rsquo;s result by <em>repeated</em> execution of the SQL <code>FETCH</code> command.
+
+</div>
+
+<p>A <code>Cursor</code> in PostgresClientKit corresponds to the unnamed portal of the connection on the
+Postgres server.</p>
+<div class="aside aside-see-also">
+    <p class="aside-title">See also</p>
+    <a href="https://www.postgresql.org/docs/11/protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY">Postgres: Message Flow - Extended
+Query</a>
+
+</div>
+
+                          <a href="Classes/Cursor.html" class="slightly-smaller">See more</a>
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Cursor</span> <span class="p">:</span> <span class="kt">Sequence</span><span class="p">,</span> <span class="kt">IteratorProtocol</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div class="task-group">
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit17ConsoleLogHandlerC"></a>
+                      <a name="//apple_ref/swift/Class/ConsoleLogHandler" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit17ConsoleLogHandlerC">ConsoleLogHandler</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>A log handler that prints log records to standard output.</p>
+
+                          <a href="Classes/ConsoleLogHandler.html" class="slightly-smaller">See more</a>
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ConsoleLogHandler</span> <span class="p">:</span> <span class="kt"><a href="Protocols/LogHandler.html">LogHandler</a></span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div class="task-group">
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit6LoggerC"></a>
+                      <a name="//apple_ref/swift/Class/Logger" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6LoggerC">Logger</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Logs events of interest.</p>
+
+<p>A <code><a href="Structs/LogRecord.html">LogRecord</a></code> describes a loggable event.  Each record has a level which reflects the importance
+of the event.  If the log level of a record is at least as high as the <code>level</code> of the logger,
+the logger dispatches the record to the logger&rsquo;s current <code>handler</code>.</p>
+
+<p>Example:</p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">logger</span> <span class="o">=</span> <span class="kt">Logger</span><span class="p">()</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="o">.</span><span class="n">warning</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">handler</span> <span class="o">=</span> <span class="kt">ConsoleLogHandler</span><span class="p">()</span>
+
+<span class="k">let</span> <span class="nv">record</span> <span class="o">=</span> <span class="kt">LogRecord</span><span class="p">(</span><span class="nv">level</span><span class="p">:</span> <span class="o">.</span><span class="n">warning</span><span class="p">,</span>
+                       <span class="nv">message</span><span class="p">:</span> <span class="s">"Watch out!"</span><span class="p">,</span>
+                       <span class="nv">context</span><span class="p">:</span> <span class="s">"Session-14"</span><span class="p">,</span>
+                       <span class="nv">timestamp</span><span class="p">:</span> <span class="kt">Date</span><span class="p">(),</span>
+                       <span class="nv">file</span><span class="p">:</span> <span class="kd">#file</span><span class="p">,</span>
+                       <span class="nv">function</span><span class="p">:</span> <span class="kd">#function</span><span class="p">,</span>
+                       <span class="nv">line</span><span class="p">:</span> <span class="kd">#line</span><span class="p">)</span>
+
+<span class="n">logger</span><span class="o">.</span><span class="nf">log</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="c1">// the record is logged (because LogLevel.warning &gt;= logger.level)</span>
+
+<span class="c1">// Convenience methods make logging more concise.</span>
+<span class="n">logger</span><span class="o">.</span><span class="nf">warning</span><span class="p">(</span><span class="s">"Watch out!"</span><span class="p">,</span> <span class="nv">context</span><span class="p">:</span> <span class="s">"Session-14"</span><span class="p">)</span>
+
+<span class="c1">// Examples of other log levels:</span>
+<span class="n">logger</span><span class="o">.</span><span class="nf">severe</span><span class="p">(</span><span class="s">"This is also logged"</span><span class="p">)</span> <span class="c1">// because LogLevel.severe &gt;= logger.level</span>
+<span class="n">logger</span><span class="o">.</span><span class="nf">info</span><span class="p">(</span><span class="s">"This is not logged"</span><span class="p">)</span>    <span class="c1">// because LogLevel.info &lt; logger.level</span>
+</code></pre>
+
+<p><code>Logger</code> is threadsafe.</p>
+<div class="aside aside-see-also">
+    <p class="aside-title">See also</p>
+    <code><a href="Structs/Postgres.html#/s:17PostgresClientKit0A0V6loggerAA6LoggerCvpZ">Postgres.logger</a></code>
+
+</div>
+
+                          <a href="Classes/Logger.html" class="slightly-smaller">See more</a>
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Logger</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div class="task-group">
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit9StatementC"></a>
+                      <a name="//apple_ref/swift/Class/Statement" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit9StatementC">Statement</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>A prepared SQL statement.</p>
+
+<p>Use <code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC16prepareStatement4textAA0F0CSS_tKF">Connection.prepareStatement(text:)</a></code> to create a <code>Statement</code>.</p>
+
+<p>Call <code><a href="Classes/Statement.html#/s:17PostgresClientKit9StatementC7execute15parameterValuesAA6CursorCSayAA0A16ValueConvertible_pSgG_tKF">Statement.execute(parameterValues:)</a></code> to execute the <code>Statement</code>, specifying the values
+of any parameters.</p>
+
+<p>A <code>Statement</code> can be repeatedly executed, and the values of its parameters can be different
+each time.</p>
+
+<p>When a <code>Statement</code> is no longer required, call <code><a href="Classes/Statement.html#/s:17PostgresClientKit9StatementC5closeyyF">Statement.close()</a></code> to release its Postgres
+server resources.</p>
+
+<p>A <code>Statement</code> in PostgresClientKit corresponds to a prepared statement on the Postgres server
+whose name is the <code>id</code> of the <code>Statement</code>.</p>
+
+                          <a href="Classes/Statement.html" class="slightly-smaller">See more</a>
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Statement</span> <span class="p">:</span> <span class="kt">CustomStringConvertible</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </section>
+          </section>
+        </article>
+      </div>
+      <div class="nav-wrapper">
+        <nav class="nav-bottom">
+          <ul class="nav-groups">
+            <li class="nav-group-name">
+              <a href="Classes.html">Classes</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="Classes/Connection.html">Connection</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/ConsoleLogHandler.html">ConsoleLogHandler</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/Cursor.html">Cursor</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/Logger.html">Logger</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/Statement.html">Statement</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="Enums.html">Enumerations</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="Enums/Credential.html">Credential</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Enums/LogLevel.html">LogLevel</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Enums/PostgresError.html">PostgresError</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="Extensions.html">Extensions</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="Extensions/Bool.html">Bool</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Extensions/Date.html">Date</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Extensions/Decimal.html">Decimal</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Extensions/Double.html">Double</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Extensions/Int.html">Int</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Extensions/Optional.html">Optional</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Extensions/String.html">String</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="Protocols.html">Protocols</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="Protocols/ConnectionDelegate.html">ConnectionDelegate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Protocols/LogHandler.html">LogHandler</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Protocols/PostgresValueConvertible.html">PostgresValueConvertible</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="Structs.html">Structures</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="Structs/ConnectionConfiguration.html">ConnectionConfiguration</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Structs/LogRecord.html">LogRecord</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Structs/Notice.html">Notice</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Structs/Postgres.html">Postgres</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Structs/PostgresByteA.html">PostgresByteA</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Structs/PostgresDate.html">PostgresDate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Structs/PostgresTime.html">PostgresTime</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Structs/PostgresTimeWithTimeZone.html">PostgresTimeWithTimeZone</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Structs/PostgresTimestamp.html">PostgresTimestamp</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Structs/PostgresTimestampWithTimeZone.html">PostgresTimestampWithTimeZone</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Structs/PostgresValue.html">PostgresValue</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Structs/Row.html">Row</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-wrapper">
+        <section id="footer">
+          <p>Copyright 2019 David Pitfield and the PostgresClientKit contributors. Licensed under the Apache License, Version 2.0.</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.5</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </div>
+    </div>
+  </body>
+</div>
+</html>

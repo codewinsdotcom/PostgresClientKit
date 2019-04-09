@@ -6,7 +6,7 @@ PostgresClientKit provides a friendly Swift API for for operating against a Post
 
 - **Doesn't require libpq.**  PostgresClientKit implements the Postgres network protocol in Swift, so it does not require `libpq`.
 
-- **Developer-friendly API using modern Swift.**  For example, errors are represented by instances of `enum PostgresError: Error`, and are raised by a `throw` or by returning a [`Result<Success, Error>`](https://github.com/apple/swift-evolution/blob/master/proposals/0235-add-result.md).
+- **Developer-friendly API using modern Swift.**  For example, errors are represented by instances of `enum PostgresError: Error` and are raised by a `throw` or by returning a [`Result<Success, Error>`](https://github.com/apple/swift-evolution/blob/master/proposals/0235-add-result.md).
 
 - **Safe conversion between Postgres and Swift types.** Type conversion is explicit and robust.  Conversion errors are signaled, not masked.  Additional Swift types for date/time values address the impedance mismatch between Postgres types and Foundation `Date`.
 
@@ -85,7 +85,7 @@ Other environments may also work, but they have not been certified.
 
 ## Building
 
-```bash
+```
 cd <path-to-clone>
 swift package clean
 swift build
@@ -93,7 +93,7 @@ swift build
 
 ## Testing
 
-```bash
+```
 cd <path-to-clone>
 swift package clean
 swift build
@@ -108,7 +108,9 @@ swift test
 
 In your `Package.swift` file:
 
-- Add PostgresClientKit to the `dependencies`.  For example: [TODO: update URL and version number]
+- Add PostgresClientKit to the `dependencies`.  For example:
+
+[TODO: update URL and version number]
 
 ```swift
 dependencies: [
@@ -136,9 +138,11 @@ targets: [
 import PostgresClientKit
 ```
 
-### API documentation
+### Documentation
 
-[API documentation page](Docs/index.html)
+- [API documentation](Docs/API/index.html)
+- [Troubleshooting](Docs/Troubleshooting.md)
+- [FAQ](Docs/FAQ.md)
 
 ### Examples
 
@@ -150,21 +154,6 @@ import PostgresClientKit
 
 [TODO]
 
-### Troubleshooting
-
-[TODO]
-
-- Using logging
-    
-#### FAQ
-
-[TODO]
-
-- Why are the PostgresClientKit APIs synchronous?
-- Does PostgresClientKit provide connection pooling?
-- Why can't I reference a column in a `Row` by name, instead of index?
-- In retrieving the value of a column, why do I need to specify the Swift type?
-    
 ### Contributing
 
 [TODO]
