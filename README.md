@@ -142,11 +142,11 @@ import PostgresClientKit
 
 - [API documentation](Docs/API/index.html)
 - [Troubleshooting](Docs/Troubleshooting.md)
-- [FAQ](Docs/FAQ.md)
+- [FAQ](Docs/FAQ.md) [TODO: update with github.io URL]
 
 ### Examples
 
-#### Playgrounds
+#### Xcode playgrounds
 
 [TODO]
 
