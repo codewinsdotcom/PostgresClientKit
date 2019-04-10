@@ -35,7 +35,7 @@ public struct ConnectionConfiguration {
     /// The name of the database of the Postgres server.  Defaults to `postgres`.
     public var database = "postgres"
     
-    /// The Postgres user name.  Defaults to an empty string.
+    /// The Postgres username.  Defaults to an empty string.
     public var user: String = ""
     
     /// The credential to use to authenticate to the Postgres server.  Defaults to

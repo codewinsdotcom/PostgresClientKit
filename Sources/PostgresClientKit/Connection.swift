@@ -24,7 +24,7 @@ import SSLService
 /// A connection to a Postgres server.
 ///
 /// The `ConnectionConfiguration` used to create a `Connection` specifies the hostname and port
-/// number of the Postgres server, the user name and database to use, and other characteristics
+/// number of the Postgres server, the username and database to use, and other characteristics
 /// of the connection.
 ///
 /// Connections are used to perform SQL statements.  To perform a SQL statement:
