@@ -154,29 +154,34 @@ import PostgresClientKit
 
 [TODO]
 
-### Contributing
+## Contributing
 
-[TODO]
+Thank you for your interest in contributing to PostgresClientKit!
 
-- Code of conduct
-- Requesting help
-- Raising issues
-- Pull requests
+This project has a code of conduct.  See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details.
+
+Please use [issues](../../issues) to:
+
+- ask questions
+- report problems (bugs)
+- request enhancements
+
+Pull requests are welcomed.  For a non-trivial contribution (for example, more than correcting spelling, typos, or whitespace) please first discuss the proposed change by opening an issue.
     
-### License
+## License
 
 PostgresClientKit is licensed under the Apache 2.0 license.  See [LICENSE](LICENSE) for details.
 
-### Versioning
+## Versioning
 
 PostgresClientKit uses [Semantic Versioning 2.0.0](https://semver.org).  For the versions available, see the [tags on this repository](../../tags).
 
-### Built with
+## Built with
 
 - [Kitura BlueSocket](https://github.com/IBM-Swift/BlueSocket) - socket library
 - [Kitura BlueSSLService](https://github.com/IBM-Swift/BlueSSLService) - SSL/TLS support
 - [Jazzy](https://github.com/realm/jazzy) - generation of API documentation pages
 
-### Authors
+## Authors
 
 - David Pitfield [(@pitfield)](https://github.com/pitfield)
