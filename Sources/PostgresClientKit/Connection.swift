@@ -420,7 +420,7 @@ public class Connection: CustomStringConvertible {
     /// The current cursor state of this `Connection`.
     private var cursorState = CursorState.closed
     
-    /// Called by the implementations of the public APIs that prepare a new `Statement`, bind
+    /// Called by the implementations of the public methods that prepare a new `Statement`, bind
     /// parameter values to and execute a previously prepared `Statement`, and close a `Statement`.
     ///
     /// This method provides a consistent pattern for performing these operations.  It:
