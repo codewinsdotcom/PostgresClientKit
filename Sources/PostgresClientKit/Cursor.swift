@@ -92,8 +92,8 @@ public class Cursor: Sequence, IteratorProtocol {
     /// Example of use:
     ///
     ///     let cursor: Cursor = ...
-    ///     for nextRow in cursor {
-    ///         let row = try nextRow.get() // throws upon an error
+    ///     for row in cursor {
+    ///         let columns = try row().columns // throws upon an error
     ///         ...
     ///     }
     ///

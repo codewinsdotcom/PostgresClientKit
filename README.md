@@ -73,16 +73,6 @@ San Francisco on 1994-11-29: low: 43, high: 57, precipitation: Optional(0.0)
 - **Swift 5 or later**  (PostgresClientKit uses Swift 5 language features)
 - **`libssl-dev`** (only required on Linux, and only for SSL/TLS connections)
 
-### Certifications
-
-PostgresClientKit has been tested in the following environments:
- 
-- macOS: [TODO]
-- iOS: [TODO]
-- Linux: [TODO]
-
-Other environments may also work, but they have not been certified.
-
 ## Building
 
 ```
@@ -144,19 +134,15 @@ import PostgresClientKit
 - [Troubleshooting](Docs/Troubleshooting.md)
 - [FAQ](Docs/FAQ.md)
 
-### Examples
+### Additional examples
 
-#### Xcode playgrounds
+- [PostgresClientKit-CommandLine-Example](https://github.com/pitfield/PostgresClientKit-CommandLine-Example): an example command-line application
 
-[TODO]
-
-#### Repositories / Xcode projects
-
-[TODO]
+- [PostgresClientKit-iOS-Example](https://github.com/pitfield/PostgresClientKit-iOS-Example): an example iOS app
 
 ## Contributing
 
-Thank you for your interest in contributing to PostgresClientKit!
+Thank you for your interest in contributing to PostgresClientKit.
 
 This project has a code of conduct.  See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details.
 
