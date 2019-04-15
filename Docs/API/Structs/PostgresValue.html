@@ -48,7 +48,7 @@
               <h1>PostgresValue</h1>
                 <div class="declaration">
                   <div class="language">
-                    <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">PostgresValue</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/PostgresValueConvertible.html">PostgresValueConvertible</a></span><span class="p">,</span> <span class="kt">CustomStringConvertible</span></code></pre>
+                    <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">PostgresValue</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/PostgresValueConvertible.html">PostgresValueConvertible</a></span><span class="p">,</span> <span class="kt">Equatable</span><span class="p">,</span> <span class="kt">CustomStringConvertible</span></code></pre>
 
                   </div>
                 </div>
@@ -127,6 +127,34 @@ These methods throw errors if the conversion fails.</p>
                               </tr>
                             </tbody>
                           </table>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit0A5ValueV03rawD0SSSgvp"></a>
+                      <a name="//apple_ref/swift/Property/rawValue" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit0A5ValueV03rawD0SSSgvp">rawValue</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The raw value used in the Postgres network protocol, or <code>nil</code> to represent a SQL <code>NULL</code>
+value.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">rawValue</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+
+                          </div>
                         </div>
                       </section>
                     </div>

@@ -48,7 +48,7 @@ import Foundation
 ///     try scoreValue.optionalInt()    // nil
 ///     try scoreValue.int()            // throws PostgresError.valueIsNil
 ///
-public struct PostgresValue: PostgresValueConvertible, CustomStringConvertible {
+public struct PostgresValue: PostgresValueConvertible, Equatable, CustomStringConvertible {
     
     /// Creates a `PostgresValue` from the raw value used in the Postgres network protocol.
     ///
@@ -57,7 +57,9 @@ public struct PostgresValue: PostgresValueConvertible, CustomStringConvertible {
         self.rawValue = rawValue
     }
     
-    internal let rawValue: String?
+    /// The raw value used in the Postgres network protocol, or `nil` to represent a SQL `NULL`
+    /// value.
+    public let rawValue: String?
     
     /// Whether this `PostgresValue` represents a SQL `NULL` value.
     public var isNull: Bool {
