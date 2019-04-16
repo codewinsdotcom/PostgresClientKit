@@ -23,6 +23,17 @@ import XCTest
 /// Tests PostgresTimestampWithTimeZone.
 class PostgresTimestampWithTimeZoneTest: XCTestCase {
     
+    let utcTimeZone = TimeZone(secondsFromGMT: 0)!
+    
+    let pacificTimeZone = TimeZone.init(identifier: "America/Los_Angeles")!
+    
+    lazy var utcCalendar: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "en_US_POSIX")
+        calendar.timeZone = utcTimeZone
+        return calendar
+    }()
+    
     func test() {
         
         //
@@ -117,81 +128,70 @@ class PostgresTimestampWithTimeZoneTest: XCTestCase {
         timestamp = PostgresTimestampWithTimeZone("2019-01-02 13:14:15.000-0830")
         checkTimestamp(timestamp, 2019, 1, 2, 21, 44, 15, 0, "2019-01-02 21:44:15.000+00:00")
     }
-}
 
-let utcTimeZone = TimeZone(secondsFromGMT: 0)!
+    func checkTimestamp(
+        _ timestamp: PostgresTimestampWithTimeZone?,
+        _ year: Int, _ month: Int, _ day: Int,
+        _ hour: Int, _ minute: Int, _ second: Int, _ nanosecond: Int,
+        _ postgresValue: PostgresValueConvertible) {
+        
+        XCTAssertNotNil(timestamp)
+        
+        // Check the dateComponents property.
+        let dateComponents = timestamp!.dateComponents
+        XCTAssert(dateComponents.isValidDate)
+        XCTAssertEqual(dateComponents.calendar, utcCalendar)
+        XCTAssertEqual(dateComponents.timeZone, utcTimeZone)
+        XCTAssertEqual(dateComponents.era, nil)
+        XCTAssertEqual(dateComponents.year, year)
+        XCTAssertEqual(dateComponents.yearForWeekOfYear, nil)
+        XCTAssertEqual(dateComponents.quarter, nil)
+        XCTAssertEqual(dateComponents.month, month)
+        XCTAssertEqual(dateComponents.weekOfMonth, nil)
+        XCTAssertEqual(dateComponents.weekOfYear, nil)
+        XCTAssertEqual(dateComponents.weekday, nil)
+        XCTAssertEqual(dateComponents.weekdayOrdinal, nil)
+        XCTAssertEqual(dateComponents.day, day)
+        XCTAssertEqual(dateComponents.hour, hour)
+        XCTAssertEqual(dateComponents.minute, minute)
+        XCTAssertEqual(dateComponents.second, second)
+        XCTAssertNotNil(dateComponents.nanosecond)
+        
+        let dateComponentsMillisecond = (Double(dateComponents.nanosecond!) / 1000000).rounded()
+        let expectedMilliscond = (Double(nanosecond) / 1000000).rounded()
+        XCTAssertEqual(dateComponentsMillisecond, expectedMilliscond)
+        
+        // Check the date property by comparing it against a date created from the already-validated
+        // dateComponents property.
+        XCTAssertEqual(timestamp!.date, utcCalendar.date(from: dateComponents))
+        
+        // Check the postgresValue property.
+        XCTAssertEqual(timestamp!.postgresValue, postgresValue.postgresValue)
+        
+        // Check the description property.
+        XCTAssertEqual(timestamp!.description, postgresValue.postgresValue.rawValue)
+        
+        // Check init(date:) using the already-validated date property.
+        var timestamp2 = PostgresTimestampWithTimeZone(date: timestamp!.date)
+        XCTAssertEqual(timestamp2.dateComponents, timestamp!.dateComponents)
+        XCTAssertEqual(timestamp2.date, timestamp!.date)
+        XCTAssertEqual(timestamp2.postgresValue, timestamp!.postgresValue)
+        XCTAssertEqual(timestamp2.description, timestamp!.description)
+        
+        // Check Date.postgresTimestampWithTimeZone the same way.
+        timestamp2 = timestamp!.date.postgresTimestampWithTimeZone
+        XCTAssertEqual(timestamp2.dateComponents, timestamp!.dateComponents)
+        XCTAssertEqual(timestamp2.date, timestamp!.date)
+        XCTAssertEqual(timestamp2.postgresValue, timestamp!.postgresValue)
+        XCTAssertEqual(timestamp2.description, timestamp!.description)
 
-let pacificTimeZone = TimeZone.init(identifier: "America/Los_Angeles")!
-
-let utcCalendar: Calendar = {
-    var calendar = Calendar(identifier: .gregorian)
-    calendar.locale = Locale(identifier: "en_US_POSIX")
-    calendar.timeZone = utcTimeZone
-    return calendar
-}()
-
-func checkTimestamp(
-    _ timestamp: PostgresTimestampWithTimeZone?,
-    _ year: Int, _ month: Int, _ day: Int,
-    _ hour: Int, _ minute: Int, _ second: Int, _ nanosecond: Int,
-    _ postgresValue: PostgresValueConvertible) {
-    
-    XCTAssertNotNil(timestamp)
-    
-    // Check the dateComponents property.
-    let dateComponents = timestamp!.dateComponents
-    XCTAssert(dateComponents.isValidDate)
-    XCTAssertEqual(dateComponents.calendar, utcCalendar)
-    XCTAssertEqual(dateComponents.timeZone, utcTimeZone)
-    XCTAssertEqual(dateComponents.era, nil)
-    XCTAssertEqual(dateComponents.year, year)
-    XCTAssertEqual(dateComponents.yearForWeekOfYear, nil)
-    XCTAssertEqual(dateComponents.quarter, nil)
-    XCTAssertEqual(dateComponents.month, month)
-    XCTAssertEqual(dateComponents.weekOfMonth, nil)
-    XCTAssertEqual(dateComponents.weekOfYear, nil)
-    XCTAssertEqual(dateComponents.weekday, nil)
-    XCTAssertEqual(dateComponents.weekdayOrdinal, nil)
-    XCTAssertEqual(dateComponents.day, day)
-    XCTAssertEqual(dateComponents.hour, hour)
-    XCTAssertEqual(dateComponents.minute, minute)
-    XCTAssertEqual(dateComponents.second, second)
-    XCTAssertNotNil(dateComponents.nanosecond)
-    
-    let dateComponentsMillisecond = (Double(dateComponents.nanosecond!) / 1000000).rounded()
-    let expectedMilliscond = (Double(nanosecond) / 1000000).rounded()
-    XCTAssertEqual(dateComponentsMillisecond, expectedMilliscond)
-    
-    // Check the date property by comparing it against a date created from the already-validated
-    // dateComponents property.
-    XCTAssertEqual(timestamp!.date, utcCalendar.date(from: dateComponents))
-    
-    // Check the postgresValue property.
-    XCTAssertEqual(timestamp!.postgresValue, postgresValue.postgresValue)
-    
-    // Check the description property.
-    XCTAssertEqual(timestamp!.description, postgresValue.postgresValue.rawValue)
-    
-    // Check init(date:) using the already-validated date property.
-    var timestamp2 = PostgresTimestampWithTimeZone(date: timestamp!.date)
-    XCTAssertEqual(timestamp2.dateComponents, timestamp!.dateComponents)
-    XCTAssertEqual(timestamp2.date, timestamp!.date)
-    XCTAssertEqual(timestamp2.postgresValue, timestamp!.postgresValue)
-    XCTAssertEqual(timestamp2.description, timestamp!.description)
-    
-    // Check Date.postgresTimestampWithTimeZone the same way.
-    timestamp2 = timestamp!.date.postgresTimestampWithTimeZone
-    XCTAssertEqual(timestamp2.dateComponents, timestamp!.dateComponents)
-    XCTAssertEqual(timestamp2.date, timestamp!.date)
-    XCTAssertEqual(timestamp2.postgresValue, timestamp!.postgresValue)
-    XCTAssertEqual(timestamp2.description, timestamp!.description)
-
-    // Check init(_:).
-    timestamp2 = PostgresTimestampWithTimeZone(timestamp!.description)!
-    XCTAssertEqual(timestamp2.dateComponents, timestamp!.dateComponents)
-    XCTAssertEqual(timestamp2.date, timestamp!.date)
-    XCTAssertEqual(timestamp2.postgresValue, timestamp!.postgresValue)
-    XCTAssertEqual(timestamp2.description, timestamp!.description)
+        // Check init(_:).
+        timestamp2 = PostgresTimestampWithTimeZone(timestamp!.description)!
+        XCTAssertEqual(timestamp2.dateComponents, timestamp!.dateComponents)
+        XCTAssertEqual(timestamp2.date, timestamp!.date)
+        XCTAssertEqual(timestamp2.postgresValue, timestamp!.postgresValue)
+        XCTAssertEqual(timestamp2.description, timestamp!.description)
+    }
 }
 
 // EOF
