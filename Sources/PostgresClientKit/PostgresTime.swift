@@ -27,10 +27,10 @@ import Foundation
 ///
 /// For example, `16:25:19.365`.
 ///
-/// Like Foundation `Date`, PostgresClientKit records fractional seconds in nanoseconds.  However,
-/// [due to a bug](https://stackoverflow.com/questions/23684727) in the Foundation `DateFormatter`
-/// class, only 3 fractional digits are preserved (millisecond resolution) in values sent to and
-/// received from the Postgres server.
+/// Like Foundation `DateComponents`, PostgresClientKit records fractional seconds in nanoseconds.
+/// However, [due to a bug](https://stackoverflow.com/questions/23684727) in the Foundation
+/// `DateFormatter` class, only 3 fractional digits are preserved (millisecond resolution) in
+/// values sent to and received from the Postgres server.
 public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
     
     /// Creates a `PostgresTime` from components.

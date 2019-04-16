@@ -36,10 +36,10 @@ import Foundation
 /// converting them to UTC/GMT.  The values are thus simply moments in time and representable
 /// by Foundation `Date` instances.
 ///
-/// Like Foundation `Date`, PostgresClientKit records fractional seconds in nanoseconds.  However,
-/// [due to a bug](https://stackoverflow.com/questions/23684727) in the Foundation `DateFormatter`
-/// class, only 3 fractional digits are preserved (millisecond resolution) in values sent to and
-/// received from the Postgres server.
+/// Like Foundation `DateComponents`, PostgresClientKit records fractional seconds in nanoseconds.
+/// However, [due to a bug](https://stackoverflow.com/questions/23684727) in the Foundation
+/// `DateFormatter` class, only 3 fractional digits are preserved (millisecond resolution) in
+/// values sent to and received from the Postgres server.
 public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStringConvertible {
     
     /// Creates a `PostgresTimestampWithTimeZone` from components.
@@ -88,7 +88,7 @@ public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStr
             return nil
         }
         
-        inner = Inner(date: date)
+        self.init(date: date)
     }
 
     /// Creates a `PostgresTimestampWithTimeZone` from a `Date`.
@@ -113,7 +113,7 @@ public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStr
             return nil
         }
         
-        inner = Inner(date: date)
+        self.init(date: date)
     }
     
     /// A `DateComponents` for this `PostgresTimestampWithTimeZone`.

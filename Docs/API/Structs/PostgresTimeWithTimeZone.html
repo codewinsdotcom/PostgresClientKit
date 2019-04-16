@@ -66,10 +66,10 @@
 <p>Unlike <code>TIMESTAMP WITH TIME ZONE</code>, a <code>TIME WITH TIME ZONE</code> value is not normalized to UTC/GMT;
 the time zone in which it is specified is preserved.</p>
 
-<p>Like Foundation <code>Date</code>, PostgresClientKit records fractional seconds in nanoseconds.  However,
-<a href="https://stackoverflow.com/questions/23684727">due to a bug</a> in the Foundation <code>DateFormatter</code>
-class, only 3 fractional digits are preserved (millisecond resolution) in values sent to and
-received from the Postgres server.</p>
+<p>Like Foundation <code>DateComponents</code>, PostgresClientKit records fractional seconds in nanoseconds.
+However, <a href="https://stackoverflow.com/questions/23684727">due to a bug</a> in the Foundation
+<code>DateFormatter</code> class, only 3 fractional digits are preserved (millisecond resolution) in
+values sent to and received from the Postgres server.</p>
 
             </section>
             <section class="section task-group-section">

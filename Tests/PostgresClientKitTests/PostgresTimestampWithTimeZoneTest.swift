@@ -21,18 +21,7 @@ import PostgresClientKit
 import XCTest
 
 /// Tests PostgresTimestampWithTimeZone.
-class PostgresTimestampWithTimeZoneTest: XCTestCase {
-    
-    let utcTimeZone = TimeZone(secondsFromGMT: 0)!
-    
-    let pacificTimeZone = TimeZone.init(identifier: "America/Los_Angeles")!
-    
-    lazy var utcCalendar: Calendar = {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = Locale(identifier: "en_US_POSIX")
-        calendar.timeZone = utcTimeZone
-        return calendar
-    }()
+class PostgresTimestampWithTimeZoneTest: PostgresClientKitTestCase {
     
     func test() {
         
@@ -54,79 +43,93 @@ class PostgresTimestampWithTimeZoneTest: XCTestCase {
         // Valid component values should succeed.
         var timestamp = PostgresTimestampWithTimeZone(
             year: 2019, month: 1, day: 2,
-            hour: 3, minute: 4, second: 5, nanosecond: 6000000,
+            hour: 3, minute: 4, second: 5, nanosecond: 006_000_000,
             timeZone: utcTimeZone)
-        checkTimestamp(timestamp, 2019, 1, 2, 3, 4, 5, 6000000, "2019-01-02 03:04:05.006+00:00")
+        checkTimestamp(timestamp, 2019, 1, 2, 3, 4, 5, 006_000_000, "2019-01-02 03:04:05.006+00:00")
         
         // Round down to nearest millisecond.
         timestamp = PostgresTimestampWithTimeZone(
             year: 2019, month: 1, day: 2,
-            hour: 13, minute: 14, second: 15, nanosecond: 6000001,
+            hour: 13, minute: 14, second: 15, nanosecond: 006_000_001,
             timeZone: utcTimeZone)
-        checkTimestamp(timestamp, 2019, 1, 2, 13, 14, 15, 6000000, "2019-01-02 13:14:15.006+00:00")
-        
+        checkTimestamp(timestamp, 2019, 1, 2, 13, 14, 15, 006_000_000, "2019-01-02 13:14:15.006+00:00")
+
         // Round up to nearest millisecond.
         timestamp = PostgresTimestampWithTimeZone(
             year: 2019, month: 1, day: 2,
-            hour: 13, minute: 14, second: 15, nanosecond: 5999999,
+            hour: 13, minute: 14, second: 15, nanosecond: 005_999_999,
             timeZone: utcTimeZone)
-        checkTimestamp(timestamp, 2019, 1, 2, 13, 14, 15, 6000000, "2019-01-02 13:14:15.006+00:00")
-        
+        checkTimestamp(timestamp, 2019, 1, 2, 13, 14, 15, 006_000_000, "2019-01-02 13:14:15.006+00:00")
+
         // Round up to nearest millisecond.
         timestamp = PostgresTimestampWithTimeZone(
             year: 2019, month: 1, day: 2,
-            hour: 13, minute: 14, second: 15, nanosecond: 999999999,
+            hour: 13, minute: 14, second: 15, nanosecond: 999_999_999,
             timeZone: utcTimeZone)
-        checkTimestamp(timestamp, 2019, 1, 2, 13, 14, 16, 0, "2019-01-02 13:14:16.000+00:00")
-        
+        checkTimestamp(timestamp, 2019, 1, 2, 13, 14, 16, 000_000_000, "2019-01-02 13:14:16.000+00:00")
+
         // Normalize from PST to UTC.
         timestamp = PostgresTimestampWithTimeZone(
             year: 2019, month: 1, day: 2,
             hour: 13, minute: 14, second: 15,
             timeZone: pacificTimeZone)
-        checkTimestamp(timestamp, 2019, 1, 2, 21, 14, 15, 0, "2019-01-02 21:14:15.000+00:00")
-        
+        checkTimestamp(timestamp, 2019, 1, 2, 21, 14, 15, 000_000_000, "2019-01-02 21:14:15.000+00:00")
+
         // Normalize from PDT to UTC.
         timestamp = PostgresTimestampWithTimeZone(
             year: 2019, month: 7, day: 2,
             hour: 13, minute: 14, second: 15,
             timeZone: pacificTimeZone)
-        checkTimestamp(timestamp, 2019, 7, 2, 20, 14, 15, 0, "2019-07-02 20:14:15.000+00:00")
+        checkTimestamp(timestamp, 2019, 7, 2, 20, 14, 15, 000_000_000, "2019-07-02 20:14:15.000+00:00")
         
         
+        //
+        // Additional test cases for init(date:).
+        //
+        
+        timestamp = PostgresTimestampWithTimeZone(date: Date(timeIntervalSinceReferenceDate: 0.001))
+        checkTimestamp(timestamp, 2001, 1, 1, 0, 0, 0, 001_000_000, "2001-01-01 00:00:00.001+00:00")
+        
+        timestamp = PostgresTimestampWithTimeZone(date: Date(timeIntervalSinceReferenceDate: 0.0011))
+        checkTimestamp(timestamp, 2001, 1, 1, 0, 0, 0, 001_000_000, "2001-01-01 00:00:00.001+00:00")
+        
+        timestamp = PostgresTimestampWithTimeZone(date: Date(timeIntervalSinceReferenceDate: 0.0009))
+        checkTimestamp(timestamp, 2001, 1, 1, 0, 0, 0, 001_000_000, "2001-01-01 00:00:00.001+00:00")
+        
+
         //
         // Additional test cases for init(_:).
         //
-        
+
         // Invalid string representation should fail.
         XCTAssertNil(PostgresTimestampWithTimeZone("foo"))
-        
+
         // Invalid string representation should fail.
         XCTAssertNil(PostgresTimestampWithTimeZone("2019-00-01 01:01:01.000+00:00"))
-        
+
         // Valid string representation should succeed.
         timestamp = PostgresTimestampWithTimeZone("2019-01-02 03:04:05.006+00:00")
-        checkTimestamp(timestamp, 2019, 1, 2, 3, 4, 5, 6000000, "2019-01-02 03:04:05.006+00:00")
-        
+        checkTimestamp(timestamp, 2019, 1, 2, 3, 4, 5, 006_000_000, "2019-01-02 03:04:05.006+00:00")
+
         // Normalize "-08:00" to UTC.
         timestamp = PostgresTimestampWithTimeZone("2019-01-02 13:14:15.000-08:00")
-        checkTimestamp(timestamp, 2019, 1, 2, 21, 14, 15, 0, "2019-01-02 21:14:15.000+00:00")
-        
+        checkTimestamp(timestamp, 2019, 1, 2, 21, 14, 15, 000_000_000, "2019-01-02 21:14:15.000+00:00")
+
         // Normalize "-0800" to UTC.
         timestamp = PostgresTimestampWithTimeZone("2019-01-02 13:14:15.000-0800")
-        checkTimestamp(timestamp, 2019, 1, 2, 21, 14, 15, 0, "2019-01-02 21:14:15.000+00:00")
-        
+        checkTimestamp(timestamp, 2019, 1, 2, 21, 14, 15, 000_000_000, "2019-01-02 21:14:15.000+00:00")
+
         // Normalize "-08" to UTC.
         timestamp = PostgresTimestampWithTimeZone("2019-01-02 13:14:15.000-08")
-        checkTimestamp(timestamp, 2019, 1, 2, 21, 14, 15, 0, "2019-01-02 21:14:15.000+00:00")
-        
+        checkTimestamp(timestamp, 2019, 1, 2, 21, 14, 15, 000_000_000, "2019-01-02 21:14:15.000+00:00")
+
         // Normalize "-08:30" to UTC.
         timestamp = PostgresTimestampWithTimeZone("2019-01-02 13:14:15.000-08:30")
-        checkTimestamp(timestamp, 2019, 1, 2, 21, 44, 15, 0, "2019-01-02 21:44:15.000+00:00")
-        
+        checkTimestamp(timestamp, 2019, 1, 2, 21, 44, 15, 000_000_000, "2019-01-02 21:44:15.000+00:00")
+
         // Normalize "-0830" to UTC.
         timestamp = PostgresTimestampWithTimeZone("2019-01-02 13:14:15.000-0830")
-        checkTimestamp(timestamp, 2019, 1, 2, 21, 44, 15, 0, "2019-01-02 21:44:15.000+00:00")
+        checkTimestamp(timestamp, 2019, 1, 2, 21, 44, 15, 000_000_000, "2019-01-02 21:44:15.000+00:00")
     }
 
     func checkTimestamp(
@@ -137,58 +140,50 @@ class PostgresTimestampWithTimeZoneTest: XCTestCase {
         
         XCTAssertNotNil(timestamp)
         
+        var expectedDateComponents = DateComponents()
+        expectedDateComponents.calendar = utcCalendar
+        expectedDateComponents.year = year
+        expectedDateComponents.month = month
+        expectedDateComponents.day = day
+        expectedDateComponents.hour = hour
+        expectedDateComponents.minute = minute
+        expectedDateComponents.second = second
+        expectedDateComponents.nanosecond = nanosecond
+        expectedDateComponents.timeZone = utcTimeZone
+
         // Check the dateComponents property.
         let dateComponents = timestamp!.dateComponents
         XCTAssert(dateComponents.isValidDate)
-        XCTAssertEqual(dateComponents.calendar, utcCalendar)
-        XCTAssertEqual(dateComponents.timeZone, utcTimeZone)
-        XCTAssertEqual(dateComponents.era, nil)
-        XCTAssertEqual(dateComponents.year, year)
-        XCTAssertEqual(dateComponents.yearForWeekOfYear, nil)
-        XCTAssertEqual(dateComponents.quarter, nil)
-        XCTAssertEqual(dateComponents.month, month)
-        XCTAssertEqual(dateComponents.weekOfMonth, nil)
-        XCTAssertEqual(dateComponents.weekOfYear, nil)
-        XCTAssertEqual(dateComponents.weekday, nil)
-        XCTAssertEqual(dateComponents.weekdayOrdinal, nil)
-        XCTAssertEqual(dateComponents.day, day)
-        XCTAssertEqual(dateComponents.hour, hour)
-        XCTAssertEqual(dateComponents.minute, minute)
-        XCTAssertEqual(dateComponents.second, second)
-        XCTAssertNotNil(dateComponents.nanosecond)
-        
-        let dateComponentsMillisecond = (Double(dateComponents.nanosecond!) / 1000000).rounded()
-        let expectedMilliscond = (Double(nanosecond) / 1000000).rounded()
-        XCTAssertEqual(dateComponentsMillisecond, expectedMilliscond)
+        XCTAssertApproximatelyEqual(dateComponents, expectedDateComponents)
         
         // Check the date property by comparing it against a date created from the already-validated
         // dateComponents property.
-        XCTAssertEqual(timestamp!.date, utcCalendar.date(from: dateComponents))
-        
+        XCTAssertApproximatelyEqual(timestamp!.date, utcCalendar.date(from: dateComponents)!)
+
         // Check the postgresValue property.
         XCTAssertEqual(timestamp!.postgresValue, postgresValue.postgresValue)
-        
+
         // Check the description property.
         XCTAssertEqual(timestamp!.description, postgresValue.postgresValue.rawValue)
-        
+
         // Check init(date:) using the already-validated date property.
         var timestamp2 = PostgresTimestampWithTimeZone(date: timestamp!.date)
-        XCTAssertEqual(timestamp2.dateComponents, timestamp!.dateComponents)
-        XCTAssertEqual(timestamp2.date, timestamp!.date)
+        XCTAssertApproximatelyEqual(timestamp2.dateComponents, timestamp!.dateComponents)
+        XCTAssertApproximatelyEqual(timestamp2.date, timestamp!.date)
         XCTAssertEqual(timestamp2.postgresValue, timestamp!.postgresValue)
         XCTAssertEqual(timestamp2.description, timestamp!.description)
-        
+
         // Check Date.postgresTimestampWithTimeZone the same way.
         timestamp2 = timestamp!.date.postgresTimestampWithTimeZone
-        XCTAssertEqual(timestamp2.dateComponents, timestamp!.dateComponents)
-        XCTAssertEqual(timestamp2.date, timestamp!.date)
+        XCTAssertApproximatelyEqual(timestamp2.dateComponents, timestamp!.dateComponents)
+        XCTAssertApproximatelyEqual(timestamp2.date, timestamp!.date)
         XCTAssertEqual(timestamp2.postgresValue, timestamp!.postgresValue)
         XCTAssertEqual(timestamp2.description, timestamp!.description)
 
         // Check init(_:).
         timestamp2 = PostgresTimestampWithTimeZone(timestamp!.description)!
-        XCTAssertEqual(timestamp2.dateComponents, timestamp!.dateComponents)
-        XCTAssertEqual(timestamp2.date, timestamp!.date)
+        XCTAssertApproximatelyEqual(timestamp2.dateComponents, timestamp!.dateComponents)
+        XCTAssertApproximatelyEqual(timestamp2.date, timestamp!.date)
         XCTAssertEqual(timestamp2.postgresValue, timestamp!.postgresValue)
         XCTAssertEqual(timestamp2.description, timestamp!.description)
     }

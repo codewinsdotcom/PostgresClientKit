@@ -39,10 +39,10 @@ import Foundation
 /// (For this reason, `TIMESTAMP WITH TIME ZONE` is often a more useful data type.  See
 /// `PostgresTimestampWithTimeZone`.)
 ///
-/// Like Foundation `Date`, PostgresClientKit records fractional seconds in nanoseconds.  However,
-/// [due to a bug](https://stackoverflow.com/questions/23684727) in the Foundation `DateFormatter`
-/// class, only 3 fractional digits are preserved (millisecond resolution) in values sent to and
-/// received from the Postgres server.
+/// Like Foundation `DateComponents`, PostgresClientKit records fractional seconds in nanoseconds.
+/// However, [due to a bug](https://stackoverflow.com/questions/23684727) in the Foundation
+/// `DateFormatter` class, only 3 fractional digits are preserved (millisecond resolution) in
+/// values sent to and received from the Postgres server.
 public struct PostgresTimestamp: PostgresValueConvertible, CustomStringConvertible {
     
     /// Creates a `PostgresTimestamp` from components.
