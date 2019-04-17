@@ -26,7 +26,7 @@ class PostgresTimestampTest: PostgresClientKitTestCase {
     func test() {
         
         //
-        // Test init(year:month:day:hour:minute:second:nanosecond) and init(date:).
+        // Test init(year:month:day:hour:minute:second:nanosecond) and init(date:in:).
         // This also tests init(_:) for valid strings.
         //
         

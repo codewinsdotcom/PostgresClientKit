@@ -111,6 +111,10 @@ class PostgresTimestampWithTimeZoneTest: PostgresClientKitTestCase {
         timestamp = PostgresTimestampWithTimeZone("2019-01-02 03:04:05.006+00:00")
         checkTimestamp(timestamp, 2019, 1, 2, 3, 4, 5, 006_000_000, "2019-01-02 03:04:05.006+00:00")
 
+        // "Z" indicates UTC.
+        timestamp = PostgresTimestampWithTimeZone("2019-01-02 13:14:15.000Z")
+        checkTimestamp(timestamp, 2019, 1, 2, 13, 14, 15, 000_000_000, "2019-01-02 13:14:15.000+00:00")
+
         // Normalize "-08:00" to UTC.
         timestamp = PostgresTimestampWithTimeZone("2019-01-02 13:14:15.000-08:00")
         checkTimestamp(timestamp, 2019, 1, 2, 21, 14, 15, 000_000_000, "2019-01-02 21:14:15.000+00:00")

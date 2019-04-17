@@ -230,7 +230,7 @@ public struct PostgresTimeWithTimeZone: PostgresValueConvertible, CustomStringCo
     // MARK: Implementation
     //
     
-    /// Formats Postgres `TIME WITH TIME ZONE` values.
+    /// Formats Postgres `TIME WITH TIME ZONE` values (excluding the terminal time zone part).
     private static let formatter: DateFormatter = {
         let df = DateFormatter()
         df.calendar = Postgres.enUsPosixUtcCalendar

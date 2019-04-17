@@ -26,7 +26,8 @@ class PostgresDateTest: PostgresClientKitTestCase {
     func test() {
         
         //
-        // Test init(year:month:day) and init(date:).  This also tests init(_:) for valid strings.
+        // Test init(year:month:day) and init(date:in:).
+        // This also tests init(_:) for valid strings.
         //
         
         // Invalid component values should fail.
