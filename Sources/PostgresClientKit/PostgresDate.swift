@@ -120,6 +120,10 @@ public struct PostgresDate: PostgresValueConvertible, CustomStringConvertible {
         var dc = inner.dateComponents
         dc.calendar = Postgres.enUsPosixUtcCalendar
         dc.timeZone = timeZone
+        dc.hour = 0
+        dc.minute = 0
+        dc.second = 0
+        dc.nanosecond = 0
         return Postgres.enUsPosixUtcCalendar.date(from: dc)! // validated components on the way in
     }
     
@@ -175,6 +179,10 @@ public struct PostgresDate: PostgresValueConvertible, CustomStringConvertible {
             var dc = dateComponents
             dc.calendar = Postgres.enUsPosixUtcCalendar
             dc.timeZone = Postgres.utcTimeZone
+            dc.hour = 0
+            dc.minute = 0
+            dc.second = 0
+            dc.nanosecond = 0
             let d = Postgres.enUsPosixUtcCalendar.date(from: dc)!
             let s = PostgresDate.formatter.string(from: d)
             return PostgresValue(s)

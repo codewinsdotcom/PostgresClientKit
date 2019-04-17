@@ -26,8 +26,8 @@ class PostgresTimestampTest: PostgresClientKitTestCase {
     func test() {
         
         //
-        // Test init(year:month:day:hour:minute:second:nanosecond:timeZone) and init(date:).
-        // This also tests init(_:) for valid strings with timeZone "+00:00".
+        // Test init(year:month:day:hour:minute:second:nanosecond) and init(date:).
+        // This also tests init(_:) for valid strings.
         //
         
         // Invalid component values should fail.
@@ -66,7 +66,7 @@ class PostgresTimestampTest: PostgresClientKitTestCase {
 
 
         //
-        // Additional test cases for init(date:).
+        // Additional test cases for init(date:in:).
         //
 
         timestamp = PostgresTimestamp(date: Date(timeIntervalSinceReferenceDate: 0.0010), in: utcTimeZone)

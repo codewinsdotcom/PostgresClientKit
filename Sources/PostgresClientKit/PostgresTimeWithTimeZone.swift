@@ -265,6 +265,9 @@ public struct PostgresTimeWithTimeZone: PostgresValueConvertible, CustomStringCo
             var dc = dateComponents
             dc.calendar = Postgres.enUsPosixUtcCalendar
             dc.timeZone = Postgres.utcTimeZone // since formatter assumes UTC; timeZone handled below
+            dc.year = 2000
+            dc.month = 1
+            dc.day = 1
             let d = Postgres.enUsPosixUtcCalendar.date(from: dc)!
             let s = PostgresTimeWithTimeZone.formatter.string(from: d)
             

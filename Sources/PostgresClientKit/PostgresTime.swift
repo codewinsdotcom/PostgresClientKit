@@ -189,6 +189,9 @@ public struct PostgresTime: PostgresValueConvertible, CustomStringConvertible {
             var dc = dateComponents
             dc.calendar = Postgres.enUsPosixUtcCalendar
             dc.timeZone = Postgres.utcTimeZone
+            dc.year = 2000
+            dc.month = 1
+            dc.day = 1
             let d = Postgres.enUsPosixUtcCalendar.date(from: dc)!
             let s = PostgresTime.formatter.string(from: d)
             return PostgresValue(s)
