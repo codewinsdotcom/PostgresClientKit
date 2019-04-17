@@ -44,10 +44,10 @@ class PostgresDateTest: PostgresClientKitTestCase {
         // Additional test cases for init(date:in:).
         //
 
-        postgresDate = PostgresDate(date: Date(timeIntervalSinceReferenceDate: 0.0), in: utcTimeZone)
+        postgresDate = PostgresDate(date: Date(timeIntervalSinceReferenceDate: 3661.1), in: utcTimeZone)
         checkPostgresDate(postgresDate, 2001, 1, 1, "2001-01-01")
 
-        postgresDate = PostgresDate(date: Date(timeIntervalSinceReferenceDate: 0.0), in: pacificTimeZone)
+        postgresDate = PostgresDate(date: Date(timeIntervalSinceReferenceDate: 3661.1), in: pacificTimeZone)
         checkPostgresDate(postgresDate, 2000, 12, 31, "2000-12-31")
 
 
