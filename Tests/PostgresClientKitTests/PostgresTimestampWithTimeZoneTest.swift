@@ -177,14 +177,14 @@ class PostgresTimestampWithTimeZoneTest: PostgresClientKitTestCase {
         // Check the supplied timestamp.
         checkTimestamp(timestamp)
         
-        // Check init(date:) using the already-validated date property.
-        checkTimestamp(PostgresTimestampWithTimeZone(date: timestamp.date))
+        // Check init(date:).
+        checkTimestamp(PostgresTimestampWithTimeZone(date: expectedDate))
 
-        // Check Date.postgresTimestampWithTimeZone the same way.
-        checkTimestamp(timestamp.date.postgresTimestampWithTimeZone)
+        // Check Date.postgresTimestampWithTimeZone.
+        checkTimestamp(expectedDate.postgresTimestampWithTimeZone)
 
         // Check init(_:).
-        checkTimestamp(PostgresTimestampWithTimeZone(timestamp.description)!)
+        checkTimestamp(PostgresTimestampWithTimeZone(expectedDescription)!)
     }
 }
 
