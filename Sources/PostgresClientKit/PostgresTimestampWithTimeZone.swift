@@ -84,7 +84,7 @@ public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStr
         dc.nanosecond = nanosecond
         dc.timeZone = timeZone
         
-        guard dc.isValidDate, let date = dc.date else {
+        guard dc.isValidDate, let date = Postgres.enUsPosixUtcCalendar.date(from: dc) else {
             return nil
         }
         

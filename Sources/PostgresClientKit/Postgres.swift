@@ -179,13 +179,32 @@ public struct Postgres {
     /// The UTC/GMT time zone.
     internal static let utcTimeZone = TimeZone(secondsFromGMT: 0)!
     
-    /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
-    internal static let enUsPosixUtcCalendar: Calendar = {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = enUsPosixLocale
-        calendar.timeZone = utcTimeZone
-        return calendar
-    }()
+    #if os(Linux) // temporary workaround for https://bugs.swift.org/browse/SR-10515
+    
+        /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
+        internal static var enUsPosixUtcCalendar: Calendar {
+            _enUsPosixUtcCalendar.timeZone = utcTimeZone
+            return _enUsPosixUtcCalendar
+        }
+    
+        private static var _enUsPosixUtcCalendar: Calendar = {
+            var calendar = Calendar(identifier: .gregorian)
+            calendar.locale = enUsPosixLocale
+            calendar.timeZone = utcTimeZone
+            return calendar
+        }()
+    
+    #else
+    
+        /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
+        internal static let enUsPosixUtcCalendar: Calendar = {
+            var calendar = Calendar(identifier: .gregorian)
+            calendar.locale = enUsPosixLocale
+            calendar.timeZone = utcTimeZone
+            return calendar
+        }()
+    
+    #endif
 }
 
 // EOF

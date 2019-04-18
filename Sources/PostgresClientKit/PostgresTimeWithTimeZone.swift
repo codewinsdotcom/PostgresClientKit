@@ -64,11 +64,21 @@ public struct PostgresTimeWithTimeZone: PostgresValueConvertible, CustomStringCo
                  nanosecond: Int = 0,
                  timeZone: TimeZone) {
         
-        guard timeZone.nextDaylightSavingTimeTransition == nil else {
-            Postgres.logger.info(
-                "timeZone must not observe daylight savings time; use TimeZone(secondsFromGMT:)")
-            return nil
-        }
+        #if os(Linux)  // temporary workaround for https://bugs.swift.org/browse/SR-10516
+            guard timeZone.nextDaylightSavingTimeTransition == nil ||
+                timeZone.nextDaylightSavingTimeTransition?.timeIntervalSinceReferenceDate == 0.0 else {
+                    
+                Postgres.logger.info(
+                    "timeZone must not observe daylight savings time; use TimeZone(secondsFromGMT:)")
+                return nil
+            }
+        #else
+            guard timeZone.nextDaylightSavingTimeTransition == nil else {
+                Postgres.logger.info(
+                    "timeZone must not observe daylight savings time; use TimeZone(secondsFromGMT:)")
+                return nil
+            }
+        #endif
         
         var dc = DateComponents()
         dc.hour = hour
