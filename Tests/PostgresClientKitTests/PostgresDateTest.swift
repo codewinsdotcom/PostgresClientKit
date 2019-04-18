@@ -107,6 +107,7 @@ class PostgresDateTest: PostgresClientKitTestCase {
             let pdPostgresValue = pd.postgresValue
             let pdDescription = pd.description
             
+            XCTAssertEqual(pd, postgresDate)
             XCTAssert(pdDateComponents.isValidDate(in: utcCalendar))
             XCTAssertApproximatelyEqual(pdDateComponents, expectedDateComponents)
             XCTAssertApproximatelyEqual(pdUtcDate, expectedUtcDate)

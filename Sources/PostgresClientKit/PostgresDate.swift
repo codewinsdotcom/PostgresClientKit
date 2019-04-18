@@ -26,7 +26,7 @@ import Foundation
 /// - day
 ///
 /// For example, `2019-03-14`.
-public struct PostgresDate: PostgresValueConvertible, CustomStringConvertible {
+public struct PostgresDate: PostgresValueConvertible, Equatable, CustomStringConvertible {
     
     /// Creates a `PostgresDate` from components.
     ///
@@ -137,6 +137,16 @@ public struct PostgresDate: PostgresValueConvertible, CustomStringConvertible {
         return inner.postgresValue
     }
     
+    
+    //
+    // MARK: Equatable
+    //
+    
+    /// True if `lhs.postgresValue == rhs.postgresValue`.
+    public static func == (lhs: PostgresDate, rhs: PostgresDate) -> Bool {
+        return lhs.postgresValue == rhs.postgresValue
+    }
+
     
     //
     // MARK: CustomStringConvertible

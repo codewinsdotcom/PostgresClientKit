@@ -20,7 +20,7 @@
 import Foundation
 
 /// Represents a Postgres `BYTEA` value (a byte array).
-public struct PostgresByteA: PostgresValueConvertible, CustomStringConvertible {
+public struct PostgresByteA: PostgresValueConvertible, Equatable, CustomStringConvertible {
     
     /// Creates a `PostgresByteA` from the specified `Data`.
     ///
@@ -64,6 +64,16 @@ public struct PostgresByteA: PostgresValueConvertible, CustomStringConvertible {
         return PostgresValue(PostgresByteA.dataToHexEncodedString(data, prefix: "\\x"))
     }
     
+    
+    //
+    // MARK: Equatable
+    //
+    
+    /// True if `lhs.data == rhs.data`.
+    public static func == (lhs: PostgresByteA, rhs: PostgresByteA) -> Bool {
+        return lhs.data == rhs.data
+    }
+
     
     //
     // MARK: CustomStringConvertible

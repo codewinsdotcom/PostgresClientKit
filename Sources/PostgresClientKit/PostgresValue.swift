@@ -468,6 +468,19 @@ public extension PostgresValue {
 
 
 //
+// MARK: Equatable
+//
+
+public extension PostgresValue {
+    
+    /// True if `lhs.rawValue == rawValue`.
+    static func == (lhs: PostgresValue, rhs: PostgresValue) -> Bool {
+        return lhs.rawValue == rhs.rawValue
+    }
+}
+
+
+//
 // MARK: CustomStringConvertible
 //
 

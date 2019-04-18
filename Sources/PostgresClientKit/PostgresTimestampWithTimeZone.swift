@@ -40,7 +40,8 @@ import Foundation
 /// However, [due to a bug](https://stackoverflow.com/questions/23684727) in the Foundation
 /// `DateFormatter` class, only 3 fractional digits are preserved (millisecond resolution) in
 /// values sent to and received from the Postgres server.
-public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStringConvertible {
+public struct PostgresTimestampWithTimeZone:
+    PostgresValueConvertible, Equatable, CustomStringConvertible {
     
     /// Creates a `PostgresTimestampWithTimeZone` from components.
     ///
@@ -150,6 +151,17 @@ public struct PostgresTimestampWithTimeZone: PostgresValueConvertible, CustomStr
         return inner.postgresValue
     }
     
+    
+    //
+    // MARK: Equatable
+    //
+    
+    /// True if `lhs.postgresValue == rhs.postgresValue`.
+    public static func == (lhs: PostgresTimestampWithTimeZone,
+                           rhs: PostgresTimestampWithTimeZone) -> Bool {
+        return lhs.postgresValue == rhs.postgresValue
+    }
+
     
     //
     // MARK: CustomStringConvertible

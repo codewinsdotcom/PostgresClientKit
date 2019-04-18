@@ -32,34 +32,39 @@ class PostgresByteATest: PostgresClientKitTestCase {
         let hexEncodedUppercase = "\\xDEADBEEFDEADBEEF0123456789ABCDEF"
 
         // Test init(data:).
-        var byteA = PostgresByteA(data: data)
+        let byteA = PostgresByteA(data: data)
+        XCTAssertEqual(byteA, byteA)
         XCTAssertEqual(byteA.data, data)
         XCTAssertEqual(byteA.postgresValue.rawValue, hexEncodedLowercase)
         XCTAssertEqual(byteA.description, "PostgresByteA(count=\(data.count))")
         
         // Test init(_:) lowercase.
-        byteA = PostgresByteA(hexEncodedLowercase)!
-        XCTAssertEqual(byteA.data, data)
-        XCTAssertEqual(byteA.postgresValue.rawValue, hexEncodedLowercase)
-        XCTAssertEqual(byteA.description, "PostgresByteA(count=\(data.count))")
+        var byteA2 = PostgresByteA(hexEncodedLowercase)!
+        XCTAssertEqual(byteA2, byteA)
+        XCTAssertEqual(byteA2.data, data)
+        XCTAssertEqual(byteA2.postgresValue.rawValue, hexEncodedLowercase)
+        XCTAssertEqual(byteA2.description, "PostgresByteA(count=\(data.count))")
         
         // Test init(_:) uppercase.
-        byteA = PostgresByteA(hexEncodedUppercase)!
-        XCTAssertEqual(byteA.data, data)
-        XCTAssertEqual(byteA.postgresValue.rawValue, hexEncodedLowercase)
-        XCTAssertEqual(byteA.description, "PostgresByteA(count=\(data.count))")
+        byteA2 = PostgresByteA(hexEncodedUppercase)!
+        XCTAssertEqual(byteA2, byteA)
+        XCTAssertEqual(byteA2.data, data)
+        XCTAssertEqual(byteA2.postgresValue.rawValue, hexEncodedLowercase)
+        XCTAssertEqual(byteA2.description, "PostgresByteA(count=\(data.count))")
         
         // Test init(data:) 0-length.
-        byteA = PostgresByteA(data: Data())
-        XCTAssertEqual(byteA.data, Data())
-        XCTAssertEqual(byteA.postgresValue.rawValue, "\\x")
-        XCTAssertEqual(byteA.description, "PostgresByteA(count=0)")
+        byteA2 = PostgresByteA(data: Data())
+        XCTAssertNotEqual(byteA2, byteA)
+        XCTAssertEqual(byteA2.data, Data())
+        XCTAssertEqual(byteA2.postgresValue.rawValue, "\\x")
+        XCTAssertEqual(byteA2.description, "PostgresByteA(count=0)")
         
         // Test init(_:) 0-length.
-        byteA = PostgresByteA("\\x")!
-        XCTAssertEqual(byteA.data, Data())
-        XCTAssertEqual(byteA.postgresValue.rawValue, "\\x")
-        XCTAssertEqual(byteA.description, "PostgresByteA(count=0)")
+        byteA2 = PostgresByteA("\\x")!
+        XCTAssertNotEqual(byteA2, byteA)
+        XCTAssertEqual(byteA2.data, Data())
+        XCTAssertEqual(byteA2.postgresValue.rawValue, "\\x")
+        XCTAssertEqual(byteA2.description, "PostgresByteA(count=0)")
 
         // Test init(_:) invalid (missing prefix).
         XCTAssertNil(PostgresByteA("foo"))
