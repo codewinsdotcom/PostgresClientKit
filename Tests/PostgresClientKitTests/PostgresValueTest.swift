@@ -686,19 +686,21 @@ class PostgresValueTest: PostgresClientKitTestCase {
               expectedTimeWithTimeZone: shouldFail(),
               expectedByteA: shouldFail())
 
-        check(postgresValueConvertible: Decimal(string: "-12345678987654321,98765432123456789", locale: frFrLocale),
-              expectedRawValue: "-12345678987654321.98765432123456789",
-              expectedString: "-12345678987654321.98765432123456789",
-              expectedInt: shouldFail(),
-              expectedDouble: -12345678987654321.98765432123456789, // literal will be rounded to nearest Double
-              expectedDecimal: Decimal(string: "-12345678987654321.98765432123456789", locale: enUsPosixLocale),
-              expectedBool: shouldFail(),
-              expectedTimestampWithTimeZone: shouldFail(),
-              expectedTimestamp: shouldFail(),
-              expectedDate: shouldFail(),
-              expectedTime: shouldFail(),
-              expectedTimeWithTimeZone: shouldFail(),
-              expectedByteA: shouldFail())
+        #if !os(Linux) // temporarily disabled on Linux due to https://bugs.swift.org/browse/SR-10525
+            check(postgresValueConvertible: Decimal(string: "-12345678987654321,98765432123456789", locale: frFrLocale),
+                  expectedRawValue: "-12345678987654321.98765432123456789",
+                  expectedString: "-12345678987654321.98765432123456789",
+                  expectedInt: shouldFail(),
+                  expectedDouble: -12345678987654321.98765432123456789, // literal will be rounded to nearest Double
+                  expectedDecimal: Decimal(string: "-12345678987654321.98765432123456789", locale: enUsPosixLocale),
+                  expectedBool: shouldFail(),
+                  expectedTimestampWithTimeZone: shouldFail(),
+                  expectedTimestamp: shouldFail(),
+                  expectedDate: shouldFail(),
+                  expectedTime: shouldFail(),
+                  expectedTimeWithTimeZone: shouldFail(),
+                  expectedByteA: shouldFail())
+        #endif
         
         check(postgresValueConvertible: Decimal.nan,
               expectedRawValue: "NaN",
