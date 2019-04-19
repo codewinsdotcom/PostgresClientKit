@@ -173,7 +173,11 @@ public struct PostgresTimeWithTimeZone:
                 return nil
             }
             
-            timeZone = TimeZone(secondsFromGMT: offset)!
+            guard let tz = TimeZone(secondsFromGMT: offset) else {
+                return nil
+            }
+            
+            timeZone = tz
         }
         
         guard var date = PostgresTimeWithTimeZone.formatter.date(from: string) else {

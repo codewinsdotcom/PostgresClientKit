@@ -204,6 +204,8 @@ public extension PostgresValue {
         
         guard let rawValue = rawValue else { return nil }
         
+        if rawValue.lowercased() == "nan" { return Decimal.nan }
+        
         guard let v = Decimal(string: rawValue, locale: Postgres.enUsPosixLocale) else {
             throw conversionError(Decimal.self)
         }

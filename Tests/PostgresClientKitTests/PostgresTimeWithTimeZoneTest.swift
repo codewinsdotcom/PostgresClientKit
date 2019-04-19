@@ -171,7 +171,7 @@ class PostgresTimeWithTimeZoneTest: PostgresClientKitTestCase {
         let expectedDate: Date = {
             var dc = expectedDateComponents
             dc.year = 2000; dc.month = 1; dc.day = 1
-            return utcCalendar.date(from: dc)! }()
+            return enUsPosixUtcCalendar.date(from: dc)! }()
         
         let expectedPostgresValue = expectedDescription.postgresValue
         
@@ -185,7 +185,7 @@ class PostgresTimeWithTimeZoneTest: PostgresClientKitTestCase {
             let tDescription = t.description
             
             XCTAssertEqual(t, time)
-            XCTAssert(tDateComponents.isValidDate(in: utcCalendar))
+            XCTAssert(tDateComponents.isValidDate(in: enUsPosixUtcCalendar))
             XCTAssertApproximatelyEqual(tDateComponents, expectedDateComponents)
             XCTAssertApproximatelyEqual(tDate, expectedDate)
             XCTAssertEqual(tTimeZone, expectedTimeZone)

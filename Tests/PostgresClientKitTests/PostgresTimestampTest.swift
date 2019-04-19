@@ -119,12 +119,12 @@ class PostgresTimestampTest: PostgresClientKitTestCase {
         let expectedUtcDate: Date = {
             var dc = expectedDateComponents
             dc.timeZone = utcTimeZone
-            return utcCalendar.date(from: dc)! }()
+            return enUsPosixUtcCalendar.date(from: dc)! }()
         
         let expectedPacificDate: Date = {
             var dc = expectedDateComponents
             dc.timeZone = pacificTimeZone
-            return utcCalendar.date(from: dc)! }()
+            return enUsPosixUtcCalendar.date(from: dc)! }()
         
         let expectedPostgresValue = expectedDescription.postgresValue
         
@@ -138,7 +138,7 @@ class PostgresTimestampTest: PostgresClientKitTestCase {
             let tsDescription = ts.description
             
             XCTAssertEqual(ts, timestamp)
-            XCTAssert(tsDateComponents.isValidDate(in: utcCalendar))
+            XCTAssert(tsDateComponents.isValidDate(in: enUsPosixUtcCalendar))
             XCTAssertApproximatelyEqual(tsDateComponents, expectedDateComponents)
             XCTAssertApproximatelyEqual(tsUtcDate, expectedUtcDate)
             XCTAssertApproximatelyEqual(tsPacificDate, expectedPacificDate)

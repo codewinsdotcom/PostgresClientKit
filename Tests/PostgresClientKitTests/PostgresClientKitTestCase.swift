@@ -22,19 +22,41 @@ import XCTest
 /// A base class for testing PostgresClientKit.
 class PostgresClientKitTestCase: XCTestCase {
     
+    /// The en_US_POSIX locale.
+    let enUsPosixLocale = Locale(identifier: "en_US_POSIX")
+    
     /// The UTC/GMT time zone.
     let utcTimeZone = TimeZone(secondsFromGMT: 0)!
     
     /// The PST/PDT time zone.
     let pacificTimeZone = TimeZone.init(identifier: "America/Los_Angeles")!
     
-    /// A calendar for the UTC/GMT time zone.
-    lazy var utcCalendar: Calendar = {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = Locale(identifier: "en_US_POSIX")
-        calendar.timeZone = utcTimeZone
-        return calendar
-    }()
+    #if os(Linux) // temporary workaround for https://bugs.swift.org/browse/SR-10515
+    
+        /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
+        internal var enUsPosixUtcCalendar: Calendar {
+            _enUsPosixUtcCalendar.timeZone = utcTimeZone
+            return _enUsPosixUtcCalendar
+        }
+    
+        private var _enUsPosixUtcCalendar: Calendar = {
+            var calendar = Calendar(identifier: .gregorian)
+            calendar.locale = Locale(identifier: "en_US_POSIX")
+            calendar.timeZone = TimeZone(secondsFromGMT: 0)!    
+            return calendar
+        }()
+    
+    #else
+    
+        /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
+        internal lazy var enUsPosixUtcCalendar: Calendar = {
+            var calendar = Calendar(identifier: .gregorian)
+            calendar.locale = enUsPosixLocale
+            calendar.timeZone = utcTimeZone
+            return calendar
+        }()
+    
+    #endif
     
     /// Asserts two values are either both `nil` or both non-`nil`.
     func XCTAssertBothNilOrBothNotNil<T>(_ value1: T?, _ value2: T?,
@@ -164,8 +186,8 @@ class PostgresClientKitTestCase: XCTestCase {
             "DateComponents.nanosecond",
             file: file, line: line)
         
-        let date1 = utcCalendar.date(from: dc1)
-        let date2 = utcCalendar.date(from: dc2)
+        let date1 = enUsPosixUtcCalendar.date(from: dc1)
+        let date2 = enUsPosixUtcCalendar.date(from: dc2)
         
         if let date1 = date1, let date2 = date2 {
             XCTAssertApproximatelyEqual(date1, date2, "DateComponents", file: file, line: line)

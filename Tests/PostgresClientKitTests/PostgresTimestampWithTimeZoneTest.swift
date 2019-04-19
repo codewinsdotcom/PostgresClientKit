@@ -150,7 +150,7 @@ class PostgresTimestampWithTimeZoneTest: PostgresClientKitTestCase {
         let timestamp = timestamp!
 
         var expectedDateComponents = DateComponents()
-        expectedDateComponents.calendar = utcCalendar
+        expectedDateComponents.calendar = enUsPosixUtcCalendar
         expectedDateComponents.year = expectedYear
         expectedDateComponents.month = expectedMonth
         expectedDateComponents.day = expectedDay
@@ -160,7 +160,7 @@ class PostgresTimestampWithTimeZoneTest: PostgresClientKitTestCase {
         expectedDateComponents.nanosecond = expectedNanosecond
         expectedDateComponents.timeZone = utcTimeZone
 
-        let expectedDate = utcCalendar.date(from: expectedDateComponents)!
+        let expectedDate = enUsPosixUtcCalendar.date(from: expectedDateComponents)!
         let expectedPostgresValue = expectedDescription.postgresValue
 
         // Helper function for what's below...
