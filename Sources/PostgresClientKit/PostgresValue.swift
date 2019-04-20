@@ -475,7 +475,7 @@ public extension PostgresValue {
 
 public extension PostgresValue {
     
-    /// True if `lhs.rawValue == rawValue`.
+    /// True if `lhs.rawValue == rhs.rawValue`.
     static func == (lhs: PostgresValue, rhs: PostgresValue) -> Bool {
         return lhs.rawValue == rhs.rawValue
     }
