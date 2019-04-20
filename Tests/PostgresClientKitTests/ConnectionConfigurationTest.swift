@@ -21,7 +21,7 @@ import PostgresClientKit
 import XCTest
 
 /// Tests ConnectionConfiguration.
-class ConnectionConfigurationTest: XCTestCase {
+class ConnectionConfigurationTest: PostgresClientKitTestCase {
     
     func test() {
 

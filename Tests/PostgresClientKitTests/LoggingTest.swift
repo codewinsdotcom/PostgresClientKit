@@ -21,7 +21,7 @@ import PostgresClientKit
 import XCTest
 
 /// Tests logging.
-class LoggingTest: XCTestCase {
+class LoggingTest: PostgresClientKitTestCase {
     
     func test() {
         

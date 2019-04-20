@@ -24,6 +24,9 @@
 ///     the result of executing a *single* SQL command.  A SQL cursor, on other other hand, exposes
 ///     a query's result by *repeated* execution of the SQL `FETCH` command.
 ///
+/// When a `Cursor` is no longer required, call `Cursor.close()` to release its Postgres server
+/// resources.
+///
 /// A `Cursor` in PostgresClientKit corresponds to the unnamed portal of the connection on the
 /// Postgres server.
 ///
