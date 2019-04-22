@@ -17,10 +17,15 @@
 //  limitations under the License.
 //
 
+import PostgresClientKit
 import XCTest
 
 /// A base class for testing PostgresClientKit.
 class PostgresClientKitTestCase: XCTestCase {
+    
+    //
+    // MARK: Localization
+    //
     
     /// The en_US_POSIX locale.
     let enUsPosixLocale = Locale(identifier: "en_US_POSIX")
@@ -34,7 +39,7 @@ class PostgresClientKitTestCase: XCTestCase {
     #if os(Linux) // temporary workaround for https://bugs.swift.org/browse/SR-10515
     
         /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
-        internal var enUsPosixUtcCalendar: Calendar {
+        var enUsPosixUtcCalendar: Calendar {
             _enUsPosixUtcCalendar.timeZone = utcTimeZone
             return _enUsPosixUtcCalendar
         }
@@ -49,7 +54,7 @@ class PostgresClientKitTestCase: XCTestCase {
     #else
     
         /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
-        internal lazy var enUsPosixUtcCalendar: Calendar = {
+        lazy var enUsPosixUtcCalendar: Calendar = {
             var calendar = Calendar(identifier: .gregorian)
             calendar.locale = enUsPosixLocale
             calendar.timeZone = utcTimeZone
@@ -57,6 +62,104 @@ class PostgresClientKitTestCase: XCTestCase {
         }()
     
     #endif
+    
+    
+    //
+    // MARK: Connections
+    //
+    
+    /// An environment for testing PostgresClientKit.
+    struct TestEnvironment: Codable {
+        
+        var postgresHost: String
+        var postgresPort: Int
+        var postgresDatabase: String
+        var terryUsername: String
+        var terryPassword: String
+        var charlieUsername: String
+        var charliePassword: String
+        var maryUsername: String
+        var maryPassword: String
+        
+        static let current: TestEnvironment = {
+            
+            let url = URL(fileURLWithPath: #file)
+                .appendingPathComponent("../TestEnvironment.json")
+                .standardized
+            
+            let environment: TestEnvironment
+
+            do {
+                let data = try Data(contentsOf: url)
+                return try JSONDecoder().decode(TestEnvironment.self, from: data)
+            } catch {
+                fatalError("Error reading TestEnvironment: \(error)")
+            }
+        }()
+    }
+    
+    /// Creates a `ConnectionConfiguration` for Terry, authenticating by `Credential.trust`.
+    ///
+    /// - Parameter ssl: whether to use SSL/TLS
+    /// - Returns: the configuration
+    func terryConnectionConfiguration(ssl: Bool = true) -> ConnectionConfiguration {
+        
+        let environment = TestEnvironment.current
+        
+        var configuration = ConnectionConfiguration()
+        configuration.host = environment.postgresHost
+        configuration.port = environment.postgresPort
+        configuration.ssl = ssl
+        configuration.database = environment.postgresDatabase
+        configuration.user = environment.terryUsername
+        configuration.credential = .trust
+        
+        return configuration
+    }
+    
+    /// Creates a `ConnectionConfiguration` for Charlie, authenticating by
+    /// `Credential.cleartextPassword`.
+    ///
+    /// - Parameter ssl: whether to use SSL/TLS
+    /// - Returns: the configuration
+    func charlieConnectionConfiguration(ssl: Bool = true) -> ConnectionConfiguration {
+        
+        let environment = TestEnvironment.current
+        
+        var configuration = ConnectionConfiguration()
+        configuration.host = environment.postgresHost
+        configuration.port = environment.postgresPort
+        configuration.ssl = ssl
+        configuration.database = environment.postgresDatabase
+        configuration.user = environment.charlieUsername
+        configuration.credential = .cleartextPassword(password: environment.charliePassword)
+        
+        return configuration
+    }
+    
+    /// Creates a `ConnectionConfiguration` for Mary, authenticating by `Credential.md5Password`.
+    ///
+    /// - Parameter ssl: whether to use SSL/TLS
+    /// - Returns: the configuration
+    func maryConnectionConfiguration(ssl: Bool = true) -> ConnectionConfiguration {
+        
+        let environment = TestEnvironment.current
+        
+        var configuration = ConnectionConfiguration()
+        configuration.host = environment.postgresHost
+        configuration.port = environment.postgresPort
+        configuration.ssl = ssl
+        configuration.database = environment.postgresDatabase
+        configuration.user = environment.maryUsername
+        configuration.credential = .md5Password(password: environment.maryPassword)
+        
+        return configuration
+    }
+    
+
+    //
+    // MARK: Assertions
+    //
     
     /// Asserts two values are either both `nil` or both non-`nil`.
     func XCTAssertBothNilOrBothNotNil<T>(_ value1: T?, _ value2: T?,

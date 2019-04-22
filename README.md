@@ -1,6 +1,6 @@
 # PostgresClientKit
 
-PostgresClientKit provides a friendly Swift API for operating against a PostgresSQL database.
+PostgresClientKit provides a friendly Swift API for operating against a PostgreSQL database.
 
 ## Features
 
@@ -73,6 +73,8 @@ San Francisco on 1994-11-29: low: 43, high: 57, precipitation: Optional(0.0)
 - **Swift 5 or later**  (PostgresClientKit uses Swift 5 language features)
 - **`libssl-dev`** (only required on Linux, and only for SSL/TLS connections)
 
+PostgresClientKit has been tested against Postgres versions 10 and 11.
+
 ## Building
 
 ```
@@ -82,6 +84,10 @@ swift build
 ```
 
 ## Testing
+
+[Set up a Postgres database for testing](Docs/Setting up a Postgres database for testing.md).  This is a one-time process.
+
+Then:
 
 ```
 cd <path-to-clone>
