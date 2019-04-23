@@ -129,7 +129,39 @@ class ConnectionTest: PostgresClientKitTestCase {
             }
         }
     }
+    
+    func testConnectionLifecycle() {
+        
+        do {
+            let configuration = maryConnectionConfiguration()
+            
+            let connection1 = try Connection(configuration: configuration)
+            let connection2 = try Connection(configuration: configuration)
+            
+            XCTAssertNotEqual(connection1.id, connection2.id)
+            XCTAssertEqual(connection1.id, connection1.description)
+            
+            XCTAssertNil(connection1.delegate)
 
+            XCTAssertFalse(connection1.isClosed)
+            XCTAssertFalse(connection2.isClosed)
+            
+            connection1.close()
+            XCTAssertTrue(connection1.isClosed)
+            XCTAssertFalse(connection2.isClosed)
+            
+            connection1.close()
+            XCTAssertTrue(connection1.isClosed)
+            XCTAssertFalse(connection2.isClosed)
+            
+            connection2.close()
+            XCTAssertTrue(connection1.isClosed)
+            XCTAssertTrue(connection2.isClosed)
+        } catch {
+            XCTFail(String(describing: error))
+        }
+    }
+    
     // TODO: delegate
 }
 
