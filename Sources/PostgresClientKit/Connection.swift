@@ -96,6 +96,7 @@ public class Connection: CustomStringConvertible {
             socket = try Socket.create()
             log(.finer, "Created socket")
         } catch {
+            Postgres.logger.severe("Unable to create socket: \(error)")
             throw PostgresError.socketError(cause: error)
         }
 
@@ -113,6 +114,7 @@ public class Connection: CustomStringConvertible {
             log(.fine, "Opening connection to port \(port) on host \(host)")
             try socket.connect(to: host, port: Int32(port))
         } catch {
+            log(.severe, "Unable to connect socket: \(error)")
             throw PostgresError.socketError(cause: error)
         }
         
@@ -124,6 +126,7 @@ public class Connection: CustomStringConvertible {
             let sslCode = try readASCIICharacter()
             
             guard sslCode == "S" else {
+                log(.severe, "SSL/TLS not enabled on Postgres server")
                 throw PostgresError.sslNotSupported
             }
             
@@ -159,6 +162,7 @@ public class Connection: CustomStringConvertible {
                         // Postgres allowed trust authentication, yet a cleartextPassword or
                         // md5Password was supplied.  Throw to alert of a possible Postgres
                         // misconfiguration.
+                        log(.warning, "Trust credential required to authenticate")
                         throw PostgresError.trustCredentialRequired
                     }
                 }
@@ -168,6 +172,7 @@ public class Connection: CustomStringConvertible {
             case is AuthenticationCleartextPasswordResponse:
                 
                 guard case let .cleartextPassword(password) = configuration.credential else {
+                    log(.warning, "Cleartext password credential required to authenticate")
                     throw PostgresError.cleartextPasswordCredentialRequired
                 }
                 
@@ -178,6 +183,7 @@ public class Connection: CustomStringConvertible {
             case let response as AuthenticationMD5PasswordResponse:
                 
                 guard case let .md5Password(password) = configuration.credential else {
+                    log(.warning, "MD5 password credential required to authenticate")
                     throw PostgresError.md5PasswordCredentialRequired
                 }
                 
@@ -250,6 +256,7 @@ public class Connection: CustomStringConvertible {
     /// - Throws: `PostgresError.connectionClosed` if closed
     private func verifyConnectionNotClosed() throws {
         if isClosed {
+            log(.fine, "Attempted to operate on closed connection")
             throw PostgresError.connectionClosed
         }
     }
@@ -399,6 +406,7 @@ public class Connection: CustomStringConvertible {
     /// - Throws: `PostgresError.statementClosed` if closed
     private func verifyStatementNotClosed(_ statement: Statement) throws {
         if statement.isClosed {
+            log(.fine, "Attempted to operate on closed statement: \(statement)")
             throw PostgresError.statementClosed
         }
     }
@@ -505,8 +513,9 @@ public class Connection: CustomStringConvertible {
         
         switch cursorState {
             
-        case .closed:
-            throw PostgresError.cursorClosed // verifies that *some* cursor is open
+        case .closed: // verifies that *some* cursor is open
+            log(.fine, "Attempted to operate on closed cursor")
+            throw PostgresError.cursorClosed
             
         case .drained:
             row = nil
@@ -553,6 +562,8 @@ public class Connection: CustomStringConvertible {
                         row = Row(columns: dataRowResponse.columns)
                         
                     default:
+                        log(.warning, "Unexpected response: \(response)")
+                        
                         throw PostgresError.serverError(
                             description: "unexpected response '\(response)'")
                     }
@@ -641,6 +652,7 @@ public class Connection: CustomStringConvertible {
     /// - Throws: `PostgresError.cursorClosed` if closed
     private func verifyCursorNotClosed(_ cursor: Cursor) throws {
         if isCursorClosed(cursor) {
+            log(.fine, "Attempted to operate on closed cursor")
             throw PostgresError.cursorClosed
         }
     }
@@ -695,6 +707,7 @@ public class Connection: CustomStringConvertible {
         do {
             try socket.write(from: request.data())
         } catch {
+            log(.warning, "Error sending request: \(error)")
             throw PostgresError.socketError(cause: error)
         }
     }
@@ -736,6 +749,8 @@ public class Connection: CustomStringConvertible {
             case "Z": response = try ReadyForQueryResponse(responseBody: responseBody)
                 
             default:
+                log(.warning, "Unrecognized response type: \(responseType)")
+                
                 throw PostgresError.serverError(
                     description: "unrecognized response type '\(responseType)'")
             }
@@ -748,6 +763,7 @@ public class Connection: CustomStringConvertible {
                 break // don't need this, since we don't support CancelRequest
                 
             case let errorResponse as ErrorResponse:
+                log(.fine, "SQL error: \(errorResponse.notice)")
                 throw PostgresError.sqlError(notice: errorResponse.notice)
                 
             case let noticeResponse as NoticeResponse:
@@ -767,12 +783,15 @@ public class Connection: CustomStringConvertible {
                     didReceiveParameterStatus: (name: parameterStatusResponse.name,
                                                 value: parameterStatusResponse.value))
                 
-                try Parameter.checkParameterStatusResponse(parameterStatusResponse)
+                try Parameter.checkParameterStatusResponse(parameterStatusResponse,
+                                                           connection: self)
                 
             case is T:
                 return response as! T
                 
             default:
+                log(.warning, "Unexpected response type: \(responseType)")
+                
                 throw PostgresError.serverError(
                     description: "unexpected response type '\(responseType)'")
             }
@@ -800,7 +819,7 @@ public class Connection: CustomStringConvertible {
         
         internal let responseType: Character
         private var bytesRemaining: Int
-        private let connection: Connection
+        internal let connection: Connection
         
         /// Reads an unsigned 8-bit integer without consuming it.
         ///
@@ -809,6 +828,7 @@ public class Connection: CustomStringConvertible {
         @discardableResult internal func peekUInt8() throws -> UInt8 {
             
             if bytesRemaining == 0 {
+                connection.log(.warning, "Response too short")
                 throw PostgresError.serverError(description: "response too short")
             }
             
@@ -824,6 +844,7 @@ public class Connection: CustomStringConvertible {
         @discardableResult internal func readUInt8() throws -> UInt8 {
             
             if bytesRemaining == 0 {
+                connection.log(.warning, "Response too short")
                 throw PostgresError.serverError(description: "response too short")
             }
             
@@ -869,6 +890,7 @@ public class Connection: CustomStringConvertible {
         @discardableResult internal func readData(count: Int) throws -> Data {
             
             if bytesRemaining < count {
+                connection.log(.warning, "Response too short")
                 throw PostgresError.serverError(description: "response too short")
             }
             
@@ -910,6 +932,7 @@ public class Connection: CustomStringConvertible {
             }
             
             guard let s = String(data: data, encoding: .utf8) else {
+                connection.log(.warning, "Response contained invalid UTF8 string")
                 throw PostgresError.serverError(description: "response contained invalid UTF8 string")
             }
             
@@ -926,6 +949,7 @@ public class Connection: CustomStringConvertible {
             let data = try readData(count: byteCount)
             
             guard let s = String(data: data, encoding: .utf8) else {
+                connection.log(.warning, "Response contained invalid UTF8 string")
                 throw PostgresError.serverError(description: "response contained invalid UTF8 string")
             }
             
@@ -937,6 +961,7 @@ public class Connection: CustomStringConvertible {
         /// - Throws: `PostgresError.serverError` if not fully consumed
         internal func verifyFullyConsumed() throws {
             if bytesRemaining != 0 {
+                connection.log(.warning, "Response too long")
                 throw PostgresError.serverError(description: "response too long")
             }
         }
@@ -1048,10 +1073,12 @@ public class Connection: CustomStringConvertible {
         do {
             readCount = try socket.read(into: &readBuffer)
         } catch {
+            log(.warning, "Error receiving response: \(error)")
             throw PostgresError.socketError(cause: error)
         }
         
         if readCount == 0 {
+            log(.warning, "Response truncated; no data available")
             throw PostgresError.serverError(description: "no data available from server")
         }
     }
@@ -1061,7 +1088,7 @@ public class Connection: CustomStringConvertible {
     // MARK: Logging
     //
     
-    private func log(_ level: LogLevel,
+    internal func log(_ level: LogLevel,
                     _ message: CustomStringConvertible,
                     file: String = #file,
                     function: String = #function,

@@ -22,6 +22,7 @@ internal class AuthenticationResponse: Response {
     internal class func parse(responseBody: Connection.ResponseBody) throws
         -> AuthenticationResponse {
         
+        let connection = responseBody.connection
         let authenticationType = try responseBody.readUInt32()
         
         switch authenticationType {
@@ -30,6 +31,8 @@ internal class AuthenticationResponse: Response {
             return try AuthenticationOKResponse(responseBody: responseBody)
             
         case 2:
+            connection.log(.warning, "Unsupported authentication type: AuthenticationKerberosV5")
+            
             throw PostgresError.unsupportedAuthenticationType(
                 authenticationType: "AuthenticationKerberosV5")
             
@@ -40,34 +43,50 @@ internal class AuthenticationResponse: Response {
             return try AuthenticationMD5PasswordResponse(responseBody: responseBody)
             
         case 6:
+            connection.log(.warning, "Unsupported authentication type: AuthenticationSCMCredential")
+            
             throw PostgresError.unsupportedAuthenticationType(
                 authenticationType: "AuthenticationSCMCredential")
             
         case 7:
+            connection.log(.warning, "Unsupported authentication type: AuthenticationGSS")
+            
             throw PostgresError.unsupportedAuthenticationType(
                 authenticationType: "AuthenticationGSS")
             
         case 8:
+            connection.log(.warning, "Unsupported authentication type: AuthenticationGSSContinue")
+            
             throw PostgresError.unsupportedAuthenticationType(
                 authenticationType: "AuthenticationGSSContinue")
             
         case 9:
+            connection.log(.warning, "Unsupported authentication type: AuthenticationSSPI")
+            
             throw PostgresError.unsupportedAuthenticationType(
                 authenticationType: "AuthenticationSSPI")
             
         case 10:
+            connection.log(.warning, "Unsupported authentication type: AuthenticationSASL")
+            
             throw PostgresError.unsupportedAuthenticationType(
                 authenticationType: "AuthenticationSASL")
             
         case 11:
+            connection.log(.warning, "Unsupported authentication type: AuthenticationSASLContinue")
+            
             throw PostgresError.unsupportedAuthenticationType(
                 authenticationType: "AuthenticationSASLContinue")
             
         case 12:
+            connection.log(.warning, "Unsupported authentication type: AuthenticationSASLFinal")
+            
             throw PostgresError.unsupportedAuthenticationType(
                 authenticationType: "AuthenticationSASLFinal")
             
         default:
+            connection.log(.warning, "Unsupported authentication type: \(authenticationType)")
+            
             throw PostgresError.unsupportedAuthenticationType(
                 authenticationType: "\(authenticationType)")
         }

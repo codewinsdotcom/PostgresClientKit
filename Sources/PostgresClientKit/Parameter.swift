@@ -78,13 +78,18 @@ internal struct Parameter {
     /// - Parameter response: the response to check
     /// - Throws: `PostgresError.invalidParameterValue` if the parameter does not have the required
     ///     value
-    internal static func checkParameterStatusResponse(_ response: ParameterStatusResponse) throws {
+    internal static func checkParameterStatusResponse(_ response: ParameterStatusResponse,
+                                                      connection: Connection) throws {
         
         if let parameter = values.first(where: {
             $0.name == response.name
                 && $0.isCheckedUponParameterStatusResponse
                 && $0.value != response.value } ) {
             
+            connection.log(.warning,
+                           "Invalid value for Postgres parameter (response.name): " +
+                                "\(response.value) (must be \(parameter.value))")
+
             throw PostgresError.invalidParameterValue(name: response.name,
                                                       value: response.value,
                                                       requiredValue: parameter.value)
