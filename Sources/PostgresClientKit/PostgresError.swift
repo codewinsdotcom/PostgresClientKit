@@ -21,7 +21,7 @@
 public enum PostgresError: Error {
     
     /// The Postgres server requires a `Credential.cleartextPassword` for authentication.
-    case cleartextPasswordCredentialRequired
+    case  cleartextPasswordCredentialRequired
     
     /// An attempt was made to operate on a closed connection.
     case connectionClosed
@@ -49,6 +49,9 @@ public enum PostgresError: Error {
     
     /// An attempt was made to operate on a closed statement.
     case statementClosed
+    
+    /// The Postgres server requires a `Credential.trust` for authentication.
+    case trustCredentialRequired
     
     /// The authentication type required by the Postgres server is not supported by
     /// PostgresClientKit.

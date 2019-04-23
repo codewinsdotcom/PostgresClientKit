@@ -144,6 +144,8 @@ public class Connection: CustomStringConvertible {
         let startupRequest = StartupRequest(user: user, database: database)
         try sendRequest(startupRequest)
         
+        var credentialSent = false
+        
         authentication:
         while true {
             let authenticationResponse = try receiveResponse(type: AuthenticationResponse.self)
@@ -151,6 +153,16 @@ public class Connection: CustomStringConvertible {
             switch authenticationResponse {
                 
             case is AuthenticationOKResponse:
+                
+                if !credentialSent {
+                    guard case .trust = configuration.credential else {
+                        // Postgres allowed trust authentication, yet a cleartextPassword or
+                        // md5Password was supplied.  Throw to alert of a possible Postgres
+                        // misconfiguration.
+                        throw PostgresError.trustCredentialRequired
+                    }
+                }
+                
                 break authentication
                 
             case is AuthenticationCleartextPasswordResponse:
@@ -161,6 +173,7 @@ public class Connection: CustomStringConvertible {
                 
                 let passwordMessageRequest = PasswordMessageRequest(password: password)
                 try sendRequest(passwordMessageRequest)
+                credentialSent = true
                 
             case let response as AuthenticationMD5PasswordResponse:
                 
@@ -183,6 +196,7 @@ public class Connection: CustomStringConvertible {
                 
                 let passwordMessageRequest = PasswordMessageRequest(password: "md5" + saltedHash)
                 try sendRequest(passwordMessageRequest)
+                credentialSent = true
 
             default:
                 fatalError("\(authenticationResponse) not handled when connecting")

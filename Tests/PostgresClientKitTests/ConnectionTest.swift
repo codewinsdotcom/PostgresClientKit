@@ -23,17 +23,114 @@ import XCTest
 /// Tests Connection.
 class ConnectionTest: PostgresClientKitTestCase {
     
-    func test() throws {
+    func testCreateConnection() throws {
         
-        // FIXME: WIP
-        do {
-            let configuration = maryConnectionConfiguration()
-            _ = try Connection(configuration: configuration)
-        } catch {
-            print(error)
-            throw error
+        // Network error
+        var configuration = terryConnectionConfiguration()
+        configuration.host = "256.0.0.0"
+        XCTAssertThrowsError(try Connection(configuration: configuration)) { error in
+            guard case PostgresError.socketError = error else {
+                return XCTFail(String(describing: error))
+            }
+        }
+        
+        // Non-SSL
+        configuration = terryConnectionConfiguration()
+        configuration.ssl = false
+        XCTAssertNoThrow(try Connection(configuration: configuration).close())
+        
+        // SSL
+        configuration = terryConnectionConfiguration()
+        configuration.ssl = true // (the default)
+        XCTAssertNoThrow(try Connection(configuration: configuration).close())
+        
+
+        // Authenticate: trust required, trust supplied
+        configuration = terryConnectionConfiguration()
+        XCTAssertNoThrow(try Connection(configuration: configuration).close())
+
+        // Authenticate: trust required, cleartextPassword supplied
+        configuration = terryConnectionConfiguration()
+        configuration.credential = .cleartextPassword(password: "wrong-credential-type")
+        XCTAssertThrowsError(try Connection(configuration: configuration)) { error in
+            guard case PostgresError.trustCredentialRequired = error else {
+                return XCTFail(String(describing: error))
+            }
+        }
+        
+        // Authenticate: trust required, md5Password supplied
+        configuration = terryConnectionConfiguration()
+        configuration.credential = .md5Password(password: "wrong-credential-type")
+        XCTAssertThrowsError(try Connection(configuration: configuration)) { error in
+            guard case PostgresError.trustCredentialRequired = error else {
+                return XCTFail(String(describing: error))
+            }
+        }
+
+        // Authenticate: cleartextPassword required, trust supplied
+        configuration = charlieConnectionConfiguration()
+        configuration.credential = .trust
+        XCTAssertThrowsError(try Connection(configuration: configuration)) { error in
+            guard case PostgresError.cleartextPasswordCredentialRequired = error else {
+                return XCTFail(String(describing: error))
+            }
+        }
+        
+        // Authenticate: cleartextPassword required, cleartextPassword supplied
+        configuration = charlieConnectionConfiguration()
+        XCTAssertNoThrow(try Connection(configuration: configuration).close())
+        
+        // Authenticate: cleartextPassword required, cleartextPassword supplied, incorrect password
+        configuration = charlieConnectionConfiguration()
+        configuration.credential = .cleartextPassword(password: "wrong-password")
+        XCTAssertThrowsError(try Connection(configuration: configuration)) { error in
+            guard case PostgresError.sqlError = error else {
+                return XCTFail(String(describing: error))
+            }
+        }
+
+        // Authenticate: cleartextPassword required, md5Password supplied
+        configuration = charlieConnectionConfiguration()
+        configuration.credential = .md5Password(password: "wrong-credential-type")
+        XCTAssertThrowsError(try Connection(configuration: configuration)) { error in
+            guard case PostgresError.cleartextPasswordCredentialRequired = error else {
+                return XCTFail(String(describing: error))
+            }
+        }
+        
+        // Authenticate: md5Password required, trust supplied
+        configuration = maryConnectionConfiguration()
+        configuration.credential = .trust
+        XCTAssertThrowsError(try Connection(configuration: configuration)) { error in
+            guard case PostgresError.md5PasswordCredentialRequired = error else {
+                return XCTFail(String(describing: error))
+            }
+        }
+
+        // Authenticate: md5Password required, cleartextPassword supplied
+        configuration = maryConnectionConfiguration()
+        configuration.credential = .cleartextPassword(password: "wrong-credential-type")
+        XCTAssertThrowsError(try Connection(configuration: configuration)) { error in
+            guard case PostgresError.md5PasswordCredentialRequired = error else {
+                return XCTFail(String(describing: error))
+            }
+        }
+        
+        // Authenticate: md5Password required, md5Password supplied
+        configuration = maryConnectionConfiguration()
+        XCTAssertNoThrow(try Connection(configuration: configuration).close())
+        
+        // Authenticate: md5Password required, md5Password supplied, incorrect password
+        configuration = maryConnectionConfiguration()
+        configuration.credential = .md5Password(password: "wrong-password")
+        XCTAssertThrowsError(try Connection(configuration: configuration)) { error in
+            guard case PostgresError.sqlError = error else {
+                return XCTFail(String(describing: error))
+            }
         }
     }
+
+    // TODO: delegate
 }
 
 // EOF
