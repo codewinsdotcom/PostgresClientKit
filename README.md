@@ -85,7 +85,7 @@ swift build
 
 ## Testing
 
-[Set up a Postgres database for testing](Docs/Setting up a Postgres database for testing.md).  This is a one-time process.
+[Set up a Postgres database for testing](Docs/setting_up_a_postgres_database_for_testing.md).  This is a one-time process.
 
 Then:
 
@@ -137,8 +137,8 @@ import PostgresClientKit
 ### Documentation
 
 - [API documentation](Docs/API/index.html) [TODO: update with github.io URL]
-- [Troubleshooting](Docs/Troubleshooting.md)
-- [FAQ](Docs/FAQ.md)
+- [Troubleshooting](Docs/troubleshooting.md)
+- [FAQ](Docs/faq.md)
 
 ### Additional examples
 
