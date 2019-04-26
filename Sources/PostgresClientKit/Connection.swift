@@ -304,7 +304,7 @@ public class Connection: CustomStringConvertible {
         try performExtendedQueryOperation(
             operation: {
                 let parseRequest = ParseRequest(statement: statement)
-                try sendRequest(parseRequest)
+                try sendRequest(parseRequest, buffer: true)
                 
                 let flushRequest = FlushRequest()
                 try sendRequest(flushRequest)
@@ -339,7 +339,7 @@ public class Connection: CustomStringConvertible {
                 try verifyStatementNotClosed(statement)
                 
                 let bindRequest = BindRequest(statement: statement, parameterValues: parameterValues)
-                try sendRequest(bindRequest)
+                try sendRequest(bindRequest, buffer: true)
                 
                 let flushRequest = FlushRequest()
                 try sendRequest(flushRequest)
@@ -347,7 +347,7 @@ public class Connection: CustomStringConvertible {
                 try receiveResponse(type: BindCompleteResponse.self)
                 
                 let executeRequest = ExecuteRequest(statement: statement)
-                try sendRequest(executeRequest)
+                try sendRequest(executeRequest, buffer: true)
                 
                 try sendRequest(flushRequest)
             },
@@ -387,7 +387,7 @@ public class Connection: CustomStringConvertible {
                 try performExtendedQueryOperation(
                     operation: {
                         let closeStatementRequest = CloseStatementRequest(statement: statement)
-                        try sendRequest(closeStatementRequest)
+                        try sendRequest(closeStatementRequest, buffer: true)
                         
                         let flushRequest = FlushRequest()
                         try sendRequest(flushRequest)
@@ -576,7 +576,7 @@ public class Connection: CustomStringConvertible {
                     // rollback) the current transaction (unless within a BEGIN/COMMIT block).
                     
                     let closePortalRequest = ClosePortalRequest()
-                    try sendRequest(closePortalRequest)
+                    try sendRequest(closePortalRequest, buffer: true)
                     
                     let flushRequest = FlushRequest()
                     try sendRequest(flushRequest)
@@ -700,16 +700,9 @@ public class Connection: CustomStringConvertible {
     // MARK: Request processing
     //
     
-    private func sendRequest(_ request: Request) throws {
-        
+    private func sendRequest(_ request: Request, buffer: Bool = false) throws {
         log(.finer, "Sending \(request)")
-
-        do {
-            try socket.write(from: request.data())
-        } catch {
-            log(.warning, "Error sending request: \(error)")
-            throw PostgresError.socketError(cause: error)
-        }
+        try writeData(request.data(), buffer: buffer)
     }
     
     
@@ -974,6 +967,20 @@ public class Connection: CustomStringConvertible {
     
     /// The underlying socket to the Postgres server.
     private let socket: Socket
+
+    /// The type of operation most recently performed on the socket.
+    ///
+    /// Used to detect successive writes.  These should be coalesced into a single write for
+    /// performance and to avoid conflicts between Nagle's algorithm and TCP delayed ACKs.
+    ///
+    /// See https://stackoverflow.com/questions/32274907.
+    private var lastSocketOperation = LastSocketOperation.created
+    
+    private enum LastSocketOperation {
+        case created
+        case read
+        case write
+    }
     
     /// A buffer of data read from Postgres but not yet consumed.
     private var readBuffer = Data()
@@ -1065,6 +1072,8 @@ public class Connection: CustomStringConvertible {
         
         assert(readBufferPosition == readBuffer.count)
         
+        lastSocketOperation = .read
+        
         readBuffer.removeAll()
         readBufferPosition = 0
         
@@ -1080,6 +1089,38 @@ public class Connection: CustomStringConvertible {
         if readCount == 0 {
             log(.warning, "Response truncated; no data available")
             throw PostgresError.serverError(description: "no data available from server")
+        }
+    }
+    
+    /// A buffer of data to be written to Postgres.
+    private var writeBuffer = Data()
+    
+    
+    /// Writes data to Postgres.
+    ///
+    /// - Parameters:
+    ///   - data: the data
+    ///   - buffer: whether to buffer; if false the data is written immediately
+    /// - Throws: if the operation fails
+    func writeData(_ data: Data, buffer: Bool) throws {
+        
+        writeBuffer.append(data)
+        
+        if !buffer {
+            if lastSocketOperation == .write {
+                log(.warning, "Consecutive socket writes should be coalesced for performance")
+            }
+            
+            lastSocketOperation = .write
+            
+            defer { writeBuffer.removeAll() }
+            
+            do {
+                try socket.write(from: writeBuffer)
+            } catch {
+                log(.warning, "Error sending request: \(error)")
+                throw PostgresError.socketError(cause: error)
+            }
         }
     }
     
