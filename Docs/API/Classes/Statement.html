@@ -239,7 +239,7 @@ SQL <code>NULL</code>.</p>
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">isClosed</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">isClosed</span><span class="p">:</span> <span class="kt">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                           </div>
                         </div>
@@ -260,6 +260,8 @@ SQL <code>NULL</code>.</p>
                         <div class="pointer"></div>
                         <div class="abstract">
                           <p>Closes this <code>Statement</code>.</p>
+
+<p>Any previous <code><a href="../Classes/Cursor.html">Cursor</a></code> for the <code><a href="../Classes/Statement.html#/s:17PostgresClientKit9StatementC10connectionAA10ConnectionCvp">connection</a></code> is closed.</p>
 
 <p>Has no effect if this <code>Statement</code> is already closed.</p>
 

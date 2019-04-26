@@ -156,6 +156,45 @@ class PostgresClientKitTestCase: XCTestCase {
         return configuration
     }
     
+    
+    //
+    // MARK: Test data
+    //
+    
+    /// Creates (or re-creates) the `weather` table from the Postgres tutorial and populates it
+    /// with three rows.
+    ///
+    /// - SeeAlso: https://www.postgresql.org/docs/11/tutorial-table.html
+    /// - SeeAlso: https://www.postgresql.org/docs/11/tutorial-populate.html
+    func createWeatherTable() throws {
+        
+        let configuration = terryConnectionConfiguration()
+        let connection = try Connection(configuration: configuration)
+        defer { connection.close() }
+        
+        var statement = try connection.prepareStatement(text: "DROP TABLE IF EXISTS weather")
+        defer { statement.close() }
+        try statement.execute()
+        
+        statement = try connection.prepareStatement(text: """
+            CREATE TABLE weather (
+                city            varchar(80),
+                temp_lo         int,           -- low temperature
+                temp_hi         int,           -- high temperature
+                prcp            real,          -- precipitation
+                date            date)
+            """)
+        defer { statement.close() }
+        try statement.execute()
+        
+        statement = try connection.prepareStatement(text:
+            "INSERT INTO weather (city, temp_lo, temp_hi, prcp, date) VALUES ($1, $2, $3, $4, $5)")
+        defer { statement.close() }
+        try statement.execute(parameterValues: [ "San Francisco", 46, 50, 0.25, "1994-11-27" ])
+        try statement.execute(parameterValues: [ "San Francisco", 43, 57, 0.0, "1994-11-29" ])
+        try statement.execute(parameterValues: [ "Hayward", 37, 54, nil, "1994-11-29" ])
+    }
+    
 
     //
     // MARK: Assertions

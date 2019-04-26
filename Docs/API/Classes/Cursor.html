@@ -263,7 +263,7 @@ retrieved (in other words, until <code><a href="../Classes/Cursor.html#/s:17Post
 <p>Example of use:</p>
 <pre class="highlight swift"><code><span class="k">let</span> <span class="nv">cursor</span><span class="p">:</span> <span class="kt">Cursor</span> <span class="o">=</span> <span class="o">...</span>
 <span class="k">for</span> <span class="n">row</span> <span class="k">in</span> <span class="n">cursor</span> <span class="p">{</span>
-    <span class="k">let</span> <span class="nv">columns</span> <span class="o">=</span> <span class="k">try</span> <span class="nf">row</span><span class="p">()</span><span class="o">.</span><span class="n">columns</span> <span class="c1">// throws upon an error</span>
+    <span class="k">let</span> <span class="nv">columns</span> <span class="o">=</span> <span class="k">try</span> <span class="n">row</span><span class="o">.</span><span class="nf">get</span><span class="p">()</span><span class="o">.</span><span class="n">columns</span> <span class="c1">// throws upon an error</span>
     <span class="o">...</span>
 <span class="p">}</span>
 </code></pre>

@@ -138,18 +138,25 @@ class ConnectionTest: PostgresClientKitTestCase {
             let connection1 = try Connection(configuration: configuration)
             let connection2 = try Connection(configuration: configuration)
             
+            // Each connection has a unique id
             XCTAssertNotEqual(connection1.id, connection2.id)
+            
+            // The description property is the id value
             XCTAssertEqual(connection1.id, connection1.description)
             
+            // No delegate by default
             XCTAssertNil(connection1.delegate)
-
+            
+            // Connections are initially open
             XCTAssertFalse(connection1.isClosed)
             XCTAssertFalse(connection2.isClosed)
             
+            // Connections can be independently closed
             connection1.close()
             XCTAssertTrue(connection1.isClosed)
             XCTAssertFalse(connection2.isClosed)
             
+            // close() is idempotent
             connection1.close()
             XCTAssertTrue(connection1.isClosed)
             XCTAssertFalse(connection2.isClosed)
@@ -163,6 +170,8 @@ class ConnectionTest: PostgresClientKitTestCase {
     }
     
     // TODO: delegate
+    // TODO: error recovery
+    // TODO: tx (implicit & explicit)
 }
 
 // EOF

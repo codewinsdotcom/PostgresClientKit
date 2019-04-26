@@ -74,14 +74,25 @@ public class Statement: CustomStringConvertible {
     /// Whether this `Statement` is closed.
     ///
     /// To close a `Statement`, call `close()`.
-    public private(set) var isClosed = false
+    public var isClosed: Bool {
+        
+        if connection.isClosed {
+            _isClosed = true
+        }
+        
+        return _isClosed
+    }
+    
+    private var _isClosed = false
 
     /// Closes this `Statement`.
+    ///
+    /// Any previous `Cursor` for the `connection` is closed.
     ///
     /// Has no effect if this `Statement` is already closed.
     public func close() {
         connection.closeStatement(self)
-        isClosed = true
+        _isClosed = true
     }
     
     /// Invokes `close()`.
