@@ -26,6 +26,7 @@ extension ConnectionTest {
     static let __allTests__ConnectionTest = [
         ("testConnectionLifecycle", testConnectionLifecycle),
         ("testCreateConnection", testCreateConnection),
+        ("testErrorRecovery", testErrorRecovery),
         ("testTransactions", testTransactions),
     ]
 }

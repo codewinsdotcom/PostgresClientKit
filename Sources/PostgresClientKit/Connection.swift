@@ -796,7 +796,7 @@ public class Connection: CustomStringConvertible {
     /// The body of a response (everything after the bytes indicating the response length).
     internal class ResponseBody {
         
-        /// Creates an `ResponseBody`.
+        /// Creates a `ResponseBody`.
         ///
         /// - Parameters:
         ///   - responseType: the response type

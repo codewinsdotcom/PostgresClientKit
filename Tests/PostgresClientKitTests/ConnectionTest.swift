@@ -383,9 +383,46 @@ class ConnectionTest: PostgresClientKitTestCase {
         }
     }
     
+    func testErrorRecovery() {
+        do {
+            let connection = try Connection(configuration: terryConnectionConfiguration())
+            var text = "invalid-text"
+
+            XCTAssertThrowsError(try connection.prepareStatement(text: text)) { error in
+                guard case PostgresError.sqlError = error else {
+                    return XCTFail(String(describing: error))
+                }
+            }
+            
+            XCTAssertFalse(connection.isClosed)
+            
+            text = "SELECT $1"
+            let statement = try connection.prepareStatement(text: text)
+            
+            XCTAssertThrowsError(try statement.execute()) { error in
+                guard case PostgresError.sqlError = error else {
+                    return XCTFail(String(describing: error))
+                }
+            }
+            
+            XCTAssertFalse(connection.isClosed)
+
+            let cursor = try statement.execute(parameterValues: [ 123 ])
+            let row = cursor.next()
+            XCTAssertNotNil(row)
+            XCTAssertEqual(try row?.get().columns[0].int(), 123)
+            
+            XCTAssertFalse(connection.isClosed)
+
+            connection.close()
+            XCTAssertTrue(connection.isClosed)
+        } catch {
+            XCTFail(String(describing: error))
+        }
+    }
+    
     // TODO: statement test (SELECT, INSERT, UPDATE, DELETE)
     // TODO: data type test
-    // TODO: error recovery
 }
 
 // EOF
