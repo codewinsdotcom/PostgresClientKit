@@ -86,10 +86,14 @@ internal struct Parameter {
                 && $0.isCheckedUponParameterStatusResponse
                 && $0.value != response.value } ) {
             
-            connection.log(.warning,
-                           "Invalid value for Postgres parameter (response.name): " +
-                                "\(response.value) (must be \(parameter.value))")
-
+            connection.log(
+                .warning,
+                "Invalid value for Postgres parameter (response.name): " +
+                "\(response.value) (must be \(parameter.value)); closing connection")
+            
+            // The invalid parameter change already ocurred.  This connection is toast.
+            connection.close()
+            
             throw PostgresError.invalidParameterValue(name: response.name,
                                                       value: response.value,
                                                       requiredValue: parameter.value)

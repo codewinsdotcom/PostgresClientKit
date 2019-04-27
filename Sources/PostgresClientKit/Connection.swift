@@ -275,11 +275,13 @@ public class Connection: CustomStringConvertible {
             cursorState = .closed
             
             do {
+                lastSocketOperation = .read // squelch the "consecutive writes" warning
                 let syncRequest = SyncRequest()
                 try sendRequest(syncRequest)
                 try receiveResponse(type: ReadyForQueryResponse.self)
             } catch {
                 log(.warning, "Closing connection due to unrecoverable error: \(error)")
+                lastSocketOperation = .read // squelch the "consecutive writes" warning
                 close()
             }
         }

@@ -43,7 +43,6 @@ class ConnectionTest: PostgresClientKitTestCase {
         configuration = terryConnectionConfiguration()
         configuration.ssl = true // (the default)
         XCTAssertNoThrow(try Connection(configuration: configuration).close())
-        
 
         // Authenticate: trust required, trust supplied
         configuration = terryConnectionConfiguration()
@@ -169,7 +168,8 @@ class ConnectionTest: PostgresClientKitTestCase {
         }
     }
     
-    // TODO: delegate
+    // TODO: statement test (SELECT, INSERT, UPDATE, DELETE)
+    // TODO: data type test
     // TODO: error recovery
     // TODO: tx (implicit & explicit)
 }

@@ -35,7 +35,7 @@ class CursorTest: PostgresClientKitTestCase {
             let cursor1 = try statement.execute()
             XCTAssertFalse(cursor1.isClosed)
             
-            // There is no more than one cursor per connection
+            // There is no more than one open cursor per connection
             let cursor2 = try statement.execute()
             XCTAssertTrue(cursor1.isClosed)
             XCTAssertFalse(cursor2.isClosed)
@@ -53,17 +53,22 @@ class CursorTest: PostgresClientKitTestCase {
             XCTAssertNil(cursor2.rowCount)
             
             // next() returns nil if there are no more rows
+            var rowCount = 0
             while true {
                 guard let row = cursor2.next() else {
                     break
                 }
                 
                 _ = try row.get()
+                rowCount += 1
                 XCTAssertNil(cursor2.rowCount)
             }
             
             // The rowCount property is set after the last row has been retrieved
             XCTAssertEqual(cursor2.rowCount, 3)
+            
+            // The rowCount property equals the number of rows returned
+            XCTAssertEqual(cursor2.rowCount, rowCount)
             
             // After the last row has been retrieved, the cursor is "drained" but still open
             XCTAssertTrue(cursor1.isClosed)
@@ -84,17 +89,38 @@ class CursorTest: PostgresClientKitTestCase {
             XCTAssertTrue(cursor1.isClosed)
             XCTAssertTrue(cursor2.isClosed)
             
+            // next() throws if cursor closed
+            XCTAssertThrowsError(try cursor2.next()?.get()) { error in
+                guard case PostgresError.cursorClosed = error else {
+                    return XCTFail(String(describing: error))
+                }
+            }
+            
             // Closing a statement closes any open cursor for the connection
             let cursor3 = try statement.execute()
             XCTAssertFalse(cursor3.isClosed)
             statement.close()
             XCTAssertTrue(cursor3.isClosed)
             
+            // next() throws if statement closed
+            XCTAssertThrowsError(try cursor3.next()?.get()) { error in
+                guard case PostgresError.statementClosed = error else {
+                    return XCTFail(String(describing: error))
+                }
+            }
+
             // Closing a connection closes any open cursor for that connection
             let cursor4 = try connection.prepareStatement(text: text).execute()
             XCTAssertFalse(cursor4.isClosed)
             connection.close()
             XCTAssertTrue(cursor4.isClosed)
+            
+            // next() throws if connection closed
+            XCTAssertThrowsError(try cursor4.next()?.get()) { error in
+                guard case PostgresError.connectionClosed = error else {
+                    return XCTFail(String(describing: error))
+                }
+            }
         } catch {
             XCTFail(String(describing: error))
         }

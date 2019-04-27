@@ -93,7 +93,7 @@ class PostgresClientKitTestCase: XCTestCase {
                 let data = try Data(contentsOf: url)
                 return try JSONDecoder().decode(TestEnvironment.self, from: data)
             } catch {
-                fatalError("Error reading TestEnvironment: \(error)")
+                fatalError("Error reading TestEnvironment.json: \(error)")
             }
         }()
     }
