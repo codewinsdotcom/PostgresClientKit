@@ -63,7 +63,9 @@ a query&rsquo;s result by <em>repeated</em> execution of the SQL <code>FETCH</co
 </div>
 
 <p>When a <code>Cursor</code> is no longer required, call <code><a href="../Classes/Cursor.html#/s:17PostgresClientKit6CursorC5closeyyF">Cursor.close()</a></code> to release its Postgres server
-resources.</p>
+resources.  A <code>Cursor</code> is implicitly closed as a side effect of certain operations on a
+connection; refer to the <code><a href="../Classes/Connection.html">Connection</a></code> documentation for a full list.  A <code>Cursor</code> is also
+automatically closed by its deinitializer.</p>
 
 <p>A <code>Cursor</code> in PostgresClientKit corresponds to the unnamed portal of the connection on the
 Postgres server.</p>

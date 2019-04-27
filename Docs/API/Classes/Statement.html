@@ -63,7 +63,7 @@ of any parameters.</p>
 each time.</p>
 
 <p>When a <code>Statement</code> is no longer required, call <code><a href="../Classes/Statement.html#/s:17PostgresClientKit9StatementC5closeyyF">Statement.close()</a></code> to release its Postgres
-server resources.</p>
+server resources.  A <code>Statement</code> is automatically closed by its deinitializer.</p>
 
 <p>A <code>Statement</code> in PostgresClientKit corresponds to a prepared statement on the Postgres server
 whose name is the <code>id</code> of the <code>Statement</code>.</p>

@@ -25,7 +25,9 @@
 ///     a query's result by *repeated* execution of the SQL `FETCH` command.
 ///
 /// When a `Cursor` is no longer required, call `Cursor.close()` to release its Postgres server
-/// resources.
+/// resources.  A `Cursor` is implicitly closed as a side effect of certain operations on a
+/// connection; refer to the `Connection` documentation for a full list.  A `Cursor` is also
+/// automatically closed by its deinitializer.
 ///
 /// A `Cursor` in PostgresClientKit corresponds to the unnamed portal of the connection on the
 /// Postgres server.

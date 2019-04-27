@@ -70,9 +70,9 @@ import SSLService
 /// against different connections.
 ///
 /// When a `Connection` is no longer required, call `Connection.close()` to release its Postgres
-/// server resources and close the network socket.  A `Connection` is automatically closed if an
-/// unrecoverable error occurs (for example, if the Postgres server closes the network socket).
-/// Use `Connection.isClosed` to test whether a `Connection` is closed.
+/// server resources and close the network socket.  A `Connection` is automatically closed by its
+/// deinitializer, or if an unrecoverable error occurs (for example, if the Postgres server closes
+/// the network socket).  Use `Connection.isClosed` to test whether a `Connection` is closed.
 public class Connection: CustomStringConvertible {
     
     //

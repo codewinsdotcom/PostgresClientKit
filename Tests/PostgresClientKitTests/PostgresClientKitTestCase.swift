@@ -172,7 +172,7 @@ class PostgresClientKitTestCase: XCTestCase {
         let connection = try Connection(configuration: configuration)
         defer { connection.close() }
         
-        var statement = try connection.prepareStatement(text: "DROP TABLE IF EXISTS weather")
+        var statement = try connection.prepareStatement(text: "DROP TABLE IF EXISTS weather CASCADE")
         defer { statement.close() }
         try statement.execute()
         

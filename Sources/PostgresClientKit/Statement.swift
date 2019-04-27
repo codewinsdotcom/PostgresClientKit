@@ -28,7 +28,7 @@
 /// each time.
 ///
 /// When a `Statement` is no longer required, call `Statement.close()` to release its Postgres
-/// server resources.
+/// server resources.  A `Statement` is automatically closed by its deinitializer.
 ///
 /// A `Statement` in PostgresClientKit corresponds to a prepared statement on the Postgres server
 /// whose name is the `id` of the `Statement`.
