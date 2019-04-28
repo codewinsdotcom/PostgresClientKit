@@ -1044,7 +1044,7 @@ public class Connection: CustomStringConvertible {
         while data.count < count {
             
             let fromIndex = readBufferPosition
-            let toIndex = min(readBufferPosition + count, readBuffer.count)
+            let toIndex = min(readBufferPosition + count - data.count, readBuffer.count)
             let chunk = readBuffer[fromIndex..<toIndex]
             data += chunk
             readBufferPosition += chunk.count
