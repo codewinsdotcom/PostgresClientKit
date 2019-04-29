@@ -420,9 +420,6 @@ class ConnectionTest: PostgresClientKitTestCase {
             XCTFail(String(describing: error))
         }
     }
-    
-    // TODO: statement test (SELECT, INSERT, UPDATE, DELETE)
-    // TODO: data type test
 }
 
 // EOF
