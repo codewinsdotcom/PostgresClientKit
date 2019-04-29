@@ -158,7 +158,7 @@ Please use [issues](../../issues) to:
 - report problems (bugs)
 - request enhancements
 
-Pull requests are welcomed.  For a non-trivial contribution (for example, more than correcting spelling, typos, or whitespace) please first discuss the proposed change by opening an issue.
+Pull requests against the `develop` branch are welcomed.  For a non-trivial contribution (for example, more than correcting spelling, typos, or whitespace) please first discuss the proposed change by opening an issue.
     
 ## License
 

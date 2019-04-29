@@ -24,4 +24,4 @@ Postgres doesn't require the columns returned by a `SELECT` to be uniquely named
 
 ### In retrieving the value of a column, why do I need to specify the Swift type?
 
-To make Postgres-to-Swift type conversion explicit and robust, PostgresClientKit defers to the developer.  Should a SQL `NUMERIC` map to a Swift `Int`, `Double`, or `Decimal`?  Should a SQL `VARCHAR` map to a Swift `String` or an `Optional<String>`?  Ultimately answering these questions requires domain knowledge, which may not be encoded in the SQL data model, but which (hopefully) the developer has.
+To make Postgres-to-Swift type conversion explicit and robust, PostgresClientKit defers to the developer.  Should a SQL `NUMERIC` map to a Swift `Int`, `Double`, or `Decimal`?  Should a SQL `VARCHAR` map to a Swift `String` or an `Optional<String>`?  Answering these questions requires domain knowledge, which may not be encoded in the SQL data model, but which the developer (hopefully) has.

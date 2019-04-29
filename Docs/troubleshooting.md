@@ -51,7 +51,7 @@ Review the [`pg_hba.conf`](https://www.postgresql.org/docs/11/auth-pg-hba-conf.h
 
 ## Cursor is unexpectedly closed
 
-The deinitializers of `Connection`, `Statement`, and `Cursor` call `close()` on instances of those types.  This is normally a convenient way to ensure Postgres resources are released, but can have unexpected side effects, particular for `Statement`.  For example:
+The deinitializers of `Connection`, `Statement`, and `Cursor` call `close()` on instances of those types.  This is normally a convenient way to ensure Postgres resources are released, but can have unexpected side effects, particularly for `Statement`.  For example:
 
 ```swift
 // Perform a first SQL command.
