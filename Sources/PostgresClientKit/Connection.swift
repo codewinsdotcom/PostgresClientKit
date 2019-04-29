@@ -914,7 +914,7 @@ public class Connection: CustomStringConvertible {
         /// - Throws: `PostgresError` if the operation fails
         @discardableResult internal func readUTF8String() throws -> String {
             
-            var data = Data()
+            var bs = [UInt8]()
             
             while true {
                 let b = try readUInt8()
@@ -923,10 +923,10 @@ public class Connection: CustomStringConvertible {
                     break
                 }
                 
-                data.append(b)
+                bs.append(b)
             }
             
-            guard let s = String(data: data, encoding: .utf8) else {
+            guard let s = String(data: Data(bs), encoding: .utf8) else {
                 connection.log(.warning, "Response contained invalid UTF8 string")
                 throw PostgresError.serverError(description: "response contained invalid UTF8 string")
             }

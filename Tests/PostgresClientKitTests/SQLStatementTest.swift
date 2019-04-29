@@ -213,6 +213,8 @@ class SQLStatementTest: PostgresClientKitTestCase {
                     count += 1
                 }
                 
+                XCTAssertEqual(cursor.rowCount, count)
+                
                 if count == 0 {
                     break
                 }
