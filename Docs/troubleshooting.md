@@ -74,5 +74,5 @@ You can prevent this in several ways:
 
 - Assign the second `Statement` instance to a different variable than the first.
 
-- Perform the each SQL command within its own `do { }` block, so that the first `Statement` is deinitialized and deallocated before starting the second SQL command.
+- Perform each SQL command within its own `do { }` block, so that the first `Statement` is deinitialized and deallocated before starting the second SQL command.
 
