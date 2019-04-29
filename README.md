@@ -28,7 +28,6 @@ import PostgresClientKit
 do {
     var configuration = PostgresClientKit.ConnectionConfiguration()
     configuration.host = "127.0.0.1"
-    configuration.ssl = true
     configuration.database = "example"
     configuration.user = "bob"
     configuration.credential = .md5Password(password: "welcome1")
@@ -98,9 +97,7 @@ swift test
 
 ## Using
 
-### Including in your project
-
-#### Swift Package Manager
+### Swift Package Manager
 
 In your `Package.swift` file:
 
@@ -124,23 +121,23 @@ targets: [
 ]
 ```
 
-#### CocoaPods
-
-[TODO]
-
-### Importing to your source code file
+Import to your source code file:
 
 ```swift
 import PostgresClientKit
 ```
 
-### Documentation
+### CocoaPods
+
+[TODO]
+
+## Documentation
 
 - [API documentation](Docs/API/index.html) [TODO: update with github.io URL]
 - [Troubleshooting](Docs/troubleshooting.md)
 - [FAQ](Docs/faq.md)
 
-### Additional examples
+## Additional examples
 
 - [PostgresClientKit-CommandLine-Example](https://github.com/pitfield/PostgresClientKit-CommandLine-Example): an example command-line application
 
