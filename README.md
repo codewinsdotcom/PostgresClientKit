@@ -8,7 +8,7 @@ PostgresClientKit provides a friendly Swift API for operating against a PostgreS
 
 - **Developer-friendly API using modern Swift.**  For example, errors are represented by instances of `enum PostgresError: Error` and are raised by a `throw` or by returning a [`Result<Success, Error>`](https://github.com/apple/swift-evolution/blob/master/proposals/0235-add-result.md).
 
-- **Safe conversion between Postgres and Swift types.** Type conversion is explicit and robust.  Conversion errors are signaled, not masked.  Additional Swift types for date/time values address the impedance mismatch between Postgres types and Foundation `Date`.
+- **Safe conversion between Postgres and Swift types.** Type conversion is explicit and robust.  Conversion errors are signaled, not masked.  PostgresClientKit provides additional Swift types for dates and times to address the impedance mismatch between Postgres types and Foundation `Date`.
 
 - **Memory efficient.** The rows in a result are exposed through an iterator, not an array.  Rows are lazily retrieved from the Postgres server.
 
@@ -72,7 +72,12 @@ San Francisco on 1994-11-29: low: 43, high: 57, precipitation: Optional(0.0)
 - **Swift 5 or later**  (PostgresClientKit uses Swift 5 language features)
 - **`libssl-dev`** (only required on Linux, and only for SSL/TLS connections)
 
-PostgresClientKit has been tested against Postgres versions 10 and 11.
+PostgresClientKit is compatible with Linux, macOS, and iOS.  It has been tested on:
+
+- Ubuntu 18.04 LTS 
+- macOS 10.14
+- iOS 12.2
+- Postgres 10 and 11
 
 ## Building
 
