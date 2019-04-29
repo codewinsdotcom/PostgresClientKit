@@ -103,11 +103,9 @@ In your `Package.swift` file:
 
 - Add PostgresClientKit to the `dependencies`.  For example:
 
-[TODO: update URL and version number]
-
 ```swift
 dependencies: [
-    .package(url: "https://github.com/pitfield/PostgresClientKit", from: "0.0.0"),
+    .package(url: "https://github.com/codewinsdotcom/PostgresClientKit", from: "0.0.0"),
 ],
 ```
 
@@ -129,11 +127,11 @@ import PostgresClientKit
 
 ### CocoaPods
 
-[TODO]
+CocoaPods support is [on the roadmap](https://github.com/codewinsdotcom/PostgresClientKit/issues/2).
 
 ## Documentation
 
-- [API documentation](Docs/API/index.html) [TODO: update with github.io URL]
+- [API documentation](https://codewinsdotcom.github.io/PostgresClientKit/Docs/API/index.html)
 - [Troubleshooting](Docs/troubleshooting.md)
 - [FAQ](Docs/faq.md)
 

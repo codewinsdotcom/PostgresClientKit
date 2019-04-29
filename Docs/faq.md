@@ -16,7 +16,7 @@ Instead of sequentially performing separate asynchronous operations for each of 
 
 ### Does PostgresClientKit provide connection pooling?
 
-No, but it's [on the roadmap](https://github.com/pitfield/PostgresClientKit/issues/1).
+No, but it's [on the roadmap](https://github.com/codewinsdotcom/PostgresClientKit/issues/1).
 
 ### Why can't I reference a column in a `Row` by name, instead of by index?
 
