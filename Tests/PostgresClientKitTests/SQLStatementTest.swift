@@ -170,11 +170,21 @@ class SQLStatementTest: PostgresClientKitTestCase {
             }
             
             // SELECT COUNT(*) to confirm they were deleted.
-            let text = "SELECT COUNT(*) FROM weather WHERE city = 'San Jose'"
-            let statement = try connection.prepareStatement(text: text)
-            let cursor = try statement.execute()
-            let count = try cursor.next()!.get().columns[0].int()
-            XCTAssertEqual(count, 0)
+            do {
+                let text = "SELECT COUNT(*) FROM weather WHERE city = 'San Jose'"
+                let statement = try connection.prepareStatement(text: text)
+                let cursor = try statement.execute()
+                let count = try cursor.next()!.get().columns[0].int()
+                XCTAssertEqual(count, 0)
+            }
+            
+            // Postgres allows an empty statement.
+            do {
+                let text = ""
+                let statement = try connection.prepareStatement(text: text)
+                let cursor = try statement.execute()
+                XCTAssertNil(cursor.next())
+            }
         } catch {
             XCTFail(String(describing: error))
         }

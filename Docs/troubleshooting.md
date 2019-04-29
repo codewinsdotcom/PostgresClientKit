@@ -47,3 +47,32 @@ ssl = on
 ## Authentication issues
 
 Review the [`pg_hba.conf`](https://www.postgresql.org/docs/11/auth-pg-hba-conf.html) file for your Postgres server.  PostgresClientKit supports the `trust`, `password`, and `md5` options for `auth-method`.
+
+
+## Cursor is unexpectedly closed
+
+The deinitializers of `Connection`, `Statement`, and `Cursor` call `close()` on instances of those types.  This is normally a convenient way to ensure Postgres resources are released, but can have unexpected side effects, particular for `Statement`.  For example:
+
+```swift
+// Perform a first SQL command.
+var statement = try connection.prepareStatement(text: ...)
+var cursor = try statement.execute()
+...
+
+// Perform a second SQL command, re-using the same variables.
+statement = try connection.prepareStatement(text: ...)  // closes first cursor
+cursor = try statement.execute()                        // triggers deinit of first cursor & statement
+assert(!cursor.isClosed)                                // fails!
+...
+```
+
+In this code fragment, the second assignment to the `cursor` variable releases the only reference to the first `Cursor` instance, allowing it to be deinitialized and then deallocated.  This, in turn, releases the only reference to the first `Statement` instance, and it too is deinitialized and deallocated.  The deinitializer for `Statement` calls `close()` which, as a side effect, closes any open cursor for the connection, in this case the just-created second `Cursor` instance.  Doh!
+
+You can prevent this in several ways:
+
+- Explicitly `close()` the first `Statement` before preparing the second.
+
+- Assign the second `Statement` instance to a different variable than the first.
+
+- Perform the each SQL command within its own `do { }` block, so that the first `Statement` is deinitialized and deallocated before starting the second SQL command.
+
