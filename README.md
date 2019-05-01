@@ -89,7 +89,7 @@ swift build
 
 ## Testing
 
-[Set up a Postgres database for testing](Docs/setting_up_a_postgres_database_for_testing.md).  This is a one-time process.
+[Set up a Postgres database for testing](https://github.com/codewinsdotcom/PostgresClientKit/blob/master/Docs/setting_up_a_postgres_database_for_testing.md).  This is a one-time process.
 
 Then:
 
@@ -132,13 +132,27 @@ import PostgresClientKit
 
 ### CocoaPods
 
-CocoaPods support is [on the roadmap](https://github.com/codewinsdotcom/PostgresClientKit/issues/2).
+Add `PostgresClientKit` to your `Podfile`.  For example:
+
+```
+target 'MyApp' do
+  pod 'PostgresClientKit', '~> 0.1'
+end
+```
+
+Then run `pod install`.
+
+Import to your source code file:
+
+```swift
+import PostgresClientKit
+```
 
 ## Documentation
 
 - [API documentation](https://codewinsdotcom.github.io/PostgresClientKit/Docs/API/index.html)
-- [Troubleshooting](Docs/troubleshooting.md)
-- [FAQ](Docs/faq.md)
+- [Troubleshooting](https://github.com/codewinsdotcom/PostgresClientKit/blob/master/Docs/troubleshooting.md)
+- [FAQ](https://github.com/codewinsdotcom/PostgresClientKit/blob/master/Docs/faq.md)
 
 ## Additional examples
 
@@ -150,9 +164,9 @@ CocoaPods support is [on the roadmap](https://github.com/codewinsdotcom/Postgres
 
 Thank you for your interest in contributing to PostgresClientKit.
 
-This project has a code of conduct.  See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details.
+This project has a code of conduct.  See [CODE_OF_CONDUCT.md](https://github.com/codewinsdotcom/PostgresClientKit/blob/master/CODE_OF_CONDUCT.md) for details.
 
-Please use [issues](../../issues) to:
+Please use [issues](https://github.com/codewinsdotcom/PostgresClientKit/issues) to:
 
 - ask questions
 - report problems (bugs)
@@ -162,11 +176,11 @@ Pull requests against the `develop` branch are welcomed.  For a non-trivial cont
     
 ## License
 
-PostgresClientKit is licensed under the Apache 2.0 license.  See [LICENSE](LICENSE) for details.
+PostgresClientKit is licensed under the Apache 2.0 license.  See [LICENSE](https://github.com/codewinsdotcom/PostgresClientKit/blob/master/LICENSE) for details.
 
 ## Versioning
 
-PostgresClientKit uses [Semantic Versioning 2.0.0](https://semver.org).  For the versions available, see the [tags on this repository](../../tags).
+PostgresClientKit uses [Semantic Versioning 2.0.0](https://semver.org).  For the versions available, see the [tags on this repository](https://github.com/codewinsdotcom/PostgresClientKit/releases).
 
 ## Built with
 
