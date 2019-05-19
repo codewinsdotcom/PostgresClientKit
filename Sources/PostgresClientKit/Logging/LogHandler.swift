@@ -73,7 +73,7 @@ public class ConsoleLogHandler: LogHandler {
         let df = DateFormatter()
         df.locale = Postgres.enUsPosixLocale
         df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-        df.timeZone = TimeZone(secondsFromGMT: 0)
+        df.timeZone = Postgres.utcTimeZone
         return df
     }()
 }
