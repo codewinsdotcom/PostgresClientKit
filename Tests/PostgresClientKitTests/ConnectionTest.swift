@@ -163,6 +163,15 @@ class ConnectionTest: PostgresClientKitTestCase {
             connection2.close()
             XCTAssertTrue(connection1.isClosed)
             XCTAssertTrue(connection2.isClosed)
+            
+            // closeAbruptly() forces the connection to close.
+            let connection3 = try Connection(configuration: configuration)
+            connection3.closeAbruptly()
+            XCTAssertTrue(connection3.isClosed)
+            connection3.closeAbruptly()
+            XCTAssertTrue(connection3.isClosed)
+            connection3.close()
+            XCTAssertTrue(connection3.isClosed)
         } catch {
             XCTFail(String(describing: error))
         }

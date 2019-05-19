@@ -244,11 +244,21 @@ public class Connection: CustomStringConvertible {
             let terminateRequest = TerminateRequest()
             try? sendRequest(terminateRequest) // consumes any Error
             
-            log(.finer, "Closing socket")
-            socket.close()
-            
-            log(.fine, "Connection closed")
+            closeAbruptly()
         }
+    }
+    
+    /// Closes this `Connection` abruptly.
+    ///
+    /// Unlike `close()`, this method does not send a "terminate" request to the Postgres server;
+    /// it simply closes the network socket.
+    ///
+    /// Use this method to force a connection to immediately close, even if another thread is
+    /// concurrently operating against the connection.
+    public func closeAbruptly() {
+        log(.finer, "Closing socket")
+        socket.close()
+        log(.fine, "Connection closed")
     }
     
     /// Verifies this `Connection` is not closed.
