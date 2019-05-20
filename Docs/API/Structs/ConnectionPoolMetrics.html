@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Notice Structure Reference</title>
+    <title>ConnectionPoolMetrics Structure Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -11,8 +11,8 @@
     
   </head>
   <body>
-    <a name="//apple_ref/swift/Struct/Notice" class="dashAnchor"></a>
-    <a title="Notice Structure Reference"></a>
+    <a name="//apple_ref/swift/Struct/ConnectionPoolMetrics" class="dashAnchor"></a>
+    <a title="ConnectionPoolMetrics Structure Reference"></a>
     <header>
       <div class="content-wrapper">
         <p>
@@ -36,7 +36,7 @@
             <a href="../index.html">PostgresClientKit Reference</a>
             <img id="carat" src="../img/carat.png" />
           </span>
-          Notice Structure Reference
+          ConnectionPoolMetrics Structure Reference
         </p>
       </div>
     </div>
@@ -45,14 +45,19 @@
         <article class="main-content">
           <section>
             <section class="section">
-              <h1>Notice</h1>
+              <h1>ConnectionPoolMetrics</h1>
                 <div class="declaration">
                   <div class="language">
-                    <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Notice</span> <span class="p">:</span> <span class="kt">CustomStringConvertible</span></code></pre>
+                    <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ConnectionPoolMetrics</span> <span class="p">:</span> <span class="kt">CustomStringConvertible</span></code></pre>
 
                   </div>
                 </div>
-              <p>A notice received from the Postgres server.</p>
+              <p>Performance metrics for a <code><a href="../Classes/ConnectionPool.html">ConnectionPool</a></code>.</p>
+<div class="aside aside-see-also">
+    <p class="aside-title">See also</p>
+    <code><a href="../Classes/ConnectionPool.html#/s:17PostgresClientKit14ConnectionPoolC14computeMetrics5resetAA0deG0VSb_tF">ConnectionPool.computeMetrics(reset:)</a></code>
+
+</div>
 
             </section>
             <section class="section task-group-section">
@@ -61,9 +66,9 @@
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit6NoticeV17localizedSeveritySSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/localizedSeverity" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV17localizedSeveritySSSgvp">localizedSeverity</a>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV15periodBeginning10Foundation4DateVvp"></a>
+                      <a name="//apple_ref/swift/Property/periodBeginning" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV15periodBeginning10Foundation4DateVvp">periodBeginning</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -71,15 +76,14 @@
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p><code>ERROR</code>, <code>FATAL</code>, or <code>PANIC</code> (in an error), or <code>WARNING</code>, <code>NOTICE</code>, <code>DEBUG</code>, <code>INFO</code>, or
-<code>LOG</code> (in a notice), or a localized translation of one of these.</p>
+                          <p>The start of the time period described by this <code>ConnectionPoolMetrics</code> instance.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">localizedSeverity</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">periodBeginning</span><span class="p">:</span> <span class="kt">Date</span></code></pre>
 
                           </div>
                         </div>
@@ -89,9 +93,9 @@
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit6NoticeV8severitySSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/severity" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV8severitySSSgvp">severity</a>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV12periodEnding10Foundation4DateVvp"></a>
+                      <a name="//apple_ref/swift/Property/periodEnding" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV12periodEnding10Foundation4DateVvp">periodEnding</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -99,16 +103,14 @@
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p><code>ERROR</code>, <code>FATAL</code>, or <code>PANIC</code> (in an error), or <code>WARNING</code>, <code>NOTICE</code>, <code>DEBUG</code>, <code>INFO</code>, or
-<code>LOG</code> (in a notice).  Identical to <code><a href="../Structs/Notice.html#/s:17PostgresClientKit6NoticeV17localizedSeveritySSSgvp">localizedSeverity</a></code> except that the contents are never
-localized.</p>
+                          <p>The end of the time period described by this <code>ConnectionPoolMetrics</code> instance.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">severity</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">periodEnding</span><span class="p">:</span> <span class="kt">Date</span></code></pre>
 
                           </div>
                         </div>
@@ -118,9 +120,9 @@ localized.</p>
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit6NoticeV4codeSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/code" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV4codeSSSgvp">code</a>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV010connectionE13ConfigurationAA0deH0Vvp"></a>
+                      <a name="//apple_ref/swift/Property/connectionPoolConfiguration" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV010connectionE13ConfigurationAA0deH0Vvp">connectionPoolConfiguration</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -128,11 +130,65 @@ localized.</p>
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>The SQLSTATE code for the error.  Not localizable.</p>
+                          <p>The <code><a href="../Structs/ConnectionPoolConfiguration.html">ConnectionPoolConfiguration</a></code> at the end of the period.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">connectionPoolConfiguration</span><span class="p">:</span> <span class="kt"><a href="../Structs/ConnectionPoolConfiguration.html">ConnectionPoolConfiguration</a></span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV18successfulRequestsSivp"></a>
+                      <a name="//apple_ref/swift/Property/successfulRequests" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV18successfulRequestsSivp">successfulRequests</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The number of requests for connections for which connections were successfully allocated.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">successfulRequests</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV27unsuccessfulRequestsTooBusySivp"></a>
+                      <a name="//apple_ref/swift/Property/unsuccessfulRequestsTooBusy" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV27unsuccessfulRequestsTooBusySivp">unsuccessfulRequestsTooBusy</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The number of requests for connections that failed because the request backlog was too
+large.</p>
 <div class="aside aside-see-also">
     <p class="aside-title">See also</p>
-    <a href="https://www.postgresql.org/docs/11/static/errcodes-appendix.html">Postgres:
-Error Codes</a>
+    <code><a href="../Structs/ConnectionPoolConfiguration.html#/s:17PostgresClientKit27ConnectionPoolConfigurationV22maximumPendingRequestsSiSgvp">ConnectionPoolConfiguration.maximumPendingRequests</a></code>
 
 </div>
 
@@ -141,7 +197,7 @@ Error Codes</a>
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">code</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">unsuccessfulRequestsTooBusy</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                           </div>
                         </div>
@@ -151,9 +207,9 @@ Error Codes</a>
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit6NoticeV7messageSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/message" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV7messageSSSgvp">message</a>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV28unsuccessfulRequestsTimedOutSivp"></a>
+                      <a name="//apple_ref/swift/Property/unsuccessfulRequestsTimedOut" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV28unsuccessfulRequestsTimedOutSivp">unsuccessfulRequestsTimedOut</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -161,14 +217,20 @@ Error Codes</a>
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>The primary human-readable error message.  Accurate but terse (typically one line).</p>
+                          <p>The number of requests for connections that failed because connections were not allocated
+before the requests timed out.</p>
+<div class="aside aside-see-also">
+    <p class="aside-title">See also</p>
+    <code><a href="../Structs/ConnectionPoolConfiguration.html#/s:17PostgresClientKit27ConnectionPoolConfigurationV21pendingRequestTimeoutSiSgvp">ConnectionPoolConfiguration.pendingRequestTimeout</a></code>
+
+</div>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">unsuccessfulRequestsTimedOut</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                           </div>
                         </div>
@@ -178,9 +240,9 @@ Error Codes</a>
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit6NoticeV6detailSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/detail" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV6detailSSSgvp">detail</a>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV25unsuccessfulRequestsErrorSivp"></a>
+                      <a name="//apple_ref/swift/Property/unsuccessfulRequestsError" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV25unsuccessfulRequestsErrorSivp">unsuccessfulRequestsError</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -188,15 +250,14 @@ Error Codes</a>
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>A secondary error message carrying more detail about the problem.  Might run to multiple
-lines.</p>
+                          <p>The number of requests for connections that failed because errors occurred.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">detail</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">unsuccessfulRequestsError</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                           </div>
                         </div>
@@ -206,9 +267,9 @@ lines.</p>
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit6NoticeV4hintSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/hint" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV4hintSSSgvp">hint</a>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV020averageTimeToAcquireD0Sdvp"></a>
+                      <a name="//apple_ref/swift/Property/averageTimeToAcquireConnection" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV020averageTimeToAcquireD0Sdvp">averageTimeToAcquireConnection</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -216,16 +277,15 @@ lines.</p>
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>A suggestion of what to do about the problem.  This is intended to differ from <code><a href="../Structs/Notice.html#/s:17PostgresClientKit6NoticeV6detailSSSgvp">detail</a></code> in
-that it offers advice (potentially inappropriate) rather than hard facts.  Might run to
-multiple lines.</p>
+                          <p>The average time, in seconds, that requests for connections waited before connections were
+successfully allocated.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">hint</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">averageTimeToAcquireConnection</span><span class="p">:</span> <span class="kt">TimeInterval</span></code></pre>
 
                           </div>
                         </div>
@@ -235,9 +295,9 @@ multiple lines.</p>
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit6NoticeV8positionSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/position" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV8positionSSSgvp">position</a>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV22minimumPendingRequestsSivp"></a>
+                      <a name="//apple_ref/swift/Property/minimumPendingRequests" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV22minimumPendingRequestsSivp">minimumPendingRequests</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -245,15 +305,14 @@ multiple lines.</p>
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>An index into the original query string.  The first character has index 1, and positions are
-measured in characters not bytes.</p>
+                          <p>The minimum size of the backlog of requests for connections.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">position</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">minimumPendingRequests</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                           </div>
                         </div>
@@ -263,9 +322,9 @@ measured in characters not bytes.</p>
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit6NoticeV16internalPositionSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/internalPosition" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV16internalPositionSSSgvp">internalPosition</a>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV22maximumPendingRequestsSivp"></a>
+                      <a name="//apple_ref/swift/Property/maximumPendingRequests" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV22maximumPendingRequestsSivp">maximumPendingRequests</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -273,16 +332,14 @@ measured in characters not bytes.</p>
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>An index into an internally generated command (<code><a href="../Structs/Notice.html#/s:17PostgresClientKit6NoticeV13internalQuerySSSgvp">internalQuery</a></code>) rather than the one
-submitted by the client.  The first character has index 1, and positions are measured in
-characters not bytes.</p>
+                          <p>The maximum size of the backlog of requests for connections.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">internalPosition</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">maximumPendingRequests</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                           </div>
                         </div>
@@ -292,9 +349,9 @@ characters not bytes.</p>
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit6NoticeV13internalQuerySSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/internalQuery" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV13internalQuerySSSgvp">internalQuery</a>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV26connectionsAtStartOfPeriodSivp"></a>
+                      <a name="//apple_ref/swift/Property/connectionsAtStartOfPeriod" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV26connectionsAtStartOfPeriodSivp">connectionsAtStartOfPeriod</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -302,15 +359,14 @@ characters not bytes.</p>
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>The text of a failed internally-generated command.  This could be, for example, a SQL query
-issued by a PL/pgSQL function.</p>
+                          <p>The number of connections in the connection pool at the start of the period.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">internalQuery</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">connectionsAtStartOfPeriod</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                           </div>
                         </div>
@@ -320,9 +376,9 @@ issued by a PL/pgSQL function.</p>
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit6NoticeV7contextSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/context" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV7contextSSSgvp">context</a>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV24connectionsAtEndOfPeriodSivp"></a>
+                      <a name="//apple_ref/swift/Property/connectionsAtEndOfPeriod" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV24connectionsAtEndOfPeriodSivp">connectionsAtEndOfPeriod</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -330,16 +386,14 @@ issued by a PL/pgSQL function.</p>
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>The context in which the error occurred.  Presently this includes a call stack traceback of
-active procedural language functions and internally-generated queries.  The trace is one
-entry per line, most recent first.</p>
+                          <p>The number of connections in the connection pool at the end of the period.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">context</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">connectionsAtEndOfPeriod</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                           </div>
                         </div>
@@ -349,9 +403,9 @@ entry per line, most recent first.</p>
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit6NoticeV6schemaSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/schema" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV6schemaSSSgvp">schema</a>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV18connectionsCreatedSivp"></a>
+                      <a name="//apple_ref/swift/Property/connectionsCreated" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV18connectionsCreatedSivp">connectionsCreated</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -359,15 +413,14 @@ entry per line, most recent first.</p>
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>If the error was associated with a specific database object, the name of the schema
-containing that object, if any.</p>
+                          <p>The number of new connections added to the connection pool.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">schema</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">connectionsCreated</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                           </div>
                         </div>
@@ -377,9 +430,9 @@ containing that object, if any.</p>
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit6NoticeV5tableSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/table" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV5tableSSSgvp">table</a>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV37allocatedConnectionsClosedByRequestorSivp"></a>
+                      <a name="//apple_ref/swift/Property/allocatedConnectionsClosedByRequestor" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV37allocatedConnectionsClosedByRequestorSivp">allocatedConnectionsClosedByRequestor</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -387,15 +440,15 @@ containing that object, if any.</p>
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>If the error was associated with a specific table, the name of the table.  (Refer to
-<code><a href="../Structs/Notice.html#/s:17PostgresClientKit6NoticeV6schemaSSSgvp">schema</a></code> for the name of the table&rsquo;s schema.)</p>
+                          <p>The number of connections that, having been allocated to requests, were closed by the
+requestors before being released, causing them to be discarded from the connection pool.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">table</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">allocatedConnectionsClosedByRequestor</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                           </div>
                         </div>
@@ -405,9 +458,9 @@ containing that object, if any.</p>
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit6NoticeV6columnSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/column" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV6columnSSSgvp">column</a>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV28allocatedConnectionsTimedOutSivp"></a>
+                      <a name="//apple_ref/swift/Property/allocatedConnectionsTimedOut" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV28allocatedConnectionsTimedOutSivp">allocatedConnectionsTimedOut</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -415,153 +468,21 @@ containing that object, if any.</p>
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>If the error was associated with a specific table column, the name of the column.  (Refer to
-<code><a href="../Structs/Notice.html#/s:17PostgresClientKit6NoticeV6schemaSSSgvp">schema</a></code> and <code><a href="../Structs/Notice.html#/s:17PostgresClientKit6NoticeV5tableSSSgvp">table</a></code> to identify the table.)</p>
+                          <p>The number of connections that, having been allocated to requests, were not released by
+the requestors before they timed out, causing them to be closed and discarded from the
+connection pool.</p>
+<div class="aside aside-see-also">
+    <p class="aside-title">See also</p>
+    <code><a href="../Structs/ConnectionPoolConfiguration.html#/s:17PostgresClientKit27ConnectionPoolConfigurationV09allocatedD7TimeoutSiSgvp">ConnectionPoolConfiguration.allocatedConnectionTimeout</a></code>
+
+</div>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">column</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
-
-                          </div>
-                        </div>
-                      </section>
-                    </div>
-                  </li>
-                  <li class="item">
-                    <div>
-                      <code>
-                      <a name="/s:17PostgresClientKit6NoticeV8dataTypeSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/dataType" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV8dataTypeSSSgvp">dataType</a>
-                      </code>
-                    </div>
-                    <div class="height-container">
-                      <div class="pointer-container"></div>
-                      <section class="section">
-                        <div class="pointer"></div>
-                        <div class="abstract">
-                          <p>If the error was associated with a specific data type, the name of the data type.  (Refer to
-<code><a href="../Structs/Notice.html#/s:17PostgresClientKit6NoticeV6schemaSSSgvp">schema</a></code> for the name of the data type&rsquo;s schema.)</p>
-
-                        </div>
-                        <div class="declaration">
-                          <h4>Declaration</h4>
-                          <div class="language">
-                            <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">dataType</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
-
-                          </div>
-                        </div>
-                      </section>
-                    </div>
-                  </li>
-                  <li class="item">
-                    <div>
-                      <code>
-                      <a name="/s:17PostgresClientKit6NoticeV10constraintSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/constraint" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV10constraintSSSgvp">constraint</a>
-                      </code>
-                    </div>
-                    <div class="height-container">
-                      <div class="pointer-container"></div>
-                      <section class="section">
-                        <div class="pointer"></div>
-                        <div class="abstract">
-                          <p>If the error was associated with a specific constraint, the name of the constraint.  Refer
-to the above properties for the associated table or domain.  (For this purpose, indexes are
-treated as constraints, even if they weren&rsquo;t created with constraint syntax.)</p>
-
-                        </div>
-                        <div class="declaration">
-                          <h4>Declaration</h4>
-                          <div class="language">
-                            <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">constraint</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
-
-                          </div>
-                        </div>
-                      </section>
-                    </div>
-                  </li>
-                  <li class="item">
-                    <div>
-                      <code>
-                      <a name="/s:17PostgresClientKit6NoticeV4fileSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/file" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV4fileSSSgvp">file</a>
-                      </code>
-                    </div>
-                    <div class="height-container">
-                      <div class="pointer-container"></div>
-                      <section class="section">
-                        <div class="pointer"></div>
-                        <div class="abstract">
-                          <p>The file name of the source-code location where the error was reported.</p>
-
-                        </div>
-                        <div class="declaration">
-                          <h4>Declaration</h4>
-                          <div class="language">
-                            <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">file</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
-
-                          </div>
-                        </div>
-                      </section>
-                    </div>
-                  </li>
-                  <li class="item">
-                    <div>
-                      <code>
-                      <a name="/s:17PostgresClientKit6NoticeV4lineSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/line" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV4lineSSSgvp">line</a>
-                      </code>
-                    </div>
-                    <div class="height-container">
-                      <div class="pointer-container"></div>
-                      <section class="section">
-                        <div class="pointer"></div>
-                        <div class="abstract">
-                          <p>The line number of the source-code location where the error was reported.</p>
-
-                        </div>
-                        <div class="declaration">
-                          <h4>Declaration</h4>
-                          <div class="language">
-                            <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">line</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
-
-                          </div>
-                        </div>
-                      </section>
-                    </div>
-                  </li>
-                  <li class="item">
-                    <div>
-                      <code>
-                      <a name="/s:17PostgresClientKit6NoticeV7routineSSSgvp"></a>
-                      <a name="//apple_ref/swift/Property/routine" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV7routineSSSgvp">routine</a>
-                      </code>
-                    </div>
-                    <div class="height-container">
-                      <div class="pointer-container"></div>
-                      <section class="section">
-                        <div class="pointer"></div>
-                        <div class="abstract">
-                          <p>The name of the source-code routine reporting the error.</p>
-
-                        </div>
-                        <div class="declaration">
-                          <h4>Declaration</h4>
-                          <div class="language">
-                            <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">routine</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">allocatedConnectionsTimedOut</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                           </div>
                         </div>
@@ -582,9 +503,9 @@ treated as constraints, even if they weren&rsquo;t created with constraint synta
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit6NoticeV11descriptionSSvp"></a>
+                      <a name="/s:17PostgresClientKit21ConnectionPoolMetricsV11descriptionSSvp"></a>
                       <a name="//apple_ref/swift/Property/description" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit6NoticeV11descriptionSSvp">description</a>
+                      <a class="token" href="#/s:17PostgresClientKit21ConnectionPoolMetricsV11descriptionSSvp">description</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -592,7 +513,7 @@ treated as constraints, even if they weren&rsquo;t created with constraint synta
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>A string representation of this <code>Notice</code>.</p>
+                          <p>A formatted string representation of this <code>ConnectionPoolMetrics</code> instance.</p>
 
                         </div>
                         <div class="declaration">

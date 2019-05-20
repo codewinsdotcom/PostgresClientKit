@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>ConnectionConfiguration Structure Reference</title>
+    <title>ConnectionPoolConfiguration Structure Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -11,8 +11,8 @@
     
   </head>
   <body>
-    <a name="//apple_ref/swift/Struct/ConnectionConfiguration" class="dashAnchor"></a>
-    <a title="ConnectionConfiguration Structure Reference"></a>
+    <a name="//apple_ref/swift/Struct/ConnectionPoolConfiguration" class="dashAnchor"></a>
+    <a title="ConnectionPoolConfiguration Structure Reference"></a>
     <header>
       <div class="content-wrapper">
         <p>
@@ -36,7 +36,7 @@
             <a href="../index.html">PostgresClientKit Reference</a>
             <img id="carat" src="../img/carat.png" />
           </span>
-          ConnectionConfiguration Structure Reference
+          ConnectionPoolConfiguration Structure Reference
         </p>
       </div>
     </div>
@@ -45,14 +45,14 @@
         <article class="main-content">
           <section>
             <section class="section">
-              <h1>ConnectionConfiguration</h1>
+              <h1>ConnectionPoolConfiguration</h1>
                 <div class="declaration">
                   <div class="language">
-                    <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ConnectionConfiguration</span></code></pre>
+                    <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ConnectionPoolConfiguration</span></code></pre>
 
                   </div>
                 </div>
-              <p>The configuration for a <code><a href="../Classes/Connection.html">Connection</a></code> to the Postgres server.</p>
+              <p>The configuration of a <code><a href="../Classes/ConnectionPool.html">ConnectionPool</a></code>.</p>
 
             </section>
             <section class="section task-group-section">
@@ -61,9 +61,9 @@
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit23ConnectionConfigurationVACycfc"></a>
+                      <a name="/s:17PostgresClientKit27ConnectionPoolConfigurationVACycfc"></a>
                       <a name="//apple_ref/swift/Method/init()" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit23ConnectionConfigurationVACycfc">init()</a>
+                      <a class="token" href="#/s:17PostgresClientKit27ConnectionPoolConfigurationVACycfc">init()</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -71,7 +71,7 @@
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>Creates a <code>ConnectionConfiguration</code>.</p>
+                          <p>Creates a <code>ConnectionPoolConfiguration</code>.</p>
 
                         </div>
                         <div class="declaration">
@@ -88,9 +88,9 @@
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit23ConnectionConfigurationV4hostSSvp"></a>
-                      <a name="//apple_ref/swift/Property/host" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit23ConnectionConfigurationV4hostSSvp">host</a>
+                      <a name="/s:17PostgresClientKit27ConnectionPoolConfigurationV18maximumConnectionsSivp"></a>
+                      <a name="//apple_ref/swift/Property/maximumConnections" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit27ConnectionPoolConfigurationV18maximumConnectionsSivp">maximumConnections</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -98,14 +98,14 @@
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>The hostname or IP address of the Postgres server.  Defaults to <code>localhost</code>.</p>
+                          <p>The maximum number of connections in the <code><a href="../Classes/ConnectionPool.html">ConnectionPool</a></code>.  Defaults to <code>10</code>.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">host</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">maximumConnections</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                           </div>
                         </div>
@@ -115,9 +115,9 @@
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit23ConnectionConfigurationV4portSivp"></a>
-                      <a name="//apple_ref/swift/Property/port" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit23ConnectionConfigurationV4portSivp">port</a>
+                      <a name="/s:17PostgresClientKit27ConnectionPoolConfigurationV22maximumPendingRequestsSiSgvp"></a>
+                      <a name="//apple_ref/swift/Property/maximumPendingRequests" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit27ConnectionPoolConfigurationV22maximumPendingRequestsSiSgvp">maximumPendingRequests</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -125,14 +125,15 @@
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>The port number of the Postgres server.  Defaults to <code>5432</code>.</p>
+                          <p>The maximum size of the backlog of requests for connections, or <code>nil</code> for no limit.
+Defaults to <code>nil</code>.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">port</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">maximumPendingRequests</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?</span></code></pre>
 
                           </div>
                         </div>
@@ -142,9 +143,9 @@
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit23ConnectionConfigurationV3sslSbvp"></a>
-                      <a name="//apple_ref/swift/Property/ssl" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit23ConnectionConfigurationV3sslSbvp">ssl</a>
+                      <a name="/s:17PostgresClientKit27ConnectionPoolConfigurationV21pendingRequestTimeoutSiSgvp"></a>
+                      <a name="//apple_ref/swift/Property/pendingRequestTimeout" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit27ConnectionPoolConfigurationV21pendingRequestTimeoutSiSgvp">pendingRequestTimeout</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -152,14 +153,15 @@
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>Whether to use SSL/TLS to connect to the Postgres server.  Defaults to <code>true</code>.</p>
+                          <p>The maximum time, in seconds, that requests for connections will wait before timing out,
+or <code>nil</code> for no timeout.  Defaults to <code>nil</code>.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">ssl</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">pendingRequestTimeout</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?</span></code></pre>
 
                           </div>
                         </div>
@@ -169,9 +171,9 @@
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit23ConnectionConfigurationV8databaseSSvp"></a>
-                      <a name="//apple_ref/swift/Property/database" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit23ConnectionConfigurationV8databaseSSvp">database</a>
+                      <a name="/s:17PostgresClientKit27ConnectionPoolConfigurationV09allocatedD7TimeoutSiSgvp"></a>
+                      <a name="//apple_ref/swift/Property/allocatedConnectionTimeout" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit27ConnectionPoolConfigurationV09allocatedD7TimeoutSiSgvp">allocatedConnectionTimeout</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -179,14 +181,15 @@
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>The name of the database of the Postgres server.  Defaults to <code>postgres</code>.</p>
+                          <p>The maximum time, in seconds, that connections allocated to requests can be used before
+timing out, or <code>nil</code> for no timeout.  Defaults to <code>nil</code>.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">database</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">allocatedConnectionTimeout</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?</span></code></pre>
 
                           </div>
                         </div>
@@ -196,9 +199,9 @@
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit23ConnectionConfigurationV4userSSvp"></a>
-                      <a name="//apple_ref/swift/Property/user" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit23ConnectionConfigurationV4userSSvp">user</a>
+                      <a name="/s:17PostgresClientKit27ConnectionPoolConfigurationV13dispatchQueueSo03OS_G6_queueCvp"></a>
+                      <a name="//apple_ref/swift/Property/dispatchQueue" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit27ConnectionPoolConfigurationV13dispatchQueueSo03OS_G6_queueCvp">dispatchQueue</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -206,14 +209,21 @@
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>The Postgres username.  Defaults to an empty string.</p>
+                          <p>The <code>DispatchQueue</code> on which completion handlers for
+<code><a href="../Classes/ConnectionPool.html#/s:17PostgresClientKit14ConnectionPoolC07acquireD017completionHandleryys6ResultOyAA0D0Cs5Error_pGc_tF">ConnectionPool.acquireConnection(completionHandler:)</a></code> and
+<code><a href="../Classes/ConnectionPool.html#/s:17PostgresClientKit14ConnectionPoolC04withD017completionHandleryys6ResultOyAA0D0Cs5Error_pGc_tF">ConnectionPool.withConnection(completionHandler:)</a></code> are executed.</p>
+
+<p>This dispatch queue is also used for asynchronous tasks internally performed by the
+<code><a href="../Classes/ConnectionPool.html">ConnectionPool</a></code>, such as managing timeouts and periodic logging of performance metrics.</p>
+
+<p>Defaults to <code>DispatchQueue.global()</code>.</p>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">user</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">dispatchQueue</span><span class="p">:</span> <span class="kt">DispatchQueue</span></code></pre>
 
                           </div>
                         </div>
@@ -223,9 +233,9 @@
                   <li class="item">
                     <div>
                       <code>
-                      <a name="/s:17PostgresClientKit23ConnectionConfigurationV10credentialAA10CredentialOvp"></a>
-                      <a name="//apple_ref/swift/Property/credential" class="dashAnchor"></a>
-                      <a class="token" href="#/s:17PostgresClientKit23ConnectionConfigurationV10credentialAA10CredentialOvp">credential</a>
+                      <a name="/s:17PostgresClientKit27ConnectionPoolConfigurationV22metricsLoggingIntervalSiSgvp"></a>
+                      <a name="//apple_ref/swift/Property/metricsLoggingInterval" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit27ConnectionPoolConfigurationV22metricsLoggingIntervalSiSgvp">metricsLoggingInterval</a>
                       </code>
                     </div>
                     <div class="height-container">
@@ -233,15 +243,56 @@
                       <section class="section">
                         <div class="pointer"></div>
                         <div class="abstract">
-                          <p>The credential to use to authenticate to the Postgres server.  Defaults to
-<code><a href="../Enums/Credential.html#/s:17PostgresClientKit10CredentialO5trustyA2CmF">Credential.trust</a></code>.</p>
+                          <p>The interval, in seconds, for periodic logging of <code><a href="../Classes/ConnectionPool.html">ConnectionPool</a></code> performance metrics,
+or <code>nil</code> to not log performance metrics.</p>
+
+<p>For example, a value of <code>3600</code> causes metrics to be logged once an hour (at the start of
+the hour).  A value of <code>21600</code> causes metrics to be logged every 6 hours (at midnight,
+06:00, noon, and 18:00 UTC).</p>
+
+<p>Metrics are logged with <code><a href="../Enums/LogLevel.html#/s:17PostgresClientKit8LogLevelO4infoyA2CmF">LogLevel.info</a></code>.</p>
+
+<p>Defaults to <code>3600</code>.</p>
+<div class="aside aside-see-also">
+    <p class="aside-title">See also</p>
+    <code><a href="../Classes/ConnectionPool.html#/s:17PostgresClientKit14ConnectionPoolC14computeMetrics5resetAA0deG0VSb_tF">ConnectionPool.computeMetrics(reset:)</a></code>
+
+</div>
 
                         </div>
                         <div class="declaration">
                           <h4>Declaration</h4>
                           <div class="language">
                             <p class="aside-title">Swift</p>
-                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">credential</span><span class="p">:</span> <span class="kt"><a href="../Enums/Credential.html">Credential</a></span></code></pre>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">metricsLoggingInterval</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit27ConnectionPoolConfigurationV22metricsResetWhenLoggedSbvp"></a>
+                      <a name="//apple_ref/swift/Property/metricsResetWhenLogged" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit27ConnectionPoolConfigurationV22metricsResetWhenLoggedSbvp">metricsResetWhenLogged</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Whether the <code><a href="../Classes/ConnectionPool.html">ConnectionPool</a></code> performance metrics are reset each time they are logged.
+Defaults to <code>true</code>.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">metricsResetWhenLogged</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
 
                           </div>
                         </div>
