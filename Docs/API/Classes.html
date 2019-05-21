@@ -176,8 +176,10 @@ To release the connection back to the pool, call <code><a href="Classes/Connecti
 <p>Alternately, use <code><a href="Classes/ConnectionPool.html#/s:17PostgresClientKit14ConnectionPoolC04withD017completionHandleryys6ResultOyAA0D0Cs5Error_pGc_tF">ConnectionPool.withConnection(completionHandler:)</a></code> to acquire a connection
 that is automatically released after execution of the completion handler.</p>
 
-<p>When a connection is released to a <code>ConnectionPool</code>, <code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC19rollbackTransactionyyKF">Connection.rollbackTransaction()</a></code> is
-called to discard any un-committed changes.</p>
+<p>When a connection is released to a <code>ConnectionPool</code>, there should be no transaction underway.
+Pair each SQL <code>BEGIN</code> command with either a <code>COMMIT</code> or <code>ROLLBACK</code> command (or equivalently,
+the <code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC16beginTransactionyyKF">Connection.beginTransaction()</a></code>, <code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC17commitTransactionyyKF">Connection.commitTransaction()</a></code>, and
+<code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC19rollbackTransactionyyKF">Connection.rollbackTransaction()</a></code> methods).</p>
 
 <p>In general, do not close a <code><a href="Classes/Connection.html">Connection</a></code> acquired from a <code>ConnectionPool</code>.  If a connection is
 closed (whether explicitly or because of an unrecoverable error) then, when that connection is

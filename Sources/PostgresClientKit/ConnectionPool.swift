@@ -41,8 +41,10 @@ import Foundation
 /// Alternately, use `ConnectionPool.withConnection(completionHandler:)` to acquire a connection
 /// that is automatically released after execution of the completion handler.
 ///
-/// When a connection is released to a `ConnectionPool`, `Connection.rollbackTransaction()` is
-/// called to discard any un-committed changes.
+/// When a connection is released to a `ConnectionPool`, there should be no transaction underway.
+/// Pair each SQL `BEGIN` command with either a `COMMIT` or `ROLLBACK` command (or equivalently,
+/// the `Connection.beginTransaction()`, `Connection.commitTransaction()`, and
+/// `Connection.rollbackTransaction()` methods).
 ///
 /// In general, do not close a `Connection` acquired from a `ConnectionPool`.  If a connection is
 /// closed (whether explicitly or because of an unrecoverable error) then, when that connection is
@@ -410,23 +412,27 @@ public class ConnectionPool {
         } else if timedOut {
             allocatedConnectionsTimedOut += 1
             destroyPooledConnection(pooledConnection)
-            log(.fine, "\(connection) timed out; closed")
+            log(.fine, "\(connection) timed out; connection closed")
             
-        // If the connecton is unallocated, the caller is trying to release a connection that was
+        // If the connection is unallocated, the caller is trying to release a connection that was
         // already released.  Log a warning, close the connection, and remove it from the pool.
         } else if pooledConnection.state == .unallocated {
             destroyPooledConnection(pooledConnection)
-            log(.warning, "\(connection) was already released; closed")
+            log(.warning, "\(connection) was already released; connection closed")
             
         // If the connection is closed, remove it from the pool.
         } else if connection.isClosed {
             allocatedConnectionsClosedByRequestor += 1
             destroyPooledConnection(pooledConnection)
-            log(.fine, "\(connection) is closed; removed from connection pool")
+            log(.fine, "\(connection) was closed; connection removed from connection pool")
+            
+        // If the connection has a transaction underway, remove it from the pool.
+        } else if connection.transactionStatus != .idle {
+            destroyPooledConnection(pooledConnection)
+            log(.warning, "\(connection) was not committed or rolled back; connection closed")
             
         // Finally, the "normal" case.  Release the connection back to the pool.
         } else {
-            // FIXME: rollback
             pooledConnection.state = .unallocated
             log(.finer, "\(connection) released to connection pool")
         }
