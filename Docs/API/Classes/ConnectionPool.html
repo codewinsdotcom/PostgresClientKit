@@ -76,7 +76,7 @@ that is automatically released after execution of the completion handler.</p>
 
 <p>When a connection is released to a <code>ConnectionPool</code>, there should be no transaction underway.
 Pair each SQL <code>BEGIN</code> command with either a <code>COMMIT</code> or <code>ROLLBACK</code> command (or equivalently,
-the <code><a href="../Classes/Connection.html#/s:17PostgresClientKit10ConnectionC16beginTransactionyyKF">Connection.beginTransaction()</a></code>, <code><a href="../Classes/Connection.html#/s:17PostgresClientKit10ConnectionC17commitTransactionyyKF">Connection.commitTransaction()</a></code>, and
+use the <code><a href="../Classes/Connection.html#/s:17PostgresClientKit10ConnectionC16beginTransactionyyKF">Connection.beginTransaction()</a></code>, <code><a href="../Classes/Connection.html#/s:17PostgresClientKit10ConnectionC17commitTransactionyyKF">Connection.commitTransaction()</a></code>, and
 <code><a href="../Classes/Connection.html#/s:17PostgresClientKit10ConnectionC19rollbackTransactionyyKF">Connection.rollbackTransaction()</a></code> methods).</p>
 
 <p>In general, do not close a <code><a href="../Classes/Connection.html">Connection</a></code> acquired from a <code>ConnectionPool</code>.  If a connection is
@@ -276,7 +276,7 @@ completion handler.  Otherwise, the request will join the backlog of pending req
 As connections become available, they are allocated to the pending requests in the order
 those requests were received.</p>
 
-<p>If a connection is not allocated before the request times out
+<p>If a connection is not allocated to the request before it times out
 (<code><a href="../Structs/ConnectionPoolConfiguration.html#/s:17PostgresClientKit27ConnectionPoolConfigurationV21pendingRequestTimeoutSiSgvp">ConnectionPoolConfiguration.pendingRequestTimeout</a></code>), the request will fail with
 <code><a href="../Enums/PostgresError.html#/s:17PostgresClientKit0A5ErrorO27timedOutAcquiringConnectionyA2CmF">PostgresError.timedOutAcquiringConnection</a></code>.</p>
 
@@ -549,7 +549,7 @@ have never been reset) and ending at the current moment in time.</p>
                         <div class="abstract">
                           <p>Closes this <code>ConnectionPool</code>.</p>
 
-<p>Any pending requests for connections are cancelled.</p>
+<p>Any pending requests for connections are canceled.</p>
 
 <p>If <code>force</code> is <code>true</code>, all <code><a href="../Classes/Connection.html">Connection</a></code> instances in this <code>ConnectionPool</code> are immediately
 forcibly closed.</p>

@@ -43,7 +43,7 @@ import Foundation
 ///
 /// When a connection is released to a `ConnectionPool`, there should be no transaction underway.
 /// Pair each SQL `BEGIN` command with either a `COMMIT` or `ROLLBACK` command (or equivalently,
-/// the `Connection.beginTransaction()`, `Connection.commitTransaction()`, and
+/// use the `Connection.beginTransaction()`, `Connection.commitTransaction()`, and
 /// `Connection.rollbackTransaction()` methods).
 ///
 /// In general, do not close a `Connection` acquired from a `ConnectionPool`.  If a connection is
@@ -120,7 +120,7 @@ public class ConnectionPool {
     /// As connections become available, they are allocated to the pending requests in the order
     /// those requests were received.
     ///
-    /// If a connection is not allocated before the request times out
+    /// If a connection is not allocated to the request before it times out
     /// (`ConnectionPoolConfiguration.pendingRequestTimeout`), the request will fail with
     /// `PostgresError.timedOutAcquiringConnection`.
     ///
@@ -298,7 +298,7 @@ public class ConnectionPool {
     
     /// Closes this `ConnectionPool`.
     ///
-    /// Any pending requests for connections are cancelled.
+    /// Any pending requests for connections are canceled.
     ///
     /// If `force` is `true`, all `Connection` instances in this `ConnectionPool` are immediately
     /// forcibly closed.

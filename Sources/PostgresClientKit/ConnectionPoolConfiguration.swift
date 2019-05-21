@@ -50,7 +50,7 @@ public struct ConnectionPoolConfiguration {
     /// Defaults to `DispatchQueue.global()`.
     public var dispatchQueue = DispatchQueue.global()
     
-    /// The interval, in seconds, for periodic logging of `ConnectionPool` performance metrics,
+    /// The interval, in seconds, between periodic logging of `ConnectionPool` performance metrics,
     /// or `nil` to not log performance metrics.
     ///
     /// For example, a value of `3600` causes metrics to be logged once an hour (at the start of
