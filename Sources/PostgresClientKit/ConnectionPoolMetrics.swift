@@ -157,8 +157,7 @@ public struct ConnectionPoolMetrics: CustomStringConvertible {
                 Connections at end of period              \(connectionsAtEndOfPeriodString             )
                 Connections created                       \(connectionsCreatedString                   )
                 Allocated connections closed by requestor \(allocatedConnectionsClosedByRequestorString)
-                Allocated connections timed out           \(allocatedConnectionsTimedOutString         )
-                \n
+                Allocated connections timed out           \(allocatedConnectionsTimedOutString         )\n\n
             """
         }
         
@@ -189,8 +188,7 @@ public struct ConnectionPoolMetrics: CustomStringConvertible {
                 Pending request timeout               \(pendingRequestTimeoutString     )
                 Allocated connection timeout          \(allocatedConnectionTimeoutString)
                 Metrics logging interval              \(metricsLoggingIntervalString    )
-                Metrics reset when logged             \(metricsResetWhenLoggedString    )
-                \n
+                Metrics reset when logged             \(metricsResetWhenLoggedString    )\n\n
             """
         }
         
