@@ -304,7 +304,7 @@ public class ConnectionPool {
         threadsafe {
             if !_isClosed {
                 
-                log("Closing connection pool")
+                log(.info, "Closing connection pool")
                 _isClosed = true
                 
                 // Cancel all pending requests.
@@ -316,15 +316,15 @@ public class ConnectionPool {
                 pendingRequests.removeAll()
                 minimumPendingRequests = 0
                 
-                log("Canceled \(pendingRequestsCount) pending request(s)")
+                log(.info, "Canceled \(pendingRequestsCount) pending request(s) for connections")
                 
                 // Destroy the pooled connections.
                 for pooledConnection in pooledConnections {
                     if pooledConnection.state == .allocated && !force {
-                        log("\(pooledConnection.connection) is allocated; will be closed when released")
+                        log(.info, "\(pooledConnection.connection) is allocated; will be closed when released")
                     } else {
                         destroyPooledConnection(pooledConnection)
-                        log("Closed \(pooledConnection.connection)")
+                        log(.info, "Closed \(pooledConnection.connection)")
                     }
                 }
             }
@@ -332,7 +332,7 @@ public class ConnectionPool {
     }
     
     deinit {
-        log("Deinitializing connection pool")
+        Postgres.logger.info("Deinitializing connection pool")
         close(force: true)
     }
     
@@ -351,7 +351,7 @@ public class ConnectionPool {
     // The pending requests for connections, oldest first.
     private var pendingRequests = [Request]()
     
-    // Accumulators the connection pool metrics (see ConnectionPoolMetrics).
+    // Accumulators for connection pool metrics (see ConnectionPoolMetrics).
     private var metricsPeriodBeginning = Date()
     private var successfulRequests = 0
     private var successfulRequestsTime = 0.0 // in seconds
@@ -382,7 +382,7 @@ public class ConnectionPool {
                 // connection is not closed, close it and log a warning.
                 if !connection.isClosed {
                     abruptlyCloseConnection(connection)
-                    log("\(connection) was not in pool; closed; check your code!")
+                    log(.warning, "\(connection) was not in connection pool; closed")
                 }
                 
                 return
@@ -391,31 +391,31 @@ public class ConnectionPool {
         // If the connection pool is closed, close the connection and remove it from the pool.
         if _isClosed {
             destroyPooledConnection(pooledConnection)
-            log("Closed \(connection)")
+            log(.info, "Closed \(connection)")
             
         // If the current allocation has timed out, close the connection and remove it from the pool.
         } else if timedOut {
             allocatedConnectionsTimedOut += 1
             destroyPooledConnection(pooledConnection)
-            log("\(connection) timed out; closed")
+            log(.fine, "\(connection) timed out; closed")
             
         // If the connecton is unallocated, the caller is trying to release a connection that was
         // already released.  Log a warning, close the connection, and remove it from the pool.
         } else if pooledConnection.state == .unallocated {
             destroyPooledConnection(pooledConnection)
-            log("\(connection) was already released; closed; check your code!")
+            log(.warning, "\(connection) was already released; closed")
             
         // If the connection is closed, remove it from the pool.
         } else if connection.isClosed {
             allocatedConnectionsClosedByRequestor += 1
             destroyPooledConnection(pooledConnection)
-            log("\(connection) is closed; removed from pool")
+            log(.fine, "\(connection) is closed; removed from connection pool")
             
         // Finally, the "normal" case.  Release the connection back to the pool.
         } else {
             // FIXME: rollback
             pooledConnection.state = .unallocated
-            log("\(connection) released to pool")
+            log(.finer, "\(connection) released to connection pool")
         }
         
         allocateConnections() // see if we can fulfill any requests
@@ -447,7 +447,7 @@ public class ConnectionPool {
                         self.successfulRequestsTime += elapsedTime
                         
                         // Execute the request's completion handler.
-                        self.log("\(pooledConnection.connection) acquired (\(Int(elapsedTime * 1000)) ms)")
+                        self.log(.finer, "\(pooledConnection.connection) acquired (\(Int(elapsedTime * 1000)) ms)")
                         request.success(pooledConnection.connection)
                     } catch {
                         // Dequeue the oldest request.  We signal the error by executing its
@@ -458,7 +458,7 @@ public class ConnectionPool {
                         self.unsuccessfulRequestsError += 1
                         
                         // Execute the request's completion handler.
-                        self.log("Request failed with error: \(error)")
+                        self.log(.warning, "Request for connection failed with error: \(error)")
                         request.failure(error)
                     }
                 }
@@ -493,7 +493,7 @@ public class ConnectionPool {
             pooledConnection = PooledConnection(connection: connection)
             pooledConnections.insert(pooledConnection!)
             connectionsCreated += 1
-            log("\(connection) created")
+            log(.finer, "\(connection) created")
         }
         
         return pooledConnection
@@ -551,7 +551,7 @@ public class ConnectionPool {
                         self.unsuccessfulRequestsTimedOut += 1
                         
                         // Execute the request's completion handler.
-                        self.log("Request timed out")
+                        self.log(.fine, "Request for connection timed out")
                         request.failure(PostgresError.timedOutAcquiringConnection)
                     }
                 }
@@ -634,7 +634,7 @@ public class ConnectionPool {
                     
                     if !self.isClosed {
                         let metrics = self.computeMetrics(reset: reset)
-                        self.logBare(metrics.description)
+                        Postgres.logger.info(metrics.description)
                         
                         self.scheduleMetricsLogging() // schedule the next iteration
                     }
@@ -643,25 +643,35 @@ public class ConnectionPool {
         }
     }
     
-    /// The message is prefixed by a short summary of connection pool performance.  For example:
+    //
+    // MARK: Logging
+    //
+    
+    /// Logs a messsage.
     ///
-    ///     [12/20 92% 13ms] Connection-3 released to pool
+    /// The message context is a short summary of connection pool performance.  For example:
+    ///
+    ///     ConnectionPool(12/20 92% 13ms)
     ///
     /// indicates there are 20 connections in the pool, of which 12 are currently allocated.
     /// 92% of requests of connections have been successfully fulfilled, after an average wait
     /// time of 13 milliseconds.
     ///
     /// Caller responsible for threadsafety.
-    private func log(_ message: String) {
+    private func log(_ level: LogLevel,
+                     _ message: CustomStringConvertible,
+                     file: String = #file,
+                     function: String = #function,
+                     line: Int = #line) {
         
         let allocatedCount = pooledConnections.filter({ $0.state == .allocated }).count
         let connectionCount = pooledConnections.count
         
         let totalRequests =
-            successfulRequests +
-            unsuccessfulRequestsTooBusy +
-            unsuccessfulRequestsTimedOut +
-            unsuccessfulRequestsError
+                successfulRequests +
+                unsuccessfulRequestsTooBusy +
+                unsuccessfulRequestsTimedOut +
+                unsuccessfulRequestsError
         
         let successfulRequestsPercent = (totalRequests == 0) ? 100.0 :
             100.0 * Double(successfulRequests) / Double(totalRequests)
@@ -669,18 +679,24 @@ public class ConnectionPool {
         let averageTimeToAcquireConnection = (successfulRequests == 0) ? 0.0 :
             successfulRequestsTime / Double(successfulRequests) * 1000.0 // milliseconds
         
-        let s = String(format: "[%d/%d %.0f%% %.0fms]",
-                       allocatedCount,
-                       connectionCount,
-                       successfulRequestsPercent,
-                       averageTimeToAcquireConnection)
+        let context = String(format: "ConnectionPool(%d/%d %.0f%% %.0fms)",
+                             allocatedCount,
+                             connectionCount,
+                             successfulRequestsPercent,
+                             averageTimeToAcquireConnection)
         
-        print(s + " " + message)
+        Postgres.logger.log(level: level,
+                            message: message,
+                            context: context,
+                            file: file,
+                            function: function,
+                            line: line)
     }
     
-    private func logBare(_ message: String) {
-        print(message)
-    }
+    
+    //
+    // MARK: Threadsafety
+    //
     
     private let connectionPoolLock = NSLock()
     
@@ -690,11 +706,21 @@ public class ConnectionPool {
         return critical()
     }
     
+    
+    //
+    // MARK: Async
+    //
+    
     private func async(_ operation: @escaping () -> Void) {
         _connectionPoolConfiguration.dispatchQueue.async {
             operation()
         }
     }
+    
+    
+    //
+    // MARK: Nested types
+    //
     
     private class Request {
         
