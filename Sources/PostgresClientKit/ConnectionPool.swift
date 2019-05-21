@@ -83,8 +83,18 @@ public class ConnectionPool {
     /// The `ConnectionPoolConfiguration` is mutable.  Configuration changes take effect for
     /// subsequent requests for connections.
     public var connectionPoolConfiguration: ConnectionPoolConfiguration {
-        get { return threadsafe { _connectionPoolConfiguration } }
-        set { threadsafe { _connectionPoolConfiguration = newValue } }
+        get {
+            return threadsafe { _connectionPoolConfiguration }
+        }
+        
+        set {
+            threadsafe {
+                _connectionPoolConfiguration = newValue
+                connectionPoolConfigurationChangeCount += 1
+            }
+            
+            scheduleMetricsLogging()
+        }
     }
     
     /// The configuration of `Connection` instances in this `ConnectionPool`.
@@ -365,6 +375,9 @@ public class ConnectionPool {
     private var allocatedConnectionsClosedByRequestor = 0
     private var allocatedConnectionsTimedOut = 0
     
+    // The number of times connectionPoolConfiguration has changed.
+    private var connectionPoolConfigurationChangeCount = 0
+    
     
     //
     // MARK: Implementation
@@ -599,7 +612,7 @@ public class ConnectionPool {
     private func scheduleMetricsLogging() {
         
         threadsafe {
-            // Is periodic metric logging of the metrics enabled?
+            // Is periodic logging of the metrics enabled?
             if let interval = _connectionPoolConfiguration.metricsLoggingInterval {
                 
                 // Yes.  Compute when they should next be logged.  For example, if the interval is
@@ -622,6 +635,7 @@ public class ConnectionPool {
                 let deadline = DispatchWallTime.now() +
                     .milliseconds(Int(next.timeIntervalSinceNow * 1000))
                 
+                let connectionPoolChangeCountWhenScheduled = connectionPoolConfigurationChangeCount
                 let reset = self._connectionPoolConfiguration.metricsResetWhenLogged
                 
                 // Schedule it.
@@ -630,6 +644,11 @@ public class ConnectionPool {
                     
                     guard let self = self else {
                         return
+                    }
+                    
+                    guard self.connectionPoolConfigurationChangeCount ==
+                        connectionPoolChangeCountWhenScheduled else {
+                            return
                     }
                     
                     if !self.isClosed {
