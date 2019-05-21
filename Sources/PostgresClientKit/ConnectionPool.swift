@@ -171,6 +171,7 @@ public class ConnectionPool {
             // Add this request to the queue.
             pendingRequests.append(request)
             
+            // Update the metrics accumulators.
             self.maximumPendingRequests =
                 max(self.maximumPendingRequests, self.pendingRequests.count)
             
@@ -426,7 +427,8 @@ public class ConnectionPool {
             destroyPooledConnection(pooledConnection)
             log(.fine, "\(connection) was closed; connection removed from connection pool")
             
-        // If the connection has a transaction underway, remove it from the pool.
+        // If the connection has a transaction underway, log a warning, close the connection, and
+        // remove it from the pool.
         } else if connection.transactionStatus != .idle {
             destroyPooledConnection(pooledConnection)
             log(.warning, "\(connection) was not committed or rolled back; connection closed")
@@ -489,7 +491,7 @@ public class ConnectionPool {
                 precondition(self.pooledConnections.count <=
                     self._connectionPoolConfiguration.maximumConnections)
                 
-                // Don't return if there are pending requests that can be fulfilled at this time.
+                // Don't stop if there are pending requests that can be fulfilled at this time.
                 precondition(
                     self.pendingRequests.isEmpty ||
                         (self.pooledConnections.count == self._connectionPoolConfiguration.maximumConnections &&
@@ -581,9 +583,6 @@ public class ConnectionPool {
     /// Caller responsible for threadsafety.
     private func scheduleTimeoutOfAllocatedConnection(_ pooledConnection: PooledConnection) {
         
-        let connection = pooledConnection.connection
-        let stateChanged = pooledConnection.stateChanged
-        
         // Do allocations of connections time out?
         if let allocatedConnectionTimeout = _connectionPoolConfiguration.allocatedConnectionTimeout {
             
@@ -591,6 +590,9 @@ public class ConnectionPool {
             let deadline = DispatchWallTime.now() + .seconds(allocatedConnectionTimeout)
             
             // And schedule the timeout.
+            let connection = pooledConnection.connection
+            let stateChanged = pooledConnection.stateChanged
+            
             _connectionPoolConfiguration.dispatchQueue.asyncAfter(wallDeadline: deadline) {
                 [weak self, weak pooledConnection, weak connection] in
                 
@@ -654,6 +656,9 @@ public class ConnectionPool {
                     
                     guard self.connectionPoolConfigurationChangeCount ==
                         connectionPoolChangeCountWhenScheduled else {
+                            // The connectionPoolConfiguration was updated, causing metrics logging
+                            // to be rescheduled (with a possibly-changed metricsLoggingInterval).
+                            // Nothing to do here.
                             return
                     }
                     
@@ -667,6 +672,7 @@ public class ConnectionPool {
             }
         }
     }
+    
     
     //
     // MARK: Logging
@@ -747,6 +753,7 @@ public class ConnectionPool {
     // MARK: Nested types
     //
     
+    /// A request for a connection.
     private class Request {
         
         fileprivate init(connectionPool: ConnectionPool,
@@ -763,7 +770,7 @@ public class ConnectionPool {
         
         fileprivate func success(_ connection: Connection) {
             
-            let completionHandler = self.completionHandler
+            let completionHandler = self.completionHandler // to not capture self below
             
             connectionPool?.async {
                 completionHandler(.success(connection))
@@ -772,7 +779,7 @@ public class ConnectionPool {
         
         fileprivate func failure(_ error: Error) {
             
-            let completionHandler = self.completionHandler
+            let completionHandler = self.completionHandler // to not capture self below
             
             connectionPool?.async {
                 completionHandler(.failure(error))
@@ -780,6 +787,7 @@ public class ConnectionPool {
         }
     }
     
+    /// Wraps a `Connection` in this `ConnectionPool` to track whether it is currently allocated.
     private class PooledConnection: Hashable {
         
         fileprivate enum State {
