@@ -30,7 +30,6 @@ class ConnectionPoolConfigurationTest: PostgresClientKitTestCase {
         XCTAssertNil(configuration.maximumPendingRequests)
         XCTAssertNil(configuration.pendingRequestTimeout)
         XCTAssertNil(configuration.allocatedConnectionTimeout)
-        XCTAssertEqual(configuration.dispatchQueue, DispatchQueue.global())
         XCTAssertEqual(configuration.metricsLoggingInterval, 3600)
         XCTAssertEqual(configuration.metricsResetWhenLogged, true)
         
@@ -46,7 +45,6 @@ class ConnectionPoolConfigurationTest: PostgresClientKitTestCase {
         XCTAssertEqual(configuration.maximumPendingRequests, 100)
         XCTAssertEqual(configuration.pendingRequestTimeout, 5)
         XCTAssertEqual(configuration.allocatedConnectionTimeout, 30)
-        XCTAssertEqual(configuration.dispatchQueue, DispatchQueue.global(qos: .background))
         XCTAssertEqual(configuration.metricsLoggingInterval, 21600)
         XCTAssertEqual(configuration.metricsResetWhenLogged, false)
     }

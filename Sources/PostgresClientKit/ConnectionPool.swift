@@ -393,13 +393,22 @@ public class ConnectionPool {
         guard let pooledConnection = pooledConnections.first(
             where: { $0.connection === connection }) else {
                 
-                // The connection is *not* in the pool.  The previous allocation may have timed
-                // out, in which case the connection would be closed.  That's OK.  However if the
-                // connection is not closed, close it and log a warning.
-                if !connection.isClosed {
-                    abruptlyCloseConnection(connection)
-                    log(.warning, "\(connection) was not in connection pool; closed")
+                // The connection is *not* in the pool.  That could be because the pool was
+                // forcibly closed.  That's OK.
+                if _isClosed {
+                    return
                 }
+                
+                // Or perhaps the previous allocation timed out, in which case the connection
+                // is closed.  That's also OK.
+                if connection.isClosed {
+                    return
+                }
+                
+                // Otherwise, the connection doesn't belong to this pool.  Log a warning and close
+                // the connection.
+                abruptlyCloseConnection(connection)
+                log(.warning, "\(connection) was not in connection pool; closed")
                 
                 return
         }
