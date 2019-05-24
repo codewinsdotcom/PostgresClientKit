@@ -21,10 +21,13 @@
 public enum PostgresError: Error {
     
     /// The Postgres server requires a `Credential.cleartextPassword` for authentication.
-    case  cleartextPasswordCredentialRequired
+    case cleartextPasswordCredentialRequired
     
     /// An attempt was made to operate on a closed connection.
     case connectionClosed
+    
+    /// An attempt was made to operate on a closed connection pool.
+    case connectionPoolClosed
     
     /// An attempt was made to operate on a closed cursor.
     case cursorClosed
@@ -49,6 +52,17 @@ public enum PostgresError: Error {
     
     /// An attempt was made to operate on a closed statement.
     case statementClosed
+    
+    /// The request for a connection failed because a connection was not allocated before the
+    /// request timed out.
+    ///
+    /// - SeeAlso: `ConnectionPoolConfiguration.pendingRequestTimeout`
+    case timedOutAcquiringConnection
+    
+    /// The request for a connection failed because the request backlog was too large.
+    ///
+    /// - SeeAlso: `ConnectionPoolConfiguration.maximumPendingRequests`
+    case tooManyRequestsForConnections
     
     /// The Postgres server requires a `Credential.trust` for authentication.
     case trustCredentialRequired

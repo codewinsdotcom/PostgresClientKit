@@ -144,6 +144,72 @@ the network socket).  Use <code><a href="Classes/Connection.html#/s:17PostgresCl
                   <li class="item">
                     <div>
                       <code>
+                      <a name="/s:17PostgresClientKit14ConnectionPoolC"></a>
+                      <a name="//apple_ref/swift/Class/ConnectionPool" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit14ConnectionPoolC">ConnectionPool</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>A pool of re-usable, interchangeable <code><a href="Classes/Connection.html">Connection</a></code> instances.</p>
+
+<p>Using a <code>ConnectionPool</code> allows an application to acquire an existing <code><a href="Classes/Connection.html">Connection</a></code> from the
+pool, use that connection to perform one or more SQL statements, and then release it for use
+elsewhere in the application.</p>
+
+<p>The <code><a href="Structs/ConnectionPoolConfiguration.html">ConnectionPoolConfiguration</a></code> used to create a <code>ConnectionPool</code> specifies the number of
+connections in the pool, how long a request for a connection will wait for a connection to
+become available, and other characteristics of the pool.</p>
+
+<p>All connections in a <code>ConnectionPool</code> are created from the same <code><a href="Structs/ConnectionConfiguration.html">ConnectionConfiguration</a></code>.
+They also have the same <code><a href="Protocols/ConnectionDelegate.html">ConnectionDelegate</a></code> (if a delegate is specified).  Consequently
+any connection in a pool is interchangeable with any other.</p>
+
+<p>Use <code><a href="Classes/ConnectionPool.html#/s:17PostgresClientKit14ConnectionPoolC07acquireD017completionHandleryys6ResultOyAA0D0Cs5Error_pGc_tF">ConnectionPool.acquireConnection(completionHandler:)</a></code> to request a connection from a
+<code>ConnectionPool</code>.  This method is non-blocking: its completion handler is asynchronously
+executed when a connection is successfully allocated to the request or if an error occurs.
+To release the connection back to the pool, call <code><a href="Classes/ConnectionPool.html#/s:17PostgresClientKit14ConnectionPoolC07releaseD0yyAA0D0CF">ConnectionPool.releaseConnection(_:)</a></code>.</p>
+
+<p>Alternately, use <code><a href="Classes/ConnectionPool.html#/s:17PostgresClientKit14ConnectionPoolC04withD017completionHandleryys6ResultOyAA0D0Cs5Error_pGc_tF">ConnectionPool.withConnection(completionHandler:)</a></code> to acquire a connection
+that is automatically released after execution of the completion handler.</p>
+
+<p>When a connection is released to a <code>ConnectionPool</code>, there should be no transaction underway.
+Pair each SQL <code>BEGIN</code> command with either a <code>COMMIT</code> or <code>ROLLBACK</code> command (or equivalently,
+use the <code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC16beginTransactionyyKF">Connection.beginTransaction()</a></code>, <code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC17commitTransactionyyKF">Connection.commitTransaction()</a></code>, and
+<code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC19rollbackTransactionyyKF">Connection.rollbackTransaction()</a></code> methods).</p>
+
+<p>In general, do not close a <code><a href="Classes/Connection.html">Connection</a></code> acquired from a <code>ConnectionPool</code>.  If a connection is
+closed (whether explicitly or because of an unrecoverable error) then, when that connection is
+released, it will be discarded from the pool, allowing a new connection to be created and added
+to the pool.</p>
+
+<p>The <code>ConnectionPool</code> class is threadsafe: multiple threads may concurrently operate against a
+<code>ConnectionPool</code> instance.  Connections acquired from the pool are subject to the threadsafety
+constraints described by the API documentation for <code><a href="Classes/Connection.html">Connection</a></code>.</p>
+
+                          <a href="Classes/ConnectionPool.html" class="slightly-smaller">See more</a>
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ConnectionPool</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div class="task-group">
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
                       <a name="/s:17PostgresClientKit6CursorC"></a>
                       <a name="//apple_ref/swift/Class/Cursor" class="dashAnchor"></a>
                       <a class="token" href="#/s:17PostgresClientKit6CursorC">Cursor</a>
@@ -351,6 +417,9 @@ whose name is the <code>id</code> of the <code>Statement</code>.</p>
                   <a href="Classes/Connection.html">Connection</a>
                 </li>
                 <li class="nav-group-task">
+                  <a href="Classes/ConnectionPool.html">ConnectionPool</a>
+                </li>
+                <li class="nav-group-task">
                   <a href="Classes/ConsoleLogHandler.html">ConsoleLogHandler</a>
                 </li>
                 <li class="nav-group-task">
@@ -423,6 +492,12 @@ whose name is the <code>id</code> of the <code>Statement</code>.</p>
               <ul class="nav-group-tasks">
                 <li class="nav-group-task">
                   <a href="Structs/ConnectionConfiguration.html">ConnectionConfiguration</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Structs/ConnectionPoolConfiguration.html">ConnectionPoolConfiguration</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Structs/ConnectionPoolMetrics.html">ConnectionPoolMetrics</a>
                 </li>
                 <li class="nav-group-task">
                   <a href="Structs/LogRecord.html">LogRecord</a>

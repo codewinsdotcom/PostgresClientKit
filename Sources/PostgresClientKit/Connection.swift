@@ -225,6 +225,22 @@ public class Connection: CustomStringConvertible {
     /// - Note: `Connection` holds a `weak` reference to the delegate.
     public weak var delegate: ConnectionDelegate?
     
+    /// Enumerates the transaction statuses of a `Connection`.
+    internal enum TransactionStatus: Character {
+        
+        /// There is no transaction underway.
+        case idle = "I"
+        
+        /// There is a transaction underway.  It must be committed or rolled back.
+        case activeTransaction = "T"
+        
+        /// There is a failed transaction underway.  It must be rolled back.
+        case failedTransaction = "E"
+    }
+    
+    /// The current transaction status of this `Connection`.
+    internal var transactionStatus = TransactionStatus.idle
+    
     /// Whether this `Connection` is closed.
     ///
     /// To close a `Connection`, call `close()`.  A `Connection` is also closed if an unrecoverable
@@ -244,11 +260,21 @@ public class Connection: CustomStringConvertible {
             let terminateRequest = TerminateRequest()
             try? sendRequest(terminateRequest) // consumes any Error
             
-            log(.finer, "Closing socket")
-            socket.close()
-            
-            log(.fine, "Connection closed")
+            closeAbruptly()
         }
+    }
+    
+    /// Closes this `Connection` abruptly.
+    ///
+    /// Unlike `close()`, this method does not send a "terminate" request to the Postgres server;
+    /// it simply closes the network socket.
+    ///
+    /// Use this method to force a connection to immediately close, even if another thread is
+    /// concurrently operating against the connection.
+    public func closeAbruptly() {
+        log(.finer, "Closing socket")
+        socket.close()
+        log(.fine, "Connection closed")
     }
     
     /// Verifies this `Connection` is not closed.
@@ -782,6 +808,20 @@ public class Connection: CustomStringConvertible {
                                                            connection: self)
                 
             case is T:
+                
+                if let readyForQueryResponse = response as? ReadyForQueryResponse {
+                    
+                    // Update the connection's transaction status.
+                    let transactionStatusCode = readyForQueryResponse.transactionStatus
+                    
+                    if let transactionStatus = TransactionStatus(rawValue: transactionStatusCode) {
+                        self.transactionStatus = transactionStatus
+                    } else {
+                        log(.warning, "Unrecognized transaction status: \(transactionStatusCode)")
+                        self.transactionStatus = .idle
+                    }
+                }
+                
                 return response as! T
                 
             default:

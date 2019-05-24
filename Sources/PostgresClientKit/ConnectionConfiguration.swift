@@ -20,7 +20,7 @@
 /// The configuration for a `Connection` to the Postgres server.
 public struct ConnectionConfiguration {
     
-    /// Creates an `ConnectionConfiguration`.
+    /// Creates a `ConnectionConfiguration`.
     public init() { }
     
     /// The hostname or IP address of the Postgres server.  Defaults to `localhost`.

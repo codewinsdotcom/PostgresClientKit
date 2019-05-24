@@ -337,6 +337,24 @@ class PostgresClientKitTestCase: XCTestCase {
             XCTAssertBothNilOrBothNotNil(date1, date2, "DateComponents", file: file, line: line)
         }
     }
+    
+    
+    //
+    // MARK: Expectations
+    //
+    
+    /// Sets an expectation.
+    ///
+    /// - Parameter description: describes the expectation
+    /// - Returns: the expectation
+    func expect(_ description: String) -> XCTestExpectation {
+        return expectation(description: description)
+    }
+    
+    /// Waits up to 2.0 seconds for all expectations to be fulfilled.
+    func waitForExpectations() {
+        waitForExpectations(timeout: 2.0)
+    }
 }
 
 // EOF

@@ -183,16 +183,21 @@ public struct Postgres {
     
         /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
         internal static var enUsPosixUtcCalendar: Calendar {
-            _enUsPosixUtcCalendar.timeZone = utcTimeZone
-            return _enUsPosixUtcCalendar
+            
+            let threadDictionary = Thread.current.threadDictionary
+            var calendar = threadDictionary["enUsPosixUtcCalendar"] as? Calendar
+            
+            if calendar == nil {
+                calendar = Calendar(identifier: .gregorian)
+                calendar!.locale = enUsPosixLocale
+                calendar!.timeZone = utcTimeZone
+                threadDictionary["enUsPosixUtcCalendar"] = calendar!
+            }
+            
+            calendar!.timeZone = utcTimeZone
+            
+            return calendar!
         }
-    
-        private static var _enUsPosixUtcCalendar: Calendar = {
-            var calendar = Calendar(identifier: .gregorian)
-            calendar.locale = enUsPosixLocale
-            calendar.timeZone = utcTimeZone
-            return calendar
-        }()
     
     #else
     

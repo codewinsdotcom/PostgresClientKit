@@ -1,22 +1,16 @@
 # FAQ
 
-### Why is the PostgresClientKit API synchronous/blocking?
-
-A design goal of PostgresClientKit is support for multiple application types.  It can be used for server-side Swift, command-line tools, macOS apps, and iOS apps.  It also does not constrain the other frameworks and design patterns used by the application.  Consequently, PostgresClientKit defers to the consuming application the decision of whether database operations should be performed asynchronously and, if so, how that is done.
-
-Additionally, the PostgresClientKit API methods are fine grained.  For example, performing a SQL `SELECT` involves calling:
-
-- `Connection.prepareStatement(text:)`
-- `Statement.execute(parameterValues:)`
-- `Cursor.next()` once for each row in the result
-- `Cursor.close()`
-- `Statement.close()`
-
-Instead of sequentially performing separate asynchronous operations for each of these steps, an application would often compose the entire sequence into a single asynchronous operation.  Consequently, there is little value in PostgresClientKit providing the ability to asynchronously execute individual steps.
-
 ### Does PostgresClientKit provide connection pooling?
 
-No, but it's [on the roadmap](https://github.com/codewinsdotcom/PostgresClientKit/issues/1).
+Yes.  See the [API documentation](https://codewinsdotcom.github.io/PostgresClientKit/Docs/API/index.html) for `ConnectionPool`.
+
+### Is the PostgresClientKit API synchronous or asynchronous?
+
+`ConnectionPool` provides an **asynchronous** API to service a large number of requests using a small number of shared `Connection` instances and threads.  This is useful for server-side Swift.
+
+`Connection` (together with `Statement` and `Cursor`) provide a **synchronous** API for performing a SQL statement.  This makes it easy to sequence the steps in preparing and executing a SQL statement, processing the rows it returns, and handling any errors on the way.
+
+Concurrency is [an evolving area](https://gist.github.com/lattner/31ed37682ef1576b16bca1432ea9f782) in Swift.  It will be interesting to see what ideas gain traction.
 
 ### Why can't I reference a column in a `Row` by name, instead of by index?
 
