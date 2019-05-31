@@ -1,5 +1,21 @@
 # PostgresClientKit
 
+<p>
+
+  <a href="https://codewinsdotcom.github.io/PostgresClientKit/Docs/API/index.html">
+    <img src="https://img.shields.io/badge/api-docs-blue.svg">
+  </a>
+  
+  <img src="https://img.shields.io/badge/swift-5-green.svg">
+  <img src="https://img.shields.io/badge/os-linux-green.svg">
+  <img src="https://img.shields.io/badge/os-macOS-green.svg">
+  <img src="https://img.shields.io/badge/os-iOS-green.svg">  
+  
+  <img src="https://img.shields.io/github/release/codewinsdotcom/PostgresClientKit.svg">
+  <img src="https://img.shields.io/github/license/codewinsdotcom/PostgresClientKit.svg">
+  
+</p>
+
 PostgresClientKit provides a friendly Swift API for operating against a PostgreSQL database.
 
 ## Features
@@ -76,8 +92,8 @@ PostgresClientKit is compatible with Linux, macOS, and iOS.  It has been tested 
 
 - Ubuntu 18.04 LTS 
 - macOS 10.14
-- iOS 12.2
-- Postgres 10 and 11
+- iOS 12
+- Postgres 10, 11, 12beta1
 
 ## Building
 
@@ -150,7 +166,7 @@ import PostgresClientKit
 
 ## Documentation
 
-- [API documentation](https://codewinsdotcom.github.io/PostgresClientKit/Docs/API/index.html)
+- [API](https://codewinsdotcom.github.io/PostgresClientKit/Docs/API/index.html)
 - [Troubleshooting](https://github.com/codewinsdotcom/PostgresClientKit/blob/master/Docs/troubleshooting.md)
 - [FAQ](https://github.com/codewinsdotcom/PostgresClientKit/blob/master/Docs/faq.md)
 
