@@ -533,9 +533,14 @@ public class ConnectionPool {
     private func earliestUnallocatedPooledConnection() -> PooledConnection? {
         return pooledConnections.reduce(
             nil,
-            { $1.state == .unallocated &&
-                $1.stateChanged < ($0?.stateChanged ?? Date.distantFuture) ?
-                    $1 : $0 })
+            {
+                if $1.state == .unallocated &&
+                    $1.stateChanged < ($0?.stateChanged ?? Date.distantFuture) {
+                    return $1
+                } else {
+                    return $0
+                }
+            })
     }
     
     /// Caller responsible for threadsafety.
