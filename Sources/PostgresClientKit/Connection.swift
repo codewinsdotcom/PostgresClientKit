@@ -1120,12 +1120,22 @@ public class Connection: CustomStringConvertible {
         readBufferPosition = 0
         
         var readCount = 0
+        let timeout = Date(timeIntervalSinceNow: 30.0) // 30 seconds
         
-        do {
-            readCount = try socket.read(into: &readBuffer)
-        } catch {
-            log(.warning, "Error receiving response: \(error)")
-            throw PostgresError.socketError(cause: error)
+        while readCount == 0 && Date() < timeout && !socket.remoteConnectionClosed {
+            do {
+                readCount = try socket.read(into: &readBuffer)
+                
+                if readCount == 0 {
+                    // Workaround https://github.com/IBM-Swift/BlueSSLService/issues/79.
+                    // This issue results in socket.read(...) returning 0 even though the
+                    // socket is supposedly "blocking".
+                    Thread.sleep(forTimeInterval: 0.01) // 10 ms
+                }
+            } catch {
+                log(.warning, "Error receiving response: \(error)")
+                throw PostgresError.socketError(cause: error)
+            }
         }
         
         if readCount == 0 {
