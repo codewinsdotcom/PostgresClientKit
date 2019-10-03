@@ -58,7 +58,7 @@ public struct PostgresTime: PostgresValueConvertible, Equatable, CustomStringCon
         dc.second = second
         dc.nanosecond = nanosecond
         
-        guard dc.isValidDate(in: Postgres.enUsPosixUtcCalendar) else {
+        guard Postgres.isValidDate(dc) else {
             return nil
         }
         

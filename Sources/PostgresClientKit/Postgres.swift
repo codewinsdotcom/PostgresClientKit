@@ -210,6 +210,18 @@ public struct Postgres {
         }()
     
     #endif
+    
+    /// Temnporary workaround for https://bugs.swift.org/browse/SR-11569.
+    internal static func isValidDate(_ dc: DateComponents) -> Bool {
+        
+        var calendar = dc.calendar ?? enUsPosixUtcCalendar
+        
+        if let timeZone = dc.timeZone {
+            calendar.timeZone = timeZone
+        }
+        
+        return dc.isValidDate(in: calendar)
+    }
 }
 
 // EOF

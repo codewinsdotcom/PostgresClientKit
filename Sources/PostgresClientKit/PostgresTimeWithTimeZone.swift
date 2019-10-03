@@ -88,7 +88,7 @@ public struct PostgresTimeWithTimeZone:
         dc.nanosecond = nanosecond
         dc.timeZone = timeZone
         
-        guard dc.isValidDate(in: Postgres.enUsPosixUtcCalendar) else {
+        guard Postgres.isValidDate(dc) else {
             return nil
         }
         

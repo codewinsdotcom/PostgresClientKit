@@ -184,7 +184,7 @@ class PostgresTimestampWithTimeZoneTest: PostgresClientKitTestCase {
             let tsDescription = ts.description
             
             XCTAssertEqual(ts, timestamp)
-            XCTAssert(tsDateComponents.isValidDate)
+            XCTAssert(isValidDate(tsDateComponents))
             XCTAssertApproximatelyEqual(tsDateComponents, expectedDateComponents)
             XCTAssertApproximatelyEqual(tsDate, expectedDate)
             XCTAssertEqual(tsPostgresValue, expectedPostgresValue)

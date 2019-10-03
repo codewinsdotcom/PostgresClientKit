@@ -63,7 +63,19 @@ class PostgresClientKitTestCase: XCTestCase {
     
     #endif
     
+    /// Temporary workaround for https://bugs.swift.org/browse/SR-11569.
+    func isValidDate(_ dc: DateComponents) -> Bool {
+        
+        var calendar = dc.calendar ?? enUsPosixUtcCalendar
+        
+        if let timeZone = dc.timeZone {
+            calendar.timeZone = timeZone
+        }
+        
+        return dc.isValidDate(in: calendar)
+    }
     
+
     //
     // MARK: Connections
     //

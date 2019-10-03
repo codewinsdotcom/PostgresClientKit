@@ -49,7 +49,7 @@ public struct PostgresDate: PostgresValueConvertible, Equatable, CustomStringCon
         dc.month = month
         dc.day = day
         
-        guard dc.isValidDate(in: Postgres.enUsPosixUtcCalendar) else {
+        guard Postgres.isValidDate(dc) else {
             return nil
         }
         
