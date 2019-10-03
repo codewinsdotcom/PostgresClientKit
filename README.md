@@ -93,7 +93,7 @@ PostgresClientKit is compatible with Linux, macOS, and iOS.  It has been tested 
 - Ubuntu 18.04 LTS 
 - macOS 10.14
 - iOS 12
-- Postgres 10, 11, 12beta1
+- Postgres 10, 11, 12
 
 ## Building
 
