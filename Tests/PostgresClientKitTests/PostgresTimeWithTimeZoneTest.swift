@@ -104,6 +104,18 @@ class PostgresTimeWithTimeZoneTest: PostgresClientKitTestCase {
         time = PostgresTimeWithTimeZone("03:04:05.006+00:00")
         checkTime(time, 3, 4, 5, 006_000_000, utcTimeZone, "03:04:05.006+00:00")
 
+        // Valid string representation should succeed.
+        time = PostgresTimeWithTimeZone("03:04:05.06+00:00")
+        checkTime(time, 3, 4, 5, 060_000_000, utcTimeZone, "03:04:05.060+00:00")
+
+        // Valid string representation should succeed.
+        time = PostgresTimeWithTimeZone("03:04:05.6+00:00")
+        checkTime(time, 3, 4, 5, 600_000_000, utcTimeZone, "03:04:05.600+00:00")
+
+        // Fractional seconds are optional.
+        time = PostgresTimeWithTimeZone("03:04:05+00:00")
+        checkTime(time, 3, 4, 5, 000_000_000, utcTimeZone, "03:04:05.000+00:00")
+
         // "Z" indicates UTC.
         time = PostgresTimeWithTimeZone("13:14:15.000Z")
         checkTime(time, 13, 14, 15, 000_000_000, utcTimeZone, "13:14:15.000+00:00")

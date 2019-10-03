@@ -103,15 +103,18 @@ public struct PostgresTimestampWithTimeZone:
     
     /// Creates a `PostgresTimestampWithTimeZone` from a string.
     ///
-    /// The string must conform to the [date format pattern](
+    /// The string must conform to either the [date format pattern](
     /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
-    /// `yyyy-MM-dd HH:mm:ss.SSSxxxxx`.  For example, `2019-03-14 16:25:19.365+00:00`.
+    /// `yyyy-MM-dd HH:mm:ss.SSSxxxxx` (for example, `2019-03-14 16:25:19.365+00:00`) or
+    /// `yyyy-MM-dd HH:mm:ssxxxxx` (for example, `2019-03-14 16:25:19+00:00`).
     ///
     /// - Parameter string: the string
     public init?(_ string: String) {
         
-        guard let date = PostgresTimestampWithTimeZone.formatter.date(from: string) else {
-            return nil
+        guard let date =
+            PostgresTimestampWithTimeZone.formatter.date(from: string) ??
+            PostgresTimestampWithTimeZone.formatter2.date(from: string) else {
+                return nil
         }
         
         self.init(date: date)
@@ -184,6 +187,16 @@ public struct PostgresTimestampWithTimeZone:
         let df = DateFormatter()
         df.calendar = Postgres.enUsPosixUtcCalendar
         df.dateFormat = "yyyy-MM-dd HH:mm:ss.SSSxxxxx"
+        df.locale = Postgres.enUsPosixLocale
+        df.timeZone = Postgres.utcTimeZone
+        return df
+    }()
+
+    /// Alternative formattter for parsing Postgres `TIMESTAMP WITH TIME ZONE` values.
+    private static let formatter2: DateFormatter = {
+        let df = DateFormatter()
+        df.calendar = Postgres.enUsPosixUtcCalendar
+        df.dateFormat = "yyyy-MM-dd HH:mm:ssxxxxx"
         df.locale = Postgres.enUsPosixLocale
         df.timeZone = Postgres.utcTimeZone
         return df

@@ -419,6 +419,20 @@ class PostgresValueTest: PostgresClientKitTestCase {
               expectedTimeWithTimeZone: shouldFail(),
               expectedByteA: shouldFail())
         
+        check(postgresValueConvertible: "2019-01-02 03:04:05-08",
+              expectedRawValue: "2019-01-02 03:04:05-08",
+              expectedString: "2019-01-02 03:04:05-08",
+              expectedInt: shouldFail(),
+              expectedDouble: shouldFail(),
+              expectedDecimal: Decimal(2019), // Decimal(string:locale:) behavior is dubious
+              expectedBool: shouldFail(),
+              expectedTimestampWithTimeZone: PostgresTimestampWithTimeZone("2019-01-02 11:04:05+00:00"),
+              expectedTimestamp: shouldFail(),
+              expectedDate: shouldFail(),
+              expectedTime: shouldFail(),
+              expectedTimeWithTimeZone: shouldFail(),
+              expectedByteA: shouldFail())
+        
         check(postgresValueConvertible: "2019-01-02 03:04:05.365",
               expectedRawValue: "2019-01-02 03:04:05.365",
               expectedString: "2019-01-02 03:04:05.365",
@@ -428,6 +442,20 @@ class PostgresValueTest: PostgresClientKitTestCase {
               expectedBool: shouldFail(),
               expectedTimestampWithTimeZone: shouldFail(),
               expectedTimestamp: PostgresTimestamp("2019-01-02 03:04:05.365"),
+              expectedDate: shouldFail(),
+              expectedTime: shouldFail(),
+              expectedTimeWithTimeZone: shouldFail(),
+              expectedByteA: shouldFail())
+        
+        check(postgresValueConvertible: "2019-01-02 03:04:05",
+              expectedRawValue: "2019-01-02 03:04:05",
+              expectedString: "2019-01-02 03:04:05",
+              expectedInt: shouldFail(),
+              expectedDouble: shouldFail(),
+              expectedDecimal: Decimal(2019), // Decimal(string:locale:) behavior is dubious
+              expectedBool: shouldFail(),
+              expectedTimestampWithTimeZone: shouldFail(),
+              expectedTimestamp: PostgresTimestamp("2019-01-02 03:04:05"),
               expectedDate: shouldFail(),
               expectedTime: shouldFail(),
               expectedTimeWithTimeZone: shouldFail(),
@@ -461,6 +489,20 @@ class PostgresValueTest: PostgresClientKitTestCase {
               expectedTimeWithTimeZone: shouldFail(),
               expectedByteA: shouldFail())
         
+        check(postgresValueConvertible: "03:04:05",
+              expectedRawValue: "03:04:05",
+              expectedString: "03:04:05",
+              expectedInt: shouldFail(),
+              expectedDouble: shouldFail(),
+              expectedDecimal: Decimal(3), // Decimal(string:locale:) behavior is dubious
+              expectedBool: shouldFail(),
+              expectedTimestampWithTimeZone: shouldFail(),
+              expectedTimestamp: shouldFail(),
+              expectedDate: shouldFail(),
+              expectedTime: PostgresTime("03:04:05"),
+              expectedTimeWithTimeZone: shouldFail(),
+              expectedByteA: shouldFail())
+        
         check(postgresValueConvertible: "03:04:05.365-08",
               expectedRawValue: "03:04:05.365-08",
               expectedString: "03:04:05.365-08",
@@ -473,6 +515,20 @@ class PostgresValueTest: PostgresClientKitTestCase {
               expectedDate: shouldFail(),
               expectedTime: shouldFail(),
               expectedTimeWithTimeZone: PostgresTimeWithTimeZone("03:04:05.365-08:00"),
+              expectedByteA: shouldFail())
+
+        check(postgresValueConvertible: "03:04:05-08",
+              expectedRawValue: "03:04:05-08",
+              expectedString: "03:04:05-08",
+              expectedInt: shouldFail(),
+              expectedDouble: shouldFail(),
+              expectedDecimal: Decimal(3), // Decimal(string:locale:) behavior is dubious
+              expectedBool: shouldFail(),
+              expectedTimestampWithTimeZone: shouldFail(),
+              expectedTimestamp: shouldFail(),
+              expectedDate: shouldFail(),
+              expectedTime: shouldFail(),
+              expectedTimeWithTimeZone: PostgresTimeWithTimeZone("03:04:05-08:00"),
               expectedByteA: shouldFail())
 
         check(postgresValueConvertible: "\\xDEADBEEF",
@@ -782,6 +838,20 @@ class PostgresValueTest: PostgresClientKitTestCase {
               expectedTimeWithTimeZone: shouldFail(),
               expectedByteA: shouldFail())
         
+        check(postgresValueConvertible: PostgresTimestampWithTimeZone("2019-01-02 03:04:05-08"),
+              expectedRawValue: "2019-01-02 11:04:05.000+00:00",
+              expectedString: "2019-01-02 11:04:05.000+00:00",
+              expectedInt: shouldFail(),
+              expectedDouble: shouldFail(),
+              expectedDecimal: Decimal(2019), // Decimal(string:locale:) behavior is dubious
+              expectedBool: shouldFail(),
+              expectedTimestampWithTimeZone: PostgresTimestampWithTimeZone("2019-01-02 11:04:05.000+00:00"),
+              expectedTimestamp: shouldFail(),
+              expectedDate: shouldFail(),
+              expectedTime: shouldFail(),
+              expectedTimeWithTimeZone: shouldFail(),
+              expectedByteA: shouldFail())
+        
         
         //
         // Test conversion from PostgresTimestamp.
@@ -796,6 +866,20 @@ class PostgresValueTest: PostgresClientKitTestCase {
               expectedBool: shouldFail(),
               expectedTimestampWithTimeZone: shouldFail(),
               expectedTimestamp: PostgresTimestamp("2019-01-02 03:04:05.365"),
+              expectedDate: shouldFail(),
+              expectedTime: shouldFail(),
+              expectedTimeWithTimeZone: shouldFail(),
+              expectedByteA: shouldFail())
+        
+        check(postgresValueConvertible: PostgresTimestamp("2019-01-02 03:04:05"),
+              expectedRawValue: "2019-01-02 03:04:05.000",
+              expectedString: "2019-01-02 03:04:05.000",
+              expectedInt: shouldFail(),
+              expectedDouble: shouldFail(),
+              expectedDecimal: Decimal(2019), // Decimal(string:locale:) behavior is dubious
+              expectedBool: shouldFail(),
+              expectedTimestampWithTimeZone: shouldFail(),
+              expectedTimestamp: PostgresTimestamp("2019-01-02 03:04:05.000"),
               expectedDate: shouldFail(),
               expectedTime: shouldFail(),
               expectedTimeWithTimeZone: shouldFail(),
@@ -839,6 +923,20 @@ class PostgresValueTest: PostgresClientKitTestCase {
               expectedTimeWithTimeZone: shouldFail(),
               expectedByteA: shouldFail())
         
+        check(postgresValueConvertible: PostgresTime("03:04:05"),
+              expectedRawValue: "03:04:05.000",
+              expectedString: "03:04:05.000",
+              expectedInt: shouldFail(),
+              expectedDouble: shouldFail(),
+              expectedDecimal: Decimal(3), // Decimal(string:locale:) behavior is dubious
+              expectedBool: shouldFail(),
+              expectedTimestampWithTimeZone: shouldFail(),
+              expectedTimestamp: shouldFail(),
+              expectedDate: shouldFail(),
+              expectedTime: PostgresTime("03:04:05.000"),
+              expectedTimeWithTimeZone: shouldFail(),
+              expectedByteA: shouldFail())
+        
         
         //
         // Test conversion from PostgresTimeWithTimeZone.
@@ -858,7 +956,21 @@ class PostgresValueTest: PostgresClientKitTestCase {
               expectedTimeWithTimeZone: PostgresTimeWithTimeZone("03:04:05.365-08:00"),
               expectedByteA: shouldFail())
         
+        check(postgresValueConvertible: PostgresTimeWithTimeZone("03:04:05-08"),
+              expectedRawValue: "03:04:05.000-08:00",
+              expectedString: "03:04:05.000-08:00",
+              expectedInt: shouldFail(),
+              expectedDouble: shouldFail(),
+              expectedDecimal: Decimal(3), // Decimal(string:locale:) behavior is dubious
+              expectedBool: shouldFail(),
+              expectedTimestampWithTimeZone: shouldFail(),
+              expectedTimestamp: shouldFail(),
+              expectedDate: shouldFail(),
+              expectedTime: shouldFail(),
+              expectedTimeWithTimeZone: PostgresTimeWithTimeZone("03:04:05.000-08:00"),
+              expectedByteA: shouldFail())
         
+
         //
         // Test conversion from PostgresByteA.
         //

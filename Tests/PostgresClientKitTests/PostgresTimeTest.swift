@@ -81,10 +81,22 @@ class PostgresTimeTest: PostgresClientKitTestCase {
 
         // Invalid string representation should fail.
         XCTAssertNil(PostgresTime("01:61:01.000"))
-
+        
         // Valid string representation should succeed.
         time = PostgresTime("03:04:05.006")
         checkTime(time, 3, 4, 5, 006_000_000, "03:04:05.006")
+        
+        // Valid string representation should succeed.
+        time = PostgresTime("03:04:05.06")
+        checkTime(time, 3, 4, 5, 060_000_000, "03:04:05.060")
+        
+        // Valid string representation should succeed.
+        time = PostgresTime("03:04:05.6")
+        checkTime(time, 3, 4, 5, 600_000_000, "03:04:05.600")
+        
+        // Fractional seconds are optional.
+        time = PostgresTime("03:04:05")
+        checkTime(time, 3, 4, 5, 000_000_000, "03:04:05.000")
     }
     
     func checkTime(

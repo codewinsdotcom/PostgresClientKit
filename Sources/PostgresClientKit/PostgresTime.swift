@@ -94,15 +94,18 @@ public struct PostgresTime: PostgresValueConvertible, Equatable, CustomStringCon
     
     /// Creates a `PostgresTime` from a string.
     ///
-    /// The string must conform to the [date format pattern](
+    /// The string must conform to either the [date format pattern](
     /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
-    /// `HH:mm:ss.SSS`.  For example, `16:25:19.365`.
+    /// `HH:mm:ss.SSS` (for example, `16:25:19.365`) or
+    /// `HH:mm:ss` (for example, `16:25:19`).
     ///
     /// - Parameter string: the string
     public init?(_ string: String) {
         
-        guard let date = PostgresTime.formatter.date(from: string) else {
-            return nil
+        guard let date =
+            PostgresTime.formatter.date(from: string) ??
+            PostgresTime.formatter2.date(from: string) else {
+                return nil
         }
         
         self.init(date: date, in: PostgresTime.formatter.timeZone)
@@ -179,6 +182,16 @@ public struct PostgresTime: PostgresValueConvertible, Equatable, CustomStringCon
         let df = DateFormatter()
         df.calendar = Postgres.enUsPosixUtcCalendar
         df.dateFormat = "HH:mm:ss.SSS"
+        df.locale = Postgres.enUsPosixLocale
+        df.timeZone = Postgres.utcTimeZone
+        return df
+    }()
+    
+    /// Alternative formatter for parsing Postgres `TIME` values.
+    private static let formatter2: DateFormatter = {
+        let df = DateFormatter()
+        df.calendar = Postgres.enUsPosixUtcCalendar
+        df.dateFormat = "HH:mm:ss"
         df.locale = Postgres.enUsPosixLocale
         df.timeZone = Postgres.utcTimeZone
         return df

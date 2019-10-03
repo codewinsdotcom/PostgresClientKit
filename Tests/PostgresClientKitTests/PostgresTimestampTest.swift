@@ -92,6 +92,18 @@ class PostgresTimestampTest: PostgresClientKitTestCase {
         // Valid string representation should succeed.
         timestamp = PostgresTimestamp("2019-01-02 03:04:05.006")
         checkTimestamp(timestamp, 2019, 1, 2, 3, 4, 5, 006_000_000, "2019-01-02 03:04:05.006")
+        
+        // Valid string representation should succeed.
+        timestamp = PostgresTimestamp("2019-01-02 03:04:05.06")
+        checkTimestamp(timestamp, 2019, 1, 2, 3, 4, 5, 060_000_000, "2019-01-02 03:04:05.060")
+        
+        // Valid string representation should succeed.
+        timestamp = PostgresTimestamp("2019-01-02 03:04:05.6")
+        checkTimestamp(timestamp, 2019, 1, 2, 3, 4, 5, 600_000_000, "2019-01-02 03:04:05.600")
+        
+        // Fractional seconds are optional.
+        timestamp = PostgresTimestamp("2019-01-02 03:04:05")
+        checkTimestamp(timestamp, 2019, 1, 2, 3, 4, 5, 000_000_000, "2019-01-02 03:04:05.000")
     }
     
     func checkTimestamp(

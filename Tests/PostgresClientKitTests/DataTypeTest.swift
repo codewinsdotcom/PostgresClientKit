@@ -174,20 +174,32 @@ class DataTypeTest: PostgresClientKitTestCase {
             check("b", false)
             
             // timestamp with time zone
-            check("tstz", PostgresTimestampWithTimeZone("2019-01-02 03:04:05.365-08"))
+            check("tstz", PostgresTimestampWithTimeZone("2019-01-02 03:04:05.006-08"))
+            check("tstz", PostgresTimestampWithTimeZone("2019-01-02 03:04:05.06-08"))
+            check("tstz", PostgresTimestampWithTimeZone("2019-01-02 03:04:05.6-08"))
+            check("tstz", PostgresTimestampWithTimeZone("2019-01-02 03:04:05-08"))
             check("tstz", PostgresTimestampWithTimeZone("2019-01-02 03:04:05.365+130"))
 
             // timestamp
-            check("ts", PostgresTimestamp("2019-01-02 03:04:05.365"))
-            
+            check("ts", PostgresTimestamp("2019-01-02 03:04:05.006"))
+            check("ts", PostgresTimestamp("2019-01-02 03:04:05.06"))
+            check("ts", PostgresTimestamp("2019-01-02 03:04:05.6"))
+            check("ts", PostgresTimestamp("2019-01-02 03:04:05"))
+
             // date
             check("d", PostgresDate("2019-01-02"))
             
             // time
-            check("t", PostgresTime("03:04:05.365"))
-            
+            check("t", PostgresTime("03:04:05.006"))
+            check("t", PostgresTime("03:04:05.06"))
+            check("t", PostgresTime("03:04:05.6"))
+            check("t", PostgresTime("03:04:05"))
+
             // time with time zone
-            check("ttz", PostgresTimeWithTimeZone("03:04:05.365-08:00"))
+            check("ttz", PostgresTimeWithTimeZone("03:04:05.006-08:00"))
+            check("ttz", PostgresTimeWithTimeZone("03:04:05.06-08:00"))
+            check("ttz", PostgresTimeWithTimeZone("03:04:05.6-08:00"))
+            check("ttz", PostgresTimeWithTimeZone("03:04:05-08:00"))
             check("ttz", PostgresTimeWithTimeZone("03:04:05.365+1:30"))
 
             // bytea
