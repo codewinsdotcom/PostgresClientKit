@@ -43,9 +43,9 @@ h6 {
 @media screen and (max-width: 767px) {
   h1 {
     font-size: 1.75em; }
-
   h2 {
     font-size: 1.4em; } }
+
 pre, code {
   font-family: "SF Mono", Menlo, monospace;
   font-size: 0.95em;
@@ -140,6 +140,7 @@ header {
 @media screen and (max-width: 767px) {
   #breadcrumbs {
     color: white; } }
+
 .nav-groups {
   list-style-type: none;
   padding-left: 0; }
@@ -168,6 +169,7 @@ header {
 @media screen and (max-width: 767px) {
   .nav-group-tasks {
     column-count: 1; } }
+
 .main-content {
   overflow: hidden;
   padding-bottom: 60px;
@@ -338,6 +340,7 @@ header {
 
 html.dash header, html.dash #breadcrumbs {
   display: none; }
+
 html.dash .main-content {
   width: calc(100% - 32px);
   max-width: 980px;
@@ -346,12 +349,16 @@ html.dash .main-content {
   width: 100%;
   top: 0;
   padding-bottom: 0; }
+
 html.dash .height-container {
   display: block; }
+
 html.dash .item .token {
   margin-left: 0; }
+
 html.dash .content-wrapper {
   width: auto; }
+
 html.dash #footer {
   position: static; }
 
