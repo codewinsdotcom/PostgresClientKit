@@ -126,7 +126,7 @@ In your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/codewinsdotcom/PostgresClientKit", from: "0.0.0"),
+    .package(url: "https://github.com/codewinsdotcom/PostgresClientKit", from: "1.0.0"),
 ],
 ```
 
@@ -152,7 +152,7 @@ Add `PostgresClientKit` to your `Podfile`.  For example:
 
 ```
 target 'MyApp' do
-  pod 'PostgresClientKit', '~> 0.1'
+  pod 'PostgresClientKit', '~> 1.0'
 end
 ```
 
