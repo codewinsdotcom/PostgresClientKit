@@ -32,6 +32,9 @@ public struct ConnectionConfiguration {
     /// Whether to use SSL/TLS to connect to the Postgres server.  Defaults to `true`.
     public var ssl = true
     
+    /// The timeout for socket operations, in seconds, or 0 for no timeout.  Defaults to 0.
+    public var socketTimeout: Int = 0
+    
     /// The name of the database of the Postgres server.  Defaults to `postgres`.
     public var database = "postgres"
     

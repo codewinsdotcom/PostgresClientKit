@@ -29,6 +29,7 @@ class ConnectionConfigurationTest: PostgresClientKitTestCase {
         XCTAssertEqual(configuration.host, "localhost")
         XCTAssertEqual(configuration.port, 5432)
         XCTAssertEqual(configuration.ssl, true)
+        XCTAssertEqual(configuration.socketTimeout, 0)
         XCTAssertEqual(configuration.database, "postgres")
         XCTAssertEqual(configuration.user, "")
         
@@ -39,6 +40,7 @@ class ConnectionConfigurationTest: PostgresClientKitTestCase {
         configuration.host = "postgres.example.com"
         configuration.port = 54321
         configuration.ssl = false
+        configuration.socketTimeout = 30
         configuration.database = "example"
         configuration.user = "bob.loblaw"
         configuration.credential = .cleartextPassword(password: "welcome1")
@@ -46,6 +48,7 @@ class ConnectionConfigurationTest: PostgresClientKitTestCase {
         XCTAssertEqual(configuration.host, "postgres.example.com")
         XCTAssertEqual(configuration.port, 54321)
         XCTAssertEqual(configuration.ssl, false)
+        XCTAssertEqual(configuration.socketTimeout, 30)
         XCTAssertEqual(configuration.database, "example")
         XCTAssertEqual(configuration.user, "bob.loblaw")
         

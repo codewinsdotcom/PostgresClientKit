@@ -109,10 +109,14 @@ public class Connection: CustomStringConvertible {
         
         let host = configuration.host
         let port = configuration.port
+        let socketTimeout = configuration.socketTimeout
+        let socketTimeoutMillis = UInt((socketTimeout < 0) ? 0 : (1000 * socketTimeout))
 
         do {
             log(.fine, "Opening connection to port \(port) on host \(host)")
-            try socket.connect(to: host, port: Int32(port))
+            try socket.connect(to: host, port: Int32(port), timeout: socketTimeoutMillis)
+            try socket.setReadTimeout(value: socketTimeoutMillis)
+            try socket.setWriteTimeout(value: socketTimeoutMillis)
         } catch {
             log(.severe, "Unable to connect socket: \(error)")
             throw PostgresError.socketError(cause: error)
