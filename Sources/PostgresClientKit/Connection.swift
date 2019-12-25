@@ -91,6 +91,7 @@ public class Connection: CustomStringConvertible {
         var success = false
         
         self.delegate = delegate
+        self.socketTimeout = configuration.socketTimeout
         
         do {
             socket = try Socket.create()
@@ -1013,6 +1014,9 @@ public class Connection: CustomStringConvertible {
     
     /// The underlying socket to the Postgres server.
     private let socket: Socket
+    
+    /// The timeout for socket operations, in seconds, or 0 for no timeout.
+    private let socketTimeout: Int
 
     /// The type of operation most recently performed on the socket.
     ///
@@ -1124,7 +1128,9 @@ public class Connection: CustomStringConvertible {
         readBufferPosition = 0
         
         var readCount = 0
-        let timeout = Date(timeIntervalSinceNow: 30.0) // 30 seconds
+        
+        let timeoutInterval = TimeInterval((socketTimeout == 0) ? 30 : socketTimeout)
+        let timeout = Date(timeIntervalSinceNow: timeoutInterval)
         
         while readCount == 0 && Date() < timeout && !socket.remoteConnectionClosed {
             do {
