@@ -17,6 +17,8 @@
 //  limitations under the License.
 //
 
+import SSLService
+
 /// The configuration for a `Connection` to the Postgres server.
 public struct ConnectionConfiguration {
     
@@ -32,6 +34,20 @@ public struct ConnectionConfiguration {
     /// Whether to use SSL/TLS to connect to the Postgres server.  Defaults to `true`.
     public var ssl = true
     
+    /// The SSL/TLS configuration for connecting to the Postgres server.  Ignored if `ssl` is
+    /// `false`.
+    ///
+    /// Defaults to `SSLService.Configuration()`, which:
+    ///
+    /// - Encrypts the connection
+    /// - Allows a self-signed server certificate
+    /// - Does not authenticate the server certificate
+    /// - Does not present a client certificate
+    ///
+    /// Refer to the [BlueSSLService documentation](https://github.com/IBM-Swift/BlueSSLService#creating-the-configuration)
+    /// for additional information on how to initialize and configure the configuration.
+    public var sslServiceConfiguration: SSLService.Configuration = SSLService.Configuration()
+
     /// The timeout for socket operations, in seconds, or 0 for no timeout.  Defaults to 0.
     public var socketTimeout: Int = 0
     

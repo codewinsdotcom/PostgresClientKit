@@ -135,7 +135,7 @@ public class Connection: CustomStringConvertible {
                 throw PostgresError.sslNotSupported
             }
             
-            let sslConfig = SSLService.Configuration()
+            let sslConfig = configuration.sslServiceConfiguration
             let sslService = try SSLService(usingConfiguration: sslConfig)!
             socket.delegate = sslService
             try sslService.initialize(asServer: false)

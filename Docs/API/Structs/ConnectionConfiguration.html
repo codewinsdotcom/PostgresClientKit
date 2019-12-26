@@ -169,6 +169,73 @@
                   <li class="item">
                     <div>
                       <code>
+                      <a name="/s:17PostgresClientKit23ConnectionConfigurationV010sslServiceE010SSLServiceAEC0E0Vvp"></a>
+                      <a name="//apple_ref/swift/Property/sslServiceConfiguration" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit23ConnectionConfigurationV010sslServiceE010SSLServiceAEC0E0Vvp">sslServiceConfiguration</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The SSL/TLS configuration for connecting to the Postgres server.  Ignored if <code><a href="../Structs/ConnectionConfiguration.html#/s:17PostgresClientKit23ConnectionConfigurationV3sslSbvp">ssl</a></code> is
+<code>false</code>.</p>
+
+<p>Defaults to <code>SSLService.Configuration()</code>, which:</p>
+
+<ul>
+<li>Encrypts the connection</li>
+<li>Allows a self-signed server certificate</li>
+<li>Does not authenticate the server certificate</li>
+<li>Does not present a client certificate</li>
+</ul>
+
+<p>Refer to the <a href="https://github.com/IBM-Swift/BlueSSLService#creating-the-configuration">BlueSSLService documentation</a>
+for additional information on how to initialize and configure the configuration.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">sslServiceConfiguration</span><span class="p">:</span> <span class="kt">SSLService</span><span class="o">.</span><span class="kt">Configuration</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit23ConnectionConfigurationV13socketTimeoutSivp"></a>
+                      <a name="//apple_ref/swift/Property/socketTimeout" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit23ConnectionConfigurationV13socketTimeoutSivp">socketTimeout</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The timeout for socket operations, in seconds, or 0 for no timeout.  Defaults to 0.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">socketTimeout</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
                       <a name="/s:17PostgresClientKit23ConnectionConfigurationV8databaseSSvp"></a>
                       <a name="//apple_ref/swift/Property/database" class="dashAnchor"></a>
                       <a class="token" href="#/s:17PostgresClientKit23ConnectionConfigurationV8databaseSSvp">database</a>
