@@ -47,6 +47,9 @@ public enum PostgresError: Error {
     /// The Postgres server reported a SQL error.
     case sqlError(notice: Notice)
     
+    /// An error occurred in establishing SSL/TLS encryption.
+    case sslError(cause: Error)
+    
     /// The Postgres server does not support SSL/TLS.
     case sslNotSupported
     

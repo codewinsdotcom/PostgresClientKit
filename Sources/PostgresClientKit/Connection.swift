@@ -135,11 +135,16 @@ public class Connection: CustomStringConvertible {
                 throw PostgresError.sslNotSupported
             }
             
-            let sslConfig = configuration.sslServiceConfiguration
-            let sslService = try SSLService(usingConfiguration: sslConfig)!
-            socket.delegate = sslService
-            try sslService.initialize(asServer: false)
-            try sslService.onConnect(socket: socket)
+            do {
+                let sslConfig = configuration.sslServiceConfiguration
+                let sslService = try SSLService(usingConfiguration: sslConfig)!
+                socket.delegate = sslService
+                try sslService.initialize(asServer: false)
+                try sslService.onConnect(socket: socket)
+            } catch {
+                log(.severe, "Unable to establish SSL/TLS encryption: \(error)")
+                throw PostgresError.sslError(cause: error)
+            }
             
             log(.fine, "Successfully negotiated SSL/TLS encryption")
         }
