@@ -66,4 +66,4 @@ psql --host=127.0.0.1 --port=5432 --dbname=postgres --username=root < CreateTest
 
 ## Review the test suite configuration
 
-The file `Tests/PostgresClientKitTests/TestEnvironment.json` describes the environment used by the PostgresClientKit test suite.  Review its content and make any changes for your environment.
+The file `Tests/PostgresClientKitTests/TestEnvironment.swift` describes the environment used by the PostgresClientKit test suite.  Review its content and make any changes for your environment.

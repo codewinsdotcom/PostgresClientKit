@@ -51,7 +51,7 @@ public struct ConnectionConfiguration {
     /// The timeout for socket operations, in seconds, or 0 for no timeout.  Defaults to 0.
     public var socketTimeout: Int = 0
     
-    /// The name of the database of the Postgres server.  Defaults to `postgres`.
+    /// The name of the database on the Postgres server.  Defaults to `postgres`.
     public var database = "postgres"
     
     /// The Postgres username.  Defaults to an empty string.

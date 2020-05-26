@@ -79,37 +79,7 @@ class PostgresClientKitTestCase: XCTestCase {
     //
     // MARK: Connections
     //
-    
-    /// An environment for testing PostgresClientKit.
-    struct TestEnvironment: Codable {
         
-        var postgresHost: String
-        var postgresPort: Int
-        var postgresDatabase: String
-        var terryUsername: String
-        var terryPassword: String
-        var charlieUsername: String
-        var charliePassword: String
-        var maryUsername: String
-        var maryPassword: String
-        
-        static let current: TestEnvironment = {
-            
-            let url = URL(fileURLWithPath: #file)
-                .appendingPathComponent("../TestEnvironment.json")
-                .standardized
-            
-            let environment: TestEnvironment
-
-            do {
-                let data = try Data(contentsOf: url)
-                return try JSONDecoder().decode(TestEnvironment.self, from: data)
-            } catch {
-                fatalError("Error reading TestEnvironment.json: \(error)")
-            }
-        }()
-    }
-    
     /// Creates a `ConnectionConfiguration` for Terry, authenticating by `Credential.trust`.
     ///
     /// - Parameter ssl: whether to use SSL/TLS
