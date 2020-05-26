@@ -60,6 +60,7 @@ extension ConnectionTest {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__ConnectionTest = [
+        ("testApplicationName", testApplicationName),
         ("testConnectionLifecycle", testConnectionLifecycle),
         ("testCreateConnection", testCreateConnection),
         ("testErrorRecovery", testErrorRecovery),

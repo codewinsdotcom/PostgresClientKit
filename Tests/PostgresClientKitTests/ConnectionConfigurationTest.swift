@@ -37,6 +37,8 @@ class ConnectionConfigurationTest: PostgresClientKitTestCase {
             XCTFail("credential \(configuration.credential)")
         }
         
+        XCTAssertEqual(configuration.applicationName, "PostgresClientKit")
+
         configuration.host = "postgres.example.com"
         configuration.port = 54321
         configuration.ssl = false
@@ -44,6 +46,7 @@ class ConnectionConfigurationTest: PostgresClientKitTestCase {
         configuration.database = "example"
         configuration.user = "bob.loblaw"
         configuration.credential = .cleartextPassword(password: "welcome1")
+        configuration.applicationName = "ConnectionConfigurationTest"
         
         XCTAssertEqual(configuration.host, "postgres.example.com")
         XCTAssertEqual(configuration.port, 54321)
@@ -55,6 +58,8 @@ class ConnectionConfigurationTest: PostgresClientKitTestCase {
         if case .cleartextPassword(password: "welcome1") = configuration.credential { } else {
             XCTFail("credential \(configuration.credential)")
         }
+        
+        XCTAssertEqual(configuration.applicationName, "ConnectionConfigurationTest")
     }
 }
 

@@ -21,13 +21,15 @@ import Foundation
 
 internal class StartupRequest: Request {
     
-    internal init(user: String, database: String) {
+    internal init(user: String, database: String, applicationName: String) {
         self.user = user
         self.database = database
+        self.applicationName = applicationName
     }
     
     private let user: String
     private let database: String
+    private let applicationName: String
     
     
     //
@@ -48,6 +50,9 @@ internal class StartupRequest: Request {
         body.append("database".dataZero)
         body.append(database.dataZero)
         
+        body.append("application_name".dataZero)
+        body.append(applicationName.dataZero)
+        
         for parameter in Parameter.values {
             if parameter.isSetWhenConnecting {
                 body.append(parameter.name.dataZero)
@@ -66,7 +71,7 @@ internal class StartupRequest: Request {
     //
     
     override var description: String {
-        return super.description + "(user: \(user), database: \(database))"
+        return super.description + "(user: \(user), database: \(database), applicationName: \(applicationName))"
     }
 }
 

@@ -129,6 +129,27 @@ class ConnectionTest: PostgresClientKitTestCase {
         }
     }
     
+    func testApplicationName() {
+        
+        do {
+            let applicationName = "Test-\(Int.random(in: Int.min...Int.max))"
+            
+            var configuration = terryConnectionConfiguration()
+            configuration.applicationName = applicationName 
+            
+            let connection = try Connection(configuration: configuration)
+            
+            let text = "SELECT COUNT(*) FROM pg_stat_activity WHERE application_name = $1"
+            let statement = try connection.prepareStatement(text: text)
+            let cursor = try statement.execute(parameterValues: [ applicationName ])
+            let firstRow = try cursor.next()!.get()
+            let count = try firstRow.columns[0].int()
+            XCTAssertEqual(count, 1)
+        } catch {
+            XCTFail(String(describing: error))
+        }
+    }
+    
     func testConnectionLifecycle() {
         
         do {

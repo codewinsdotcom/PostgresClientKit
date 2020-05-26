@@ -46,20 +46,24 @@ public struct ConnectionConfiguration {
     ///
     /// Refer to the [BlueSSLService documentation](https://github.com/IBM-Swift/BlueSSLService#creating-the-configuration)
     /// for additional information on how to initialize and configure the configuration.
-    public var sslServiceConfiguration: SSLService.Configuration = SSLService.Configuration()
+    public var sslServiceConfiguration = SSLService.Configuration()
 
     /// The timeout for socket operations, in seconds, or 0 for no timeout.  Defaults to 0.
-    public var socketTimeout: Int = 0
+    public var socketTimeout = 0
     
     /// The name of the database on the Postgres server.  Defaults to `postgres`.
     public var database = "postgres"
     
     /// The Postgres username.  Defaults to an empty string.
-    public var user: String = ""
+    public var user = ""
     
     /// The credential to use to authenticate to the Postgres server.  Defaults to
     /// `Credential.trust`.
-    public var credential: Credential = .trust
+    public var credential = Credential.trust
+    
+    /// The Postgres `application_name` parameter.  Included in the `pg_stat_activity` view and
+    /// displayed by pgAdmin.  Defaults to `PostgresClientKit`.
+    public var applicationName = "PostgresClientKit"
 }
 
 // EOF
