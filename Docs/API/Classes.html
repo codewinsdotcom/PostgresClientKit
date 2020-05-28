@@ -75,7 +75,8 @@ of the connection.</p>
 
 <ul>
 <li>Call <code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC16prepareStatement4textAA0F0CSS_tKF">Connection.prepareStatement(text:)</a></code> to parse the SQL text and return a <code><a href="Classes/Statement.html">Statement</a></code>.</li>
-<li>Call <code><a href="Classes/Statement.html#/s:17PostgresClientKit9StatementC7execute15parameterValuesAA6CursorCSayAA0A16ValueConvertible_pSgG_tKF">Statement.execute(parameterValues:)</a></code> to execute the statement and return a <code><a href="Classes/Cursor.html">Cursor</a></code>.</li>
+<li>Call <code><a href="Classes/Statement.html#/s:17PostgresClientKit9StatementC7execute15parameterValues22retrieveColumnMetadataAA6CursorCSayAA0A16ValueConvertible_pSgG_SbtKF">Statement.execute(parameterValues:retrieveColumnMetadata:)</a></code> to execute the statement
+and return a <code><a href="Classes/Cursor.html">Cursor</a></code>.</li>
 <li>Iterate over the <code><a href="Classes/Cursor.html">Cursor</a></code> to retrieve the rows in the result.</li>
 <li>Close the <code><a href="Classes/Cursor.html">Cursor</a></code> and the <code><a href="Classes/Statement.html">Statement</a></code> to release resources on the Postgres server.</li>
 </ul>
@@ -85,8 +86,8 @@ each time.  This is more efficient than having the Postgres server repeatedly pa
 SQL text.</p>
 
 <p>A <code>Connection</code> performs no more than one SQL statement at a time.  When
-<code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC16prepareStatement4textAA0F0CSS_tKF">Connection.prepareStatement(text:)</a></code> or <code><a href="Classes/Statement.html#/s:17PostgresClientKit9StatementC7execute15parameterValuesAA6CursorCSayAA0A16ValueConvertible_pSgG_tKF">Statement.execute(parameterValues:)</a></code> is called, any
-previous <code><a href="Classes/Cursor.html">Cursor</a></code> for the <code>Connection</code> is closed.</p>
+<code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC16prepareStatement4textAA0F0CSS_tKF">Connection.prepareStatement(text:)</a></code> or <code><a href="Classes/Statement.html#/s:17PostgresClientKit9StatementC7execute15parameterValues22retrieveColumnMetadataAA6CursorCSayAA0A16ValueConvertible_pSgG_SbtKF">Statement.execute(parameterValues:retrieveColumnMetadata:)</a></code>
+is called, any previous <code><a href="Classes/Cursor.html">Cursor</a></code> for the <code>Connection</code> is closed.</p>
 
 <p>The following methods also close any previous <code><a href="Classes/Cursor.html">Cursor</a></code> for the <code>Connection</code>:</p>
 
@@ -356,8 +357,8 @@ the logger dispatches the record to the logger&rsquo;s current <code>handler</co
 
 <p>Use <code><a href="Classes/Connection.html#/s:17PostgresClientKit10ConnectionC16prepareStatement4textAA0F0CSS_tKF">Connection.prepareStatement(text:)</a></code> to create a <code>Statement</code>.</p>
 
-<p>Call <code><a href="Classes/Statement.html#/s:17PostgresClientKit9StatementC7execute15parameterValuesAA6CursorCSayAA0A16ValueConvertible_pSgG_tKF">Statement.execute(parameterValues:)</a></code> to execute the <code>Statement</code>, specifying the values
-of any parameters.</p>
+<p>Call <code><a href="Classes/Statement.html#/s:17PostgresClientKit9StatementC7execute15parameterValues22retrieveColumnMetadataAA6CursorCSayAA0A16ValueConvertible_pSgG_SbtKF">Statement.execute(parameterValues:retrieveColumnMetadata:)</a></code> to execute the <code>Statement</code>,
+specifying the values of any parameters.</p>
 
 <p>A <code>Statement</code> can be repeatedly executed, and the values of its parameters can be different
 each time.</p>
@@ -470,6 +471,9 @@ whose name is the <code>id</code> of the <code>Statement</code>.</p>
             <li class="nav-group-name">
               <a href="Structs.html">Structures</a>
               <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="Structs/ColumnMetadata.html">ColumnMetadata</a>
+                </li>
                 <li class="nav-group-task">
                   <a href="Structs/ConnectionConfiguration.html">ConnectionConfiguration</a>
                 </li>

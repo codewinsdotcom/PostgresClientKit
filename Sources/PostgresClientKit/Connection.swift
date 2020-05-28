@@ -30,7 +30,8 @@ import SSLService
 /// Connections are used to perform SQL statements.  To perform a SQL statement:
 ///
 /// - Call `Connection.prepareStatement(text:)` to parse the SQL text and return a `Statement`.
-/// - Call `Statement.execute(parameterValues:)` to execute the statement and return a `Cursor`.
+/// - Call `Statement.execute(parameterValues:retrieveColumnMetadata:)` to execute the statement
+///   and return a `Cursor`.
 /// - Iterate over the `Cursor` to retrieve the rows in the result.
 /// - Close the `Cursor` and the `Statement` to release resources on the Postgres server.
 ///
@@ -39,8 +40,8 @@ import SSLService
 /// SQL text.
 ///
 /// A `Connection` performs no more than one SQL statement at a time.  When
-/// `Connection.prepareStatement(text:)` or `Statement.execute(parameterValues:)` is called, any
-/// previous `Cursor` for the `Connection` is closed.
+/// `Connection.prepareStatement(text:)` or `Statement.execute(parameterValues:retrieveColumnMetadata:)`
+/// is called, any previous `Cursor` for the `Connection` is closed.
 ///
 /// The following methods also close any previous `Cursor` for the `Connection`:
 ///
@@ -364,17 +365,22 @@ public class Connection: CustomStringConvertible {
         return statement
     }
     
-    /// Called by `Statement.execute(parameterValues:)` to execute a `Statement`.
+    /// Called by `Statement.execute(parameterValues:retrieveColumnMetadata:)` to execute a
+    /// `Statement`.
     ///
     /// Any previous `Cursor` for this `Connection` is closed.
     ///
     /// - Parameters:
     ///   - statement: the `Statement`
     ///   - parameterValues: the values of the statement's parameters
+    ///   - retrieveColumnMetadata: whether to retrieve metadata about the columns in the results
     /// - Returns: the `Cursor` containing the result
     /// - Throws: `PostgresError` is the operation fails
     internal func executeStatement(_ statement: Statement,
-                                   parameterValues: [PostgresValueConvertible?] = []) throws -> Cursor {
+                                   parameterValues: [PostgresValueConvertible?] = [],
+                                   retrieveColumnMetadata: Bool) throws -> Cursor {
+        
+        var columns: [ColumnMetadata]? = nil
         
         try performExtendedQueryOperation(
             operation: {
@@ -388,6 +394,31 @@ public class Connection: CustomStringConvertible {
                 
                 try receiveResponse(type: BindCompleteResponse.self)
                 
+                if retrieveColumnMetadata {
+                    
+                    let describePortalRequest = DescribePortalRequest()
+                    try sendRequest(describePortalRequest, buffer: true)
+                    
+                    try sendRequest(flushRequest)
+                    
+                    let response = try receiveResponse()
+                    
+                    switch response {
+                        
+                    case is NoDataResponse:
+                        columns = nil
+                        
+                    case let rowDescriptionResponse as RowDescriptionResponse:
+                        columns = rowDescriptionResponse.columns
+                        
+                    default:
+                        log(.warning, "Unexpected response type: \(response.responseType)")
+                        
+                        throw PostgresError.serverError(
+                            description: "unexpected response type '\(response.responseType)'")
+                    }
+                }
+                
                 let executeRequest = ExecuteRequest(statement: statement)
                 try sendRequest(executeRequest, buffer: true)
                 
@@ -400,7 +431,7 @@ public class Connection: CustomStringConvertible {
             }
         )
             
-        let cursor = Cursor(statement: statement)
+        let cursor = Cursor(statement: statement, columns: columns)
         
         // (The CursorState enum cases capture the Cursor id, rather than the Cursor instance, to
         // avoid a reference cycle.)
@@ -781,8 +812,10 @@ public class Connection: CustomStringConvertible {
             case "N": response = try NoticeResponse(responseBody: responseBody)
             case "R": response = try AuthenticationResponse.parse(responseBody: responseBody)
             case "S": response = try ParameterStatusResponse(responseBody: responseBody)
+            case "T": response = try RowDescriptionResponse(responseBody: responseBody)
             case "Z": response = try ReadyForQueryResponse(responseBody: responseBody)
-                
+            case "n": response = try NoDataResponse(responseBody: responseBody)
+
             default:
                 log(.warning, "Unrecognized response type: \(responseType)")
                 

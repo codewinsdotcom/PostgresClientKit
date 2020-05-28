@@ -112,6 +112,39 @@ Query</a>
                   <li class="item">
                     <div>
                       <code>
+                      <a name="/s:17PostgresClientKit6CursorC7columnsSayAA14ColumnMetadataVGSgvp"></a>
+                      <a name="//apple_ref/swift/Property/columns" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit6CursorC7columnsSayAA14ColumnMetadataVGSgvp">columns</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Metadata about the columns in the results, or <code>nil</code> if column metadata is not available.</p>
+
+<p>For column metadata to be available, set <code>retrieveColumnMetadata</code> to <code>true</code> in calling
+<code><a href="../Classes/Statement.html#/s:17PostgresClientKit9StatementC7execute15parameterValues22retrieveColumnMetadataAA6CursorCSayAA0A16ValueConvertible_pSgG_SbtKF">Statement.execute(parameterValues:retrieveColumnMetadata:)</a></code>.</p>
+
+<p>Each element in the returned value describes the corresponding element in the <code>columns</code>
+of each <code><a href="../Structs/Row.html">Row</a></code> of the results.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">columns</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/ColumnMetadata.html">ColumnMetadata</a></span><span class="p">]?</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
                       <a name="/s:17PostgresClientKit6CursorC9statementAA9StatementCvp"></a>
                       <a name="//apple_ref/swift/Property/statement" class="dashAnchor"></a>
                       <a class="token" href="#/s:17PostgresClientKit6CursorC9statementAA9StatementCvp">statement</a>
@@ -414,6 +447,9 @@ an associated <code>Error</code>); or <code>nil</code> if there are no more rows
             <li class="nav-group-name">
               <a href="../Structs.html">Structures</a>
               <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Structs/ColumnMetadata.html">ColumnMetadata</a>
+                </li>
                 <li class="nav-group-task">
                   <a href="../Structs/ConnectionConfiguration.html">ConnectionConfiguration</a>
                 </li>

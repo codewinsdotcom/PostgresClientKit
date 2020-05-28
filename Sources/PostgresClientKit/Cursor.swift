@@ -38,15 +38,28 @@ public class Cursor: Sequence, IteratorProtocol {
     
     /// Creates a `Cursor`.
     ///
-    /// - Parameter statement: the `Statement`
-    internal init(statement: Statement) {
+    /// - Parameters:
+    ///   - statement: the statement
+    ///   - columns: metadata about the columns in the results, or `nil` if column metadata is not
+    ///       available
+    internal init(statement: Statement, columns: [ColumnMetadata]?) {
         self.statement = statement
+        self.columns = columns
     }
     
     /// Uniquely identifies this `Cursor`.
     ///
     /// Used in logging and to formulate the `description`.
     public let id = "Cursor-\(Postgres.nextId())"
+    
+    /// Metadata about the columns in the results, or `nil` if column metadata is not available.
+    ///
+    /// For column metadata to be available, set `retrieveColumnMetadata` to `true` in calling
+    /// `Statement.execute(parameterValues:retrieveColumnMetadata:)`.
+    ///
+    /// Each element in the returned value describes the corresponding element in the `columns`
+    /// of each `Row` of the results.
+    public let columns: [ColumnMetadata]?
     
     /// The `Statement` to which this `Cursor` belongs.
     public let statement: Statement

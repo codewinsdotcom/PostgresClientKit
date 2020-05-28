@@ -21,8 +21,8 @@
 ///
 /// Use `Connection.prepareStatement(text:)` to create a `Statement`.
 ///
-/// Call `Statement.execute(parameterValues:)` to execute the `Statement`, specifying the values
-/// of any parameters.
+/// Call `Statement.execute(parameterValues:retrieveColumnMetadata:)` to execute the `Statement`,
+/// specifying the values of any parameters.
 ///
 /// A `Statement` can be repeatedly executed, and the values of its parameters can be different
 /// each time.
@@ -60,15 +60,19 @@ public class Statement: CustomStringConvertible {
     ///
     /// Any previous `Cursor` for this `Connection` is closed.
     ///
-    /// - Parameter parameterValues: the values of the statement's parameters.  Index 0 is the
-    ///     value of `$1`, index 1 is the value of `$2`, and so on.  A `nil` element represents
-    ///     SQL `NULL`.
+    /// - Parameters:
+    ///   - parameterValues: the values of the statement's parameters.  Index 0 is the value of
+    ///     `$1`, index 1 is the value of `$2`, and so on.  A `nil` element represents SQL `NULL`.
+    ///   - retrieveColumnMetadata: whether to retrieve metadata about the columns in the results
     /// - Returns: a `Cursor` containing the result
     /// - Throws: `PostgresError` if the operation fails
-    @discardableResult public func execute(parameterValues: [PostgresValueConvertible?] = [ ])
+    @discardableResult public func execute(parameterValues: [PostgresValueConvertible?] = [ ],
+                                           retrieveColumnMetadata: Bool = false)
         throws -> Cursor {
         
-        return try connection.executeStatement(self, parameterValues: parameterValues)
+            return try connection.executeStatement(self,
+                                                   parameterValues: parameterValues,
+                                                   retrieveColumnMetadata: retrieveColumnMetadata)
     }
     
     /// Whether this `Statement` is closed.
