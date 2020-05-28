@@ -227,6 +227,84 @@ class SQLStatementTest: PostgresClientKitTestCase {
             XCTFail(String(describing: error))
         }
     }
+
+    func testResultMetadata() {
+        
+        do {
+            try createWeatherTable()
+            let connection = try Connection(configuration: terryConnectionConfiguration())
+            
+            func checkResultMetadata(columns: [ColumnMetadata]) {
+                
+                XCTAssertEqual(columns.count, 5)
+                let expectedNames = [ "city", "temp_lo", "temp_hi", "prcp", "date" ]
+
+                for (index, column) in columns.enumerated() {
+                    XCTAssertEqual(column.name, expectedNames[index])
+                    XCTAssertEqual(column.tableOID, columns[0].tableOID)
+                    XCTAssertEqual(column.columnAttributeNumber, index + 1)
+                    XCTAssertNotEqual(column.dataTypeOID, 0)
+                    XCTAssertNotEqual(column.dataTypeSize, 0)
+                    XCTAssertNotEqual(column.dataTypeModifier, 0)
+                }
+            }
+            
+            // No result metadata for statements that don't return results.
+            do {
+                let text = "UPDATE weather SET temp_hi = temp_hi + 1 WHERE city = 'Hayward'"
+                let statement = try connection.prepareStatement(text: text)
+                
+                var cursor = try statement.execute()
+                XCTAssertEqual(cursor.rowCount, 1)
+                XCTAssertNil(cursor.columns) // retrieveColumnMetadata defaults to false
+                
+                cursor = try statement.execute(retrieveColumnMetadata: false)
+                XCTAssertEqual(cursor.rowCount, 1)
+                XCTAssertNil(cursor.columns) // retrieveColumnMetadata set to false
+                
+                cursor = try statement.execute(retrieveColumnMetadata: true)
+                XCTAssertEqual(cursor.rowCount, 1)
+                XCTAssertNil(cursor.columns) // UPDATE returns no results
+            }
+            
+            // Result metadata for statements that do return results (but 0 rows).
+            do {
+                let text = "SELECT * FROM weather WHERE city = 'Seattle'"
+                let statement = try connection.prepareStatement(text: text)
+                
+                var cursor = try statement.execute()
+                XCTAssertEqual(cursor.rowCount, 0)
+                XCTAssertNil(cursor.columns) // retrieveColumnMetadata defaults to false
+                
+                cursor = try statement.execute(retrieveColumnMetadata: false)
+                XCTAssertEqual(cursor.rowCount, 0)
+                XCTAssertNil(cursor.columns) // retrieveColumnMetadata set to false
+                
+                cursor = try statement.execute(retrieveColumnMetadata: true)
+                XCTAssertEqual(cursor.rowCount, 0)
+                XCTAssertNotNil(cursor.columns)
+                checkResultMetadata(columns: cursor.columns!)
+            }
+                        
+            // Result metadata available even before retrieving first row.
+            do {
+                let text = "SELECT city, temp_lo, temp_hi, prcp, date FROM weather WHERE city = 'San Francisco'"
+                let statement = try connection.prepareStatement(text: text)
+                
+                let cursor = try statement.execute(retrieveColumnMetadata: true)
+                XCTAssertNil(cursor.rowCount)
+                XCTAssertNotNil(cursor.columns)
+                checkResultMetadata(columns: cursor.columns!)
+                
+                for _ in cursor { } // drain cursor
+                XCTAssertEqual(cursor.rowCount, 2)
+                XCTAssertNotNil(cursor.columns) // result metadata still available
+                checkResultMetadata(columns: cursor.columns!)
+            }
+        } catch {
+            XCTFail(String(describing: error))
+        }
+    }
 }
 
 // EOF

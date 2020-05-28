@@ -164,6 +164,7 @@ extension SQLStatementTest {
     // to regenerate.
     static let __allTests__SQLStatementTest = [
         ("testCRUD", testCRUD),
+        ("testResultMetadata", testResultMetadata),
         ("testSQLCursor", testSQLCursor),
     ]
 }
