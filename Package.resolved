@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/IBM-Swift/BlueSocket.git",
         "state": {
           "branch": null,
-          "revision": "f82e1401f04f62b2e8ce4670456d104466957810",
-          "version": "1.0.50"
+          "revision": "c46a3d41f5b2401d18bcb46d0101cdc5cd13e307",
+          "version": "1.0.52"
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/IBM-Swift/BlueSSLService",
         "state": {
           "branch": null,
-          "revision": "d6616def31a12088034f0a63ed4646772eff5bce",
-          "version": "1.0.50"
+          "revision": "ab2c2aa2fe574969f391c80ee87746be431dee0e",
+          "version": "1.0.52"
         }
       }
     ]
