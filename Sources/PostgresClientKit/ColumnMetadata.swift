@@ -26,28 +26,28 @@ public struct ColumnMetadata {
     /// If the column can be identified as a column of a specific table, the object ID of that
     /// table; otherwise zero.
     ///
-    /// -SeeAlso: [pg_attribute.attrelid](https://www.postgresql.org/docs/12/catalog-pg-attribute.html)
+    /// - SeeAlso: [pg_attribute.attrelid](https://www.postgresql.org/docs/12/catalog-pg-attribute.html)
     public let tableOID: UInt32
     
     /// If the column can be identified as a column of a specific table, the attribute number of
     /// the column in that table; otherwise zero.
     ///
-    /// -SeeAlso: [pg_attribute.attnum](https://www.postgresql.org/docs/12/catalog-pg-attribute.html)
+    /// - SeeAlso: [pg_attribute.attnum](https://www.postgresql.org/docs/12/catalog-pg-attribute.html)
     public let columnAttributeNumber: Int
     
     /// The object ID of the column's data type.
     ///
-    /// -SeeAlso: [pg_type.oid](https://www.postgresql.org/docs/12/catalog-pg-type.html)
+    /// - SeeAlso: [pg_type.oid](https://www.postgresql.org/docs/12/catalog-pg-type.html)
     public let dataTypeOID: UInt32
     
     /// The data type size.
     ///
-    /// -SeeAlso: [pg_type.typlen](https://www.postgresql.org/docs/12/catalog-pg-type.html)
+    /// - SeeAlso: [pg_type.typlen](https://www.postgresql.org/docs/12/catalog-pg-type.html)
     public let dataTypeSize: Int
     
     /// The data type modifier.
     ///
-    /// -SeeAlso: [pg_attribute.atttypmod](https://www.postgresql.org/docs/12/catalog-pg-attribute.html)
+    /// - SeeAlso: [pg_attribute.atttypmod](https://www.postgresql.org/docs/12/catalog-pg-attribute.html)
     public let dataTypeModifier: UInt32
 }
 
