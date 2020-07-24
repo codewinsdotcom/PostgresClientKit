@@ -6,7 +6,7 @@ do {
     configuration.ssl = true
     configuration.database = "example"
     configuration.user = "bob"
-    configuration.credential = .md5Password(password: "welcome1")
+    configuration.credential = .scramSHA256(password: "welcome1")
     
     let connection = try PostgresClientKit.Connection(configuration: configuration)
     defer { connection.close() }

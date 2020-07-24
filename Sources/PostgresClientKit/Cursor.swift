@@ -20,7 +20,7 @@
 /// The result of successfully executing a `Statement`.
 ///
 /// - Note: Do not confuse this `Cursor` class with the SQL cursors created by the [SQL DECLARE
-///     command](https://www.postgresql.org/docs/11/sql-declare.html).  The `Cursor` class exposes
+///     command](https://www.postgresql.org/docs/12/sql-declare.html).  The `Cursor` class exposes
 ///     the result of executing a *single* SQL command.  A SQL cursor, on other other hand, exposes
 ///     a query's result by *repeated* execution of the SQL `FETCH` command.
 ///
@@ -33,7 +33,7 @@
 /// Postgres server.
 ///
 /// - SeeAlso: [Postgres: Message Flow - Extended
-///     Query](https://www.postgresql.org/docs/11/protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY)
+///     Query](https://www.postgresql.org/docs/12/protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY)
 public class Cursor: Sequence, IteratorProtocol {
     
     /// Creates a `Cursor`.

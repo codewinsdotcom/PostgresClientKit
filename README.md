@@ -46,7 +46,7 @@ do {
     configuration.host = "127.0.0.1"
     configuration.database = "example"
     configuration.user = "bob"
-    configuration.credential = .md5Password(password: "welcome1")
+    configuration.credential = .scramSHA256(password: "welcome1")
 
     let connection = try PostgresClientKit.Connection(configuration: configuration)
     defer { connection.close() }
@@ -86,7 +86,7 @@ San Francisco on 1994-11-29: low: 43, high: 57, precipitation: Optional(0.0)
 ## Prerequisites
 
 - **Swift 5 or later**  (PostgresClientKit uses Swift 5 language features)
-- **`libssl-dev`** (only required on Linux, and only for SSL/TLS connections)
+- **`libssl-dev`** (only required on Linux)
 
 PostgresClientKit is compatible with Linux, macOS, and iOS.  It has been tested on:
 

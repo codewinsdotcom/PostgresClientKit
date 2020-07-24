@@ -24,7 +24,7 @@ internal class Request: CustomStringConvertible {
     
     /// The request type.
     ///
-    /// See https://www.postgresql.org/docs/11/static/protocol-message-formats.html.
+    /// See https://www.postgresql.org/docs/12/static/protocol-message-formats.html.
     internal var requestType: Character? {
         fatalError("Request subclass must override requestType property")
     }
@@ -62,39 +62,6 @@ internal class Request: CustomStringConvertible {
     /// A short string that describes this request.
     internal var description: String {
         return String(describing: type(of: self)) // subclasses can override
-    }
-}
-
-internal extension UInt16 {
-    
-    /// The big-endian representation.
-    var data: Data {
-        var value = bigEndian
-        return Data(bytes: &value, count: 2)
-    }
-}
-
-internal extension UInt32 {
-    
-    /// The big-endian representation.
-    var data: Data {
-        var value = bigEndian
-        return Data(bytes: &value, count: 4)
-    }
-}
-
-internal extension String {
-    
-    /// The UTF8 representation.
-    var data: Data {
-        return Data(utf8)
-    }
-    
-    /// The null-terminated UTF8 representation.
-    var dataZero: Data {
-        var data = self.data
-        data.append(0)
-        return data
     }
 }
 

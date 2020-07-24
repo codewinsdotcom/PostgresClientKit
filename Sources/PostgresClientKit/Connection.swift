@@ -162,7 +162,8 @@ public class Connection: CustomStringConvertible {
         
         try sendRequest(startupRequest)
         
-        var credentialSent = false
+        var authenticationRequestSent = false
+        var scramSHA256Authenticator: SCRAMSHA256Authenticator? = nil
         
         authentication:
         while true {
@@ -171,16 +172,6 @@ public class Connection: CustomStringConvertible {
             switch authenticationResponse {
                 
             case is AuthenticationOKResponse:
-                
-                if !credentialSent {
-                    guard case .trust = configuration.credential else {
-                        // Postgres allowed trust authentication, yet a cleartextPassword or
-                        // md5Password was supplied.  Throw to alert of a possible Postgres
-                        // misconfiguration.
-                        log(.warning, "Trust credential required to authenticate")
-                        throw PostgresError.trustCredentialRequired
-                    }
-                }
                 
                 break authentication
                 
@@ -193,7 +184,7 @@ public class Connection: CustomStringConvertible {
                 
                 let passwordMessageRequest = PasswordMessageRequest(password: password)
                 try sendRequest(passwordMessageRequest)
-                credentialSent = true
+                authenticationRequestSent = true
                 
             case let response as AuthenticationMD5PasswordResponse:
                 
@@ -203,7 +194,7 @@ public class Connection: CustomStringConvertible {
                 }
                 
                 func md5AsHex(data: Data) -> String {
-                    return Postgres.md5(data: data).map { String(format: "%02x", $0) }.joined()
+                    return Crypto.md5(data: data).map { String(format: "%02x", $0) }.joined()
                 }
                 
                 // Compute concat('md5', md5(concat(md5(concat(password, username)), random-salt))).
@@ -217,15 +208,80 @@ public class Connection: CustomStringConvertible {
                 
                 let passwordMessageRequest = PasswordMessageRequest(password: "md5" + saltedHash)
                 try sendRequest(passwordMessageRequest)
-                credentialSent = true
+                authenticationRequestSent = true
 
+            case let response as AuthenticationSASLResponse:
+                
+                guard case let .scramSHA256(password) = configuration.credential else {
+                    log(.warning, "SCRAM-SHA-256 credential required to authenticate")
+                    throw PostgresError.scramSHA256CredentialRequired
+                }
+                
+                guard scramSHA256Authenticator == nil else {
+                    log(.warning, "Unexpected response type: \(response.responseType)")
+                    
+                    throw PostgresError.serverError(
+                        description: "unexpected response type '\(response.responseType)'")
+                }
+                
+                guard response.mechanisms.contains("SCRAM-SHA-256") else {
+                    throw PostgresError.unsupportedAuthenticationType(
+                        authenticationType: String(describing: response))
+                }
+                
+                scramSHA256Authenticator = SCRAMSHA256Authenticator(user: user, password: password)
+                let clientFirstMessage = try scramSHA256Authenticator!.prepareClientFirstMessage()
+                
+                let saslInitialRequest = SASLInitialRequest(
+                    mechanism: "SCRAM-SHA-256",
+                    clientFirstMessage: clientFirstMessage)
+                
+                try sendRequest(saslInitialRequest)
+                authenticationRequestSent = true
+                
+            case let response as AuthenticationSASLContinueResponse:
+                
+                guard scramSHA256Authenticator?.state == .sentClientFirstMessage else {
+                    log(.warning, "Unexpected response type: \(response.responseType)")
+                    
+                    throw PostgresError.serverError(
+                        description: "unexpected response type '\(response.responseType)'")
+                }
+                
+                try scramSHA256Authenticator!.processServerFirstMessage(response.serverFirstMessage)
+                let clientFinalMessage = try scramSHA256Authenticator!.prepareClientFinalMessage()
+                
+                let saslRequest = SASLRequest(clientFinalMessage: clientFinalMessage)
+                try sendRequest(saslRequest)
+                
+            case let response as AuthenticationSASLFinalResponse:
+                
+                guard scramSHA256Authenticator?.state == .sentClientFinalMessage else {
+                    log(.warning, "Unexpected response type: \(response.responseType)")
+                    
+                    throw PostgresError.serverError(
+                        description: "unexpected response type '\(response.responseType)'")
+                }
+                
+                try scramSHA256Authenticator!.processServerFinalMessage(response.serverFinalMessage)
+                
             default:
                 fatalError("\(authenticationResponse) not handled when connecting")
             }
         }
         
         try receiveResponse(type: ReadyForQueryResponse.self)
-        
+
+        if !authenticationRequestSent {
+            guard case .trust = configuration.credential else {
+                // Postgres allowed trust authentication, yet a cleartextPassword,
+                // md5Password, or scramSHA256 credential was supplied.  Throw to
+                // alert of a possible Postgres misconfiguration.
+                log(.warning, "Trust credential required to authenticate")
+                throw PostgresError.trustCredentialRequired
+            }
+        }
+
         log(.fine, "Successfully connected")
         success = true
     }
@@ -489,7 +545,7 @@ public class Connection: CustomStringConvertible {
     /// Between when it is created and when it is closed, a connection can perform a sequence of
     /// SQL statements.  Each statement is performed by an exchange between PostgresClientKit and
     /// the Postgres server of "extended query" requests and responses.  For more information, see
-    /// https://www.postgresql.org/docs/11/protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY.
+    /// https://www.postgresql.org/docs/12/protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY.
     ///
     /// A SQL statement can return a result consisting of a one or more rows.  Instead of exposing
     /// this result as an array of rows, PostgresClientKit exposes an iterator by which the next
@@ -900,7 +956,7 @@ public class Connection: CustomStringConvertible {
         }
         
         internal let responseType: Character
-        private var bytesRemaining: Int
+        internal private(set) var bytesRemaining: Int
         internal let connection: Connection
         
         /// Reads an unsigned 8-bit integer without consuming it.

@@ -46,7 +46,7 @@ ssl = on
 
 ## Authentication issues
 
-Review the [`pg_hba.conf`](https://www.postgresql.org/docs/11/auth-pg-hba-conf.html) file for your Postgres server.  PostgresClientKit supports the `trust`, `password`, and `md5` options for `auth-method`.
+Review the [`pg_hba.conf`](https://www.postgresql.org/docs/11/auth-pg-hba-conf.html) file for your Postgres server.  PostgresClientKit supports the `trust`, `password`, `md5`, and `scram-sha-256` options for `auth-method`.
 
 
 ## Cursor is unexpectedly closed

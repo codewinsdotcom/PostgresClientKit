@@ -49,7 +49,13 @@ struct TestEnvironment {
     /// The password of the Postgres user identified by `maryUsername`.
     let maryPassword = "welcome1"
     
+    /// The username of a Postgres user who can connect by `Credential.scramSHA256`.
+    let sallyUsername = "sally_postgresclientkittest"
+
+    /// The password of the Postgres user identified by `sallyUsername`.
+    let sallyPassword = "welcome1"
     
+
     /// The current test environment.
     static let current = TestEnvironment()
 }

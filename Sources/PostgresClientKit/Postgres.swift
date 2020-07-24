@@ -48,128 +48,6 @@ public struct Postgres {
     
     
     //
-    // MARK: Crypto
-    //
-    
-    /// Computes an MD5 digest.
-    ///
-    /// - SeeAlso: [Wikipedia](https://en.wikipedia.org/wiki/MD5)
-    ///
-    /// - Parameter data: the input data
-    /// - Returns: the 16-byte digest
-    internal static func md5(data: Data) -> Data {
-        
-        /// The per-round shift amounts.
-        let s: [UInt32] = [
-            7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
-            5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
-            4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
-            6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21 ]
-        
-        /// Constants derived from the binary integer part of the sines of integers (radians).
-        let k: [UInt32] = [
-            0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
-            0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
-            0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
-            0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
-            0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
-            0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
-            0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
-            0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
-            0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
-            0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
-            0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
-            0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
-            0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
-            0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
-            0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
-            0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391 ]
-        
-        // Initialize variables.
-        var a0: UInt32 = 0x67452301
-        var b0: UInt32 = 0xefcdab89
-        var c0: UInt32 = 0x98badcfe
-        var d0: UInt32 = 0x10325476
-        
-        // Pre-processing: add a single 1 bit.
-        var input = data
-        input.append(0x80)
-        
-        // Pre-processing: pad with zeros until message length in bits is 448 (mod 512).
-        input.append(Data(count: (120 - (input.count % 64)) % 64))
-        assert(input.count % 64 == 56)
-        
-        // Append original length in bits mod 2^64 to message.
-        var originalLengthInBits = UInt64(data.count * 8).littleEndian
-        input.append(Data(bytes: &originalLengthInBits, count: 8))
-        
-        // Process the message in successive 512-bit chunks.
-        for chunk in stride(from: 0, to: input.count, by: 64) {
-            
-            // Break chunk into sixteen 32-bit words.
-            var m = [UInt32]()
-            
-            for i in 0..<16 {
-                let offset = chunk + (4 * i)
-                
-                m.append(
-                    UInt32(input[offset    ]) << 0 |
-                        UInt32(input[offset + 1]) << 8 |
-                        UInt32(input[offset + 2]) << 16 |
-                        UInt32(input[offset + 3]) << 24)
-            }
-            
-            // Initialize hash value for this chunk.
-            var a = a0
-            var b = b0
-            var c = c0
-            var d = d0
-            
-            // Main loop.
-            for i in 0..<64 {
-                
-                var f: UInt32
-                var g: Int
-                
-                switch i {
-                case 0..<16:    f = (b & c) | ((~b) & d)    ; g = i
-                case 16..<32:   f = (d & b) | ((~d) & c)    ; g = (5 * i + 1) % 16
-                case 32..<48:   f = b ^ c ^ d               ; g = (3 * i + 5) % 16
-                case 48..<64:   f = c ^ (b | (~d))          ; g = (7 * i) % 16
-                default: fatalError() // can't happen
-                }
-                
-                f = f &+ a &+ k[i] &+ m[g]
-                a = d
-                d = c
-                c = b
-                b = b &+ ((f << s[i]) | (f >> (32 - s[i])))
-            }
-            
-            // Add this chunk's hash to result so far.
-            a0 = a0 &+ a
-            b0 = b0 &+ b
-            c0 = c0 &+ c
-            d0 = d0 &+ d
-        }
-        
-        // Form the output.
-        a0 = a0.littleEndian
-        b0 = b0.littleEndian
-        c0 = c0.littleEndian
-        d0 = d0.littleEndian
-        
-        var output = Data()
-        output.append(Data(bytes: &a0, count: 4))
-        output.append(Data(bytes: &b0, count: 4))
-        output.append(Data(bytes: &c0, count: 4))
-        output.append(Data(bytes: &d0, count: 4))
-        
-        return output
-    }
-    
-    
-    //
     // MARK: Localization
     //
     
@@ -211,7 +89,7 @@ public struct Postgres {
     
     #endif
     
-    /// Temnporary workaround for https://bugs.swift.org/browse/SR-11569.
+    /// Temporary workaround for https://bugs.swift.org/browse/SR-11569.
     internal static func isValidDate(_ dc: DateComponents) -> Bool {
         
         var calendar = dc.calendar ?? enUsPosixUtcCalendar
@@ -222,6 +100,105 @@ public struct Postgres {
         
         return dc.isValidDate(in: calendar)
     }
+}
+
+
+//
+// MARK: Type conversion extensions
+//
+
+internal extension UInt16 {
+    
+    /// The big-endian representation.
+    var data: Data {
+        var value = bigEndian
+        return Data(bytes: &value, count: 2)
+    }
+}
+
+internal extension UInt32 {
+    
+    /// The big-endian representation.
+    var data: Data {
+        var value = bigEndian
+        return Data(bytes: &value, count: 4)
+    }
+}
+
+internal extension UInt64 {
+    
+    var data: Data {
+        var value = bigEndian
+        return Data(bytes: &value, count: 8)
+    }
+}
+
+internal extension String {
+    
+    /// The UTF8 representation.
+    var data: Data {
+        return Data(utf8)
+    }
+    
+    /// The null-terminated UTF8 representation.
+    var dataZero: Data {
+        var data = self.data
+        data.append(0)
+        return data
+    }
+}
+
+internal extension Data {
+    
+    init?(hexEncoded: String) {
+        
+        let utf8 = Array(hexEncoded.utf8)
+        guard utf8.count % 2 == 0 else { return nil }
+        
+        var bytes = [UInt8]()
+        bytes.reserveCapacity(utf8.count / 2)
+        
+        for i in stride(from: 0, to: utf8.count, by: 2) {
+            let hi = Data.charToHexDigit[Int(utf8[i])]
+            let lo = Data.charToHexDigit[Int(utf8[i + 1])]
+            guard hi != 0xff && lo != 0xff else { return nil }
+            bytes.append(hi << 4 | lo)
+        }
+        
+        self.init(bytes)
+    }
+    
+    func hexEncodedString(prefix: String = "") -> String {
+        
+        var hexEncoded = Array(prefix.utf8)
+        hexEncoded.reserveCapacity(hexEncoded.count + count * 2)
+        
+        for byte in self {
+            let i = Int(byte)
+            hexEncoded.append(Data.hexDigitToChar[i / 16])
+            hexEncoded.append(Data.hexDigitToChar[i % 16])
+        }
+        
+        return String(bytes: hexEncoded, encoding: .utf8)!
+    }
+
+    private static let hexDigitToChar = Array("0123456789abcdef".utf8)
+    
+    private static let charToHexDigit: [UInt8] = {
+        
+        var map = [UInt8](repeating: 0xff, count: 256)
+        
+        for i in 0x00...0x09 {
+            map[0x30 + i] = UInt8(i)        // "0" to "9"
+        }
+        
+        for i in 0x0a...0x0f {
+            map[0x41 - 0x0a + i] = UInt8(i) // "A" to "F"
+            map[0x61 - 0x0a + i] = UInt8(i) // "a" to "f"
+        }
+        
+        return map
+    }()
 }
 
 // EOF

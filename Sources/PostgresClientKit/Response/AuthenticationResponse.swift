@@ -67,22 +67,13 @@ internal class AuthenticationResponse: Response {
                 authenticationType: "AuthenticationSSPI")
             
         case 10:
-            connection.log(.warning, "Unsupported authentication type: AuthenticationSASL")
-            
-            throw PostgresError.unsupportedAuthenticationType(
-                authenticationType: "AuthenticationSASL")
-            
+            return try AuthenticationSASLResponse(responseBody: responseBody)
+
         case 11:
-            connection.log(.warning, "Unsupported authentication type: AuthenticationSASLContinue")
-            
-            throw PostgresError.unsupportedAuthenticationType(
-                authenticationType: "AuthenticationSASLContinue")
+            return try AuthenticationSASLContinueResponse(responseBody: responseBody)
             
         case 12:
-            connection.log(.warning, "Unsupported authentication type: AuthenticationSASLFinal")
-            
-            throw PostgresError.unsupportedAuthenticationType(
-                authenticationType: "AuthenticationSASLFinal")
+            return try AuthenticationSASLFinalResponse(responseBody: responseBody)
             
         default:
             connection.log(.warning, "Unsupported authentication type: \(authenticationType)")

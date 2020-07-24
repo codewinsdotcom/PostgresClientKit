@@ -34,9 +34,18 @@ public enum PostgresError: Error {
     
     /// The Postgres server has a parameter set to a value incompatible with PostgresClientKit.
     case invalidParameterValue(name: String, value: String, requiredValue: String)
-        
+    
+    /// The specified username does not meet the SCRAM-SHA-256 requirements for a username.
+    case invalidUsernameString
+    
+    /// The specified password does not meet the SCRAM-SHA-256 requirements for a password.
+    case invalidPasswordString
+    
     /// The Postgres server requires a `Credential.md5Password` for authentication.
     case md5PasswordCredentialRequired
+    
+    /// The Postgres server requires a `Credential.scramSHA256` for authentication.
+    case scramSHA256CredentialRequired
     
     /// The Postgres server reported an internal error or returned an invalid response.
     case serverError(description: String)

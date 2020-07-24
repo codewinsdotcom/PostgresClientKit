@@ -246,7 +246,7 @@ public extension PostgresValue {
         
         guard let rawValue = rawValue else { return nil }
         
-        // https://www.postgresql.org/docs/11/datatype-boolean.html
+        // https://www.postgresql.org/docs/12/datatype-boolean.html
         switch rawValue {
         case "t": return true
         case "f": return false

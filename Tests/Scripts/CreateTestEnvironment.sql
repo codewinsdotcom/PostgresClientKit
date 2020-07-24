@@ -41,8 +41,14 @@ DROP USER IF EXISTS charlie_postgresclientkittest;
 CREATE USER charlie_postgresclientkittest WITH PASSWORD 'welcome1';
 GRANT ALL PRIVILEGES ON DATABASE postgresclientkittest TO charlie_postgresclientkittest;
 
+SET password_encryption = 'md5'; -- prevent Postgres from upgrading authn to scram-sha-256
 DROP USER IF EXISTS mary_postgresclientkittest;
 CREATE USER mary_postgresclientkittest WITH PASSWORD 'welcome1';
 GRANT ALL PRIVILEGES ON DATABASE postgresclientkittest TO mary_postgresclientkittest;
+SET password_encryption = 'scram-sha-256';
+
+DROP USER IF EXISTS sally_postgresclientkittest;
+CREATE USER sally_postgresclientkittest WITH PASSWORD 'welcome1';
+GRANT ALL PRIVILEGES ON DATABASE postgresclientkittest TO sally_postgresclientkittest;
 
 -- EOF

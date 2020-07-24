@@ -31,7 +31,7 @@ internal class Response: CustomStringConvertible {
     
     /// The response type.
     ///
-    /// See https://www.postgresql.org/docs/11/static/protocol-message-formats.html.
+    /// See https://www.postgresql.org/docs/12/static/protocol-message-formats.html.
     internal let responseType: Character
     
 

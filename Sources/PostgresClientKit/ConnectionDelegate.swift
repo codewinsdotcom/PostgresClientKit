@@ -24,7 +24,7 @@ public protocol ConnectionDelegate: AnyObject {
     /// Called upon receiving a notice message from the Postgres server.
     ///
     /// - SeeAlso: [Postgres: Message Flow - Asynchronous
-    ///     Opererations](https://www.postgresql.org/docs/11/protocol-flow.html#PROTOCOL-ASYNC)
+    ///     Opererations](https://www.postgresql.org/docs/12/protocol-flow.html#PROTOCOL-ASYNC)
     ///
     /// - Parameters:
     ///   - connection: the `Connection`
@@ -35,7 +35,7 @@ public protocol ConnectionDelegate: AnyObject {
     /// Called upon a change in the value of certain Postgres server parameters.
     ///
     /// - SeeAlso: [Postgres: Message Flow - Asynchronous
-    ///     Opererations](https://www.postgresql.org/docs/11/protocol-flow.html#PROTOCOL-ASYNC)
+    ///     Opererations](https://www.postgresql.org/docs/12/protocol-flow.html#PROTOCOL-ASYNC)
     ///
     /// - Parameters:
     ///   - connection: the `Connection`
@@ -45,7 +45,7 @@ public protocol ConnectionDelegate: AnyObject {
     
     /// Called upon receiving a notification message from the Postgres server.
     ///
-    /// - SeeAlso: [Postgres: NOTIFY command](https://www.postgresql.org/docs/11/sql-notify.html)
+    /// - SeeAlso: [Postgres: NOTIFY command](https://www.postgresql.org/docs/12/sql-notify.html)
     ///
     /// - Parameters:
     ///   - connection: the `Connection`

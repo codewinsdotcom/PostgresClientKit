@@ -9,8 +9,9 @@ After [installing Postgres](https://www.postgresql.org/download/), follow the st
 In `postgresql.conf`, ensure:
 
     ssl = on
+    password_encryption = scram-sha-256
     
-If running Postgres on a different host than PostgresClientKit, confirm `postgressql.conf` also sets [`listen_addresses`](https://www.postgresql.org/docs/11/runtime-config-connection.html#RUNTIME-CONFIG-CONNECTION-SETTINGS) to the desired network interface.
+If running Postgres on a different host than PostgresClientKit, confirm `postgressql.conf` also sets [`listen_addresses`](https://www.postgresql.org/docs/12/runtime-config-connection.html#RUNTIME-CONFIG-CONNECTION-SETTINGS) to the desired network interface.
     
 ## Configure authentication
 
@@ -24,6 +25,8 @@ host    postgresclientkittest   charlie_postgresclientkittest   0.0.0.0/0       
 host    postgresclientkittest   charlie_postgresclientkittest   ::0/0           password
 host    postgresclientkittest   mary_postgresclientkittest      0.0.0.0/0       md5
 host    postgresclientkittest   mary_postgresclientkittest      ::0/0           md5
+host    postgresclientkittest   sally_postgresclientkittest     0.0.0.0/0       scram-sha-256
+host    postgresclientkittest   sally_postgresclientkittest     ::0/0           scram-sha-256
 ```
 
 This configures how Postgres authenticates three test users.
@@ -31,6 +34,7 @@ This configures how Postgres authenticates three test users.
 - User `terry_postgresclientkittest` authenticates by `trust` (no password)
 - User `charlie_postgresclientkittest` authenticates by `password` (a cleartext password)
 - User `mary_postgresclientkittest` authenticates by `md5` (an MD5 hash of the username, password, and random salt)
+- User `sally_postgresclientkittest` authenticates by `scram-sha-256` (the most secure authentication mechanism supported)
 
 (The users will be created below.)
 
