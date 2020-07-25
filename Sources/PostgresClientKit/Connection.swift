@@ -193,18 +193,14 @@ public class Connection: CustomStringConvertible {
                     throw PostgresError.md5PasswordCredentialRequired
                 }
                 
-                func md5AsHex(data: Data) -> String {
-                    return Crypto.md5(data: data).map { String(format: "%02x", $0) }.joined()
-                }
-                
                 // Compute concat('md5', md5(concat(md5(concat(password, username)), random-salt))).
                 var passwordUser = password.data
                 passwordUser.append(user.data)
-                let passwordUserHash = md5AsHex(data: passwordUser)
+                let passwordUserHash = Crypto.md5(data: passwordUser).hexEncodedString()
                 
                 var salted = passwordUserHash.data
                 salted.append(response.salt.data)
-                let saltedHash = md5AsHex(data: salted)
+                let saltedHash = Crypto.md5(data: salted).hexEncodedString()
                 
                 let passwordMessageRequest = PasswordMessageRequest(password: "md5" + saltedHash)
                 try sendRequest(passwordMessageRequest)

@@ -29,7 +29,7 @@ class CryptoTest: PostgresClientKitTestCase {
         
         func md5(message: String, expectedDigest: String) {
             let data = Data(message.utf8)
-            let digest = Crypto.md5(data: data).map { String(format: "%02x", $0) }.joined()
+            let digest = Crypto.md5(data: data).hexEncodedString()
             XCTAssertEqual(digest, expectedDigest)
         }
         
@@ -60,7 +60,7 @@ class CryptoTest: PostgresClientKitTestCase {
         
         func sha256(message: String, expectedDigest: String) {
             let data = Data(message.utf8)
-            let digest = Crypto.sha256(data: data).map { String(format: "%02x", $0) }.joined()
+            let digest = Crypto.sha256(data: data).hexEncodedString()
             XCTAssertEqual(digest, expectedDigest)
         }
         
@@ -92,7 +92,7 @@ class CryptoTest: PostgresClientKitTestCase {
         
         func testHMACSHA256(key: Data, message: Data, expectedDigest: String) {
             let data = Crypto.hmacSHA256(key: key, message: message)
-            let digest = data.map { String(format: "%02x", $0) }.joined()
+            let digest = data.hexEncodedString()
             XCTAssertEqual(digest, expectedDigest)
         }
 
@@ -236,7 +236,7 @@ class CryptoTest: PostgresClientKitTestCase {
             let keyData = Crypto.pbkdf2HMACSHA256(password: password,
                                              salt: salt,
                                              iterationCount: iterationCount)
-            let key = keyData.map { String(format: "%02x", $0) }.joined()
+            let key = keyData.hexEncodedString()
             XCTAssertEqual(key, expectedKey)
 
             // Also test pure Swift implementation for a subset of test cases.
@@ -244,7 +244,7 @@ class CryptoTest: PostgresClientKitTestCase {
                 let keyData = Crypto.pbkdf2HMACSHA256Swift(password: password,
                                                       salt: salt,
                                                       iterationCount: iterationCount)
-                let key = keyData.map { String(format: "%02x", $0) }.joined()
+                let key = keyData.hexEncodedString()
                 XCTAssertEqual(key, expectedKey)
             }
             
