@@ -75,7 +75,7 @@ extension CryptoTest {
     static let __allTests__CryptoTest = [
         ("testHMACSHA256", testHMACSHA256),
         ("testMD5", testMD5),
-        ("testPBKDF2HMACSA256", testPBKDF2HMACSA256),
+        ("testPBKDF2HMACSHA256", testPBKDF2HMACSHA256),
         ("testSHA256", testSHA256),
     ]
 }

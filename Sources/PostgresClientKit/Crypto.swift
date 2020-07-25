@@ -367,31 +367,31 @@ internal struct Crypto {
     ///   - salt: the salt
     ///   - iterationCount: the iteration count
     /// - Returns: the 32-byte PBKDF2 key
-    internal static func pbkdf2HMACSA256(password: Data, salt: Data, iterationCount: Int) -> Data {
+    internal static func pbkdf2HMACSHA256(password: Data, salt: Data, iterationCount: Int) -> Data {
         
         #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
         
         // On Apple platforms, use CommonCrypto.  (Using CryptoKit would require macOS 10.15+ or
         // iOS 13+.)
-        return pbkdf2HMACSA256CommonCrypto(password: password, salt: salt, iterationCount: iterationCount)
+        return pbkdf2HMACSHA256CommonCrypto(password: password, salt: salt, iterationCount: iterationCount)
 
         #elseif os(Linux)
         
         // On Linux platforms, use OpenSSL.  (OpenSSL is already being brought in by BlueSSLService.
         // Using Swift Crypto would bring in hundreds of source files, as well as require macOS
         // 10.15+ or iOS 13+.)
-        return pbkdf2HMACSA256OpenSSL(password: password, salt: salt, iterationCount: iterationCount)
+        return pbkdf2HMACSHA256OpenSSL(password: password, salt: salt, iterationCount: iterationCount)
 
         #else
         
         // Fallback to pure Swift.  This is slower than CommonCrypo and OpenSSL.
-        return pbkdf2HMACSA256Swift(password: password, salt: salt, iterationCount: iterationCount)
+        return pbkdf2HMACSHA256Swift(password: password, salt: salt, iterationCount: iterationCount)
         
         #endif
     }
     
     #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-    private static func pbkdf2HMACSA256CommonCrypto(password: Data,
+    private static func pbkdf2HMACSHA256CommonCrypto(password: Data,
                                                     salt: Data,
                                                     iterationCount: Int) -> Data {
         
@@ -418,7 +418,7 @@ internal struct Crypto {
     #endif
     
     #if os(Linux)
-    private static func pbkdf2HMACSA256OpenSSL(password: Data,
+    private static func pbkdf2HMACSHA256OpenSSL(password: Data,
                                                salt: Data,
                                                iterationCount: Int) -> Data {
         
@@ -443,7 +443,7 @@ internal struct Crypto {
     }
     #endif
     
-    internal static func pbkdf2HMACSA256Swift(password: Data,
+    internal static func pbkdf2HMACSHA256Swift(password: Data,
                                               salt: Data,
                                               iterationCount: Int) -> Data {
         

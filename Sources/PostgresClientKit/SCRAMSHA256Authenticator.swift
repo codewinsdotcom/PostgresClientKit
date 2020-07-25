@@ -237,7 +237,7 @@ internal class SCRAMSHA256Authenticator {
     }
     
     private func Hi(str: Data, salt: Data, i iterationCount: Int) -> Data {
-        return Crypto.pbkdf2HMACSA256(password: str, salt: salt, iterationCount: iterationCount)
+        return Crypto.pbkdf2HMACSHA256(password: str, salt: salt, iterationCount: iterationCount)
     }
     
     

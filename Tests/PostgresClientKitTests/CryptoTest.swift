@@ -226,14 +226,14 @@ class CryptoTest: PostgresClientKitTestCase {
                 """)
     }
     
-    func testPBKDF2HMACSA256() {
+    func testPBKDF2HMACSHA256() {
         
-        func testPBKDF2HMACSA256(password: Data,
+        func testPBKDF2HMACSHA256(password: Data,
                                  salt: Data,
                                  iterationCount: Int,
                                  expectedKey: String) {
             
-            let keyData = Crypto.pbkdf2HMACSA256(password: password,
+            let keyData = Crypto.pbkdf2HMACSHA256(password: password,
                                              salt: salt,
                                              iterationCount: iterationCount)
             let key = keyData.map { String(format: "%02x", $0) }.joined()
@@ -241,7 +241,7 @@ class CryptoTest: PostgresClientKitTestCase {
 
             // Also test pure Swift implementation for a subset of test cases.
             if iterationCount <= 256 {
-                let keyData = Crypto.pbkdf2HMACSA256Swift(password: password,
+                let keyData = Crypto.pbkdf2HMACSHA256Swift(password: password,
                                                       salt: salt,
                                                       iterationCount: iterationCount)
                 let key = keyData.map { String(format: "%02x", $0) }.joined()
@@ -252,7 +252,7 @@ class CryptoTest: PostgresClientKitTestCase {
         }
         
         // Test vectors from https://stackoverflow.com/questions/5130513/pbkdf2-hmac-sha2-test-vectors
-        testPBKDF2HMACSA256(
+        testPBKDF2HMACSHA256(
             password: Data("password".utf8),
             salt: Data("salt".utf8),
             iterationCount: 1,
@@ -264,7 +264,7 @@ class CryptoTest: PostgresClientKitTestCase {
                 0805987cb70be17b
                 """)
         
-        testPBKDF2HMACSA256(
+        testPBKDF2HMACSHA256(
             password: Data("password".utf8),
             salt: Data("salt".utf8),
             iterationCount: 2,
@@ -276,7 +276,7 @@ class CryptoTest: PostgresClientKitTestCase {
                 d6e2d85a95474c43
                 """)
         
-        testPBKDF2HMACSA256(
+        testPBKDF2HMACSHA256(
             password: Data("password".utf8),
             salt: Data("salt".utf8),
             iterationCount: 4096,
@@ -288,7 +288,7 @@ class CryptoTest: PostgresClientKitTestCase {
                 a4963873aa98134a
                 """)
 
-        testPBKDF2HMACSA256(
+        testPBKDF2HMACSHA256(
             password: Data("password".utf8),
             salt: Data("salt".utf8),
             iterationCount: 16777216,
@@ -300,7 +300,7 @@ class CryptoTest: PostgresClientKitTestCase {
                 17ad10e3ac6eba46
                 """)
 
-        testPBKDF2HMACSA256(
+        testPBKDF2HMACSHA256(
             password: Data("passwordPASSWORDpassword".utf8),
             salt: Data("saltSALTsaltSALTsaltSALTsaltSALTsalt".utf8),
             iterationCount: 4096,
@@ -312,7 +312,7 @@ class CryptoTest: PostgresClientKitTestCase {
                 1c4e2a1fb8dd53e1
                 """)
 
-        testPBKDF2HMACSA256(
+        testPBKDF2HMACSHA256(
             password: Data("pass\0word".utf8),
             salt: Data("sa\0lt".utf8),
             iterationCount: 4096,
