@@ -54,9 +54,9 @@ internal class StartupRequest: Request {
         body.append(applicationName.dataZero)
         
         for parameter in Parameter.values {
-            if parameter.isSetWhenConnecting {
+            if let value = parameter.valueSetWhenConnecting {
                 body.append(parameter.name.dataZero)
-                body.append(parameter.value.dataZero)
+                body.append(value.dataZero)
             }
         }
         

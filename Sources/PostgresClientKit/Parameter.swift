@@ -31,72 +31,67 @@ internal struct Parameter {
     /// The parameter name.
     internal let name: String
     
-    /// The parameter value desired by PostgresClientKit.
-    internal let value: String
+    /// The parameter values allowed by PostgresClientKit, or `nil` for any value.
+    internal let allowedValues: [String]?
     
-    /// Whether PostgresClientKit sets the value of this parameter in creating a `Connection`.
-    internal let isSetWhenConnecting: Bool
-    
-    /// Whether PostgresClientKit checks the value of this parameter when it receives a
-    /// `ParameterStatusResponse`.
-    internal let isCheckedUponParameterStatusResponse: Bool
+    /// The parameter value set by PostgresClientKit in creating a `Connection`, or `nil` to not
+    /// set a value.
+    internal let valueSetWhenConnecting: String?
     
     /// The parameters of interest to PostgresClientKit.
     internal static let values = [
         
         // PostgresClientKit requires strings received from the Postgres server to be UTF8 format.
         Parameter(name: "client_encoding",
-                  value: "UTF8",
-                  isSetWhenConnecting: true,
-                  isCheckedUponParameterStatusResponse: true),
+                  allowedValues: [ "UTF8" ],
+                  valueSetWhenConnecting: "UTF8"),
         
         // PostgresClientKit requires timestamps, dates, and times received from the Postgres server
         // to be ISO-8601 format.
         Parameter(name: "DateStyle",
-                  value: "ISO, MDY",
-                  isSetWhenConnecting: true,
-                  isCheckedUponParameterStatusResponse: true),
+                  allowedValues: [ "ISO, MDY", "ISO, DMY", "ISO, YMD" ],
+                  valueSetWhenConnecting: "ISO, MDY"),
         
         // PostgresClientKit requires timestamps and times received from the Postgres server to be
         // in the UTC/GMT time zone.
         Parameter(name: "TimeZone",
-                  value: "GMT",
-                  isSetWhenConnecting: true,
-                  isCheckedUponParameterStatusResponse: true),
-        
+                  allowedValues: [ "GMT" ],
+                  valueSetWhenConnecting: "GMT"),
+
         // PostgresClientKit requires `bytea` values received from the Postgres server to be hex
         // encoded.
         Parameter(name: "bytea_output",
-                  value: "hex",
-                  isSetWhenConnecting: true,
-                  isCheckedUponParameterStatusResponse: true),
+                  allowedValues: [ "hex" ],
+                  valueSetWhenConnecting: "hex"),
     ]
     
-    /// Checks whether the parameter in the specified `ParameterStatusResponse` is required by
-    /// PostgresClientKit to have a certain value and, if so, whether it has that value.
+    /// Checks whether the parameter in the specified `ParameterStatusResponse` is constrained by
+    /// PostgresClientKit to certain values and, if so, whether that constraint is satisfied.
     ///
     /// - Parameter response: the response to check
-    /// - Throws: `PostgresError.invalidParameterValue` if the parameter does not have the required
+    /// - Throws: `PostgresError.invalidParameterValue` if the parameter does not have an allowed
     ///     value
     internal static func checkParameterStatusResponse(_ response: ParameterStatusResponse,
                                                       connection: Connection) throws {
         
         if let parameter = values.first(where: {
             $0.name == response.name
-                && $0.isCheckedUponParameterStatusResponse
-                && $0.value != response.value } ) {
+                && $0.allowedValues != nil
+                && !$0.allowedValues!.contains(response.value) } ) {
+            
+            let allowedValues = parameter.allowedValues!
             
             connection.log(
                 .warning,
-                "Invalid value for Postgres parameter (response.name): " +
-                "\(response.value) (must be \(parameter.value)); closing connection")
+                "Invalid value for Postgres parameter \(response.name): " +
+                    "\(response.value) (allowedValues \(allowedValues)); closing connection")
             
             // The invalid parameter change already ocurred.  This connection is toast.
             connection.close()
             
             throw PostgresError.invalidParameterValue(name: response.name,
                                                       value: response.value,
-                                                      requiredValue: parameter.value)
+                                                      allowedValues: allowedValues)
         }
     }
 }

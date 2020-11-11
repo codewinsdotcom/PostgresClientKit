@@ -33,7 +33,7 @@ public enum PostgresError: Error {
     case cursorClosed
     
     /// The Postgres server has a parameter set to a value incompatible with PostgresClientKit.
-    case invalidParameterValue(name: String, value: String, requiredValue: String)
+    case invalidParameterValue(name: String, value: String, allowedValues: [String])
     
     /// The specified username does not meet the SCRAM-SHA-256 requirements for a username.
     case invalidUsernameString
