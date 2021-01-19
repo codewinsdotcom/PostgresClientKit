@@ -90,10 +90,10 @@ San Francisco on 1994-11-29: low: 43, high: 57, precipitation: Optional(0.0)
 
 PostgresClientKit is compatible with Linux, macOS, and iOS.  It has been tested on:
 
-- Ubuntu 18.04 LTS 
-- macOS 10.14, 10.15
-- iOS 12, 13
-- Postgres 10, 11, 12
+- Ubuntu 18.04 LTS, 20.04 LTS
+- macOS 10.14, 10.15, 11.1
+- iOS 12, 13, 14
+- Postgres 10, 11, 12, 13
 
 ## Building
 
