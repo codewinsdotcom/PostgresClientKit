@@ -1,0 +1,47 @@
+==============
+ISSUE_26_NOTES
+==============
+
+https://github.com/codewinsdotcom/PostgresClientKit/issues/26
+
+----------
+2020-01-21
+----------
+
+PROBLEM TO BE SOLVED
+
+PostgresClientKit uses Foundation types (such as DateFormatter, Calendar, and DateComponents) to
+convert date/time values from strings into more useful types.  This is non-performant.  Issue 26
+identifies better approaches.
+
+BASELINE
+
+Let's benchmark the current implementation.  All performance testing is running on "My Mac" using
+the Release build configuration (Swift Compiler - Code Generation Optimization Level "-O").  See
+ExistingPerformance.swift.
+
+    67.080 us PostgresValue(_:).timestampWithTimeZone().date
+   172.154 us PostgresValue(_:).timestamp().date(in:)
+   158.966 us PostgresValue(_:).date().date(in:)
+   170.791 us PostgresValue(_:).time().date(in: tz)
+   292.829 us PostgresValue(_:).timeWithTimeZone().date
+
+POTENTIAL IMPROVEMENT
+
+A couple of approaches (focused on PostgresTimestamp) were identified in Issue 26.
+
+    21.363 us PostgresValue(_:).fastDateSwiftParser(timeZone:)
+    22.599 us PostgresValue(_:).fastDateVsscanf(timeZone:)
+
+
+
+
+
+    
+
+-----
+TO DO
+-----
+
+- regenerate API doc & check for changes
+- check whether workarounds for Swift bugs are still required
