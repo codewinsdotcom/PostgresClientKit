@@ -13,8 +13,20 @@ class ExistingPerformance: XCTestCase {
     
     func test() throws {
         
-        let tz = TimeZone.current
+        // Results (My Mac, release build):
+        //
+        // PostgresClientKit
+        //    66.764 us PostgresValue(_:).timestampWithTimeZone().date     (10000 iterations) 2019-01-02 11:04:05 +0000
+        //   170.522 us PostgresValue(_:).timestamp().date(in:)            (1000 iterations) 2019-01-02 11:04:05 +0000
+        //   159.015 us PostgresValue(_:).date().date(in:)                 (1000 iterations) 2019-01-02 08:00:00 +0000
+        //   165.569 us PostgresValue(_:).time().date(in: tz)              (1000 iterations) 2000-01-01 11:04:05 +0000
+        //   290.003 us PostgresValue(_:).timeWithTimeZone().date          (1000 iterations) 2000-01-01 11:04:05 +0000
+        // Prototypes for PostgresTimestamp
+        //    21.414 us PostgresValue(_:).fastDateSwiftParser(timeZone:)   (10000 iterations) 2019-01-02 11:04:05 +0000
+        //    23.878 us PostgresValue(_:).fastDateVsscanf(timeZone:)       (10000 iterations) 2019-01-02 11:04:05 +0000
         
+        
+        let tz = TimeZone.current
         
         //
         // Performance of current PostgresClientKit release

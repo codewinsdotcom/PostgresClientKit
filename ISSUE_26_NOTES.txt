@@ -37,7 +37,7 @@ A couple of approaches (focused on PostgresTimestamp) were identified in Issue 2
 2020-01-22
 ----------
 
-DATA ANALYSIS
+ANALYSIS
 
 For the date/time types, what are the inputs, outputs, and internal state?
 
@@ -52,7 +52,7 @@ For the date/time types, what are the inputs, outputs, and internal state?
 We are most concerned about conversion from String to Date, since this is what is required to
 process result sets.
 
-For PTSTZ, this currrently entails calling DateFormatter.date(from:) either once (if the String
+For PTSWTZ, this currrently entails calling DateFormatter.date(from:) either once (if the String
 contains fractional seconds) or twice (if not).  This takes about 65 us, which is nearly all of
 the 67 us observed above.
 
@@ -71,9 +71,17 @@ For PTS, this currently entails:
 This sums to 150 us, which is nearly all of the observed 172 us.
 
 
+----------
+2020-01-23
+----------
 
+IDEA
 
-
+Our idea is to:
+    - replace DateFormatter.date(from:) with a hand-rolled parser that produces a DateComponents
+    - validate that DateComponents by round-tripping it to a Date without its fields changing
+    - for PTSWTZ, doing this round-trip using the TimeZone that we predict the consumer will use
+    - keeping a cache of Calendars for different TimeZones
 
 
 -----

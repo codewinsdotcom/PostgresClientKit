@@ -30,11 +30,10 @@ extension XCTestCase {
 
         let averageMicroseconds = elapsedSeconds / Double(iterations) * 1_000_000
         
-        print(String(format: " %9.3f us %@ (%d iterations) %@",
-                     averageMicroseconds,
-                     name.padding(toLength: 50, withPad: " ", startingAt: 0),
-                     iterations,
-                     output))
+        print(String(format: "%9.3f us ", averageMicroseconds) +
+                name.padding(toLength: 50, withPad: " ", startingAt: 0) +
+                String(format: "(%d iterations) ", iterations) +
+                output)
     }
 }
 
