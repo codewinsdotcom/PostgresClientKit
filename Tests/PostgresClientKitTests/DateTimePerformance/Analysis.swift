@@ -213,6 +213,154 @@ class Analysis: XCTestCase {
             return counter
         }
     }
+    
+    
+    func testDateComponentsCalendar() throws {
+        
+        // Results (My Mac, release build):
+        //
+        //  1.048 us DateComponents.calendar set (timeZone not set)    (100000 iterations) ()
+        // 10.485 us DateComponents.calendar set (timeZone set)        (10000 iterations) ()
+        //
+        // Conclusions:
+        // - Setting the calendar of a DateComponents is expensive if the timeZone is set
+
+        let calendar = Postgres.enUsPosixUtcCalendar
+        
+        var dc = DateComponents()
+        dc.year = 2019
+        dc.month = 1
+        dc.day = 2
+        dc.hour = 3
+        dc.minute = 4
+        dc.second = 5
+        dc.nanosecond = 365_000_000
+        
+        try time("DateComponents.calendar set (timeZone not set)") {
+            dc.calendar = calendar
+        }
+        
+        dc.timeZone = TimeZone.current
+        
+        try time("DateComponents.calendar set (timeZone set)") {
+            dc.calendar = calendar
+        }
+    }
+    
+    func testDateComponentsTimeZone() throws {
+    
+        // Results (My Mac, release build):
+        //
+        // 0.054 us DateComponents.timeZone set (calendar not set)    (10000000 iterations) ()
+        // 0.051 us DateComponents.timeZone set (calendar set)        (10000000 iterations) ()
+        //
+        // Conclusions:
+        // - Setting the timeZone of a DateComponents is cheap
+        
+        let tz = TimeZone.current
+        
+        var dc = DateComponents()
+        dc.year = 2019
+        dc.month = 1
+        dc.day = 2
+        dc.hour = 3
+        dc.minute = 4
+        dc.second = 5
+        dc.nanosecond = 365_000_000
+
+        try time("DateComponents.timeZone set (calendar not set)") {
+            dc.timeZone = tz
+        }
+        
+        dc.calendar = Postgres.enUsPosixUtcCalendar
+
+        try time("DateComponents.timeZone set (calendar set)") {
+            dc.timeZone = tz
+        }
+    }
+    
+    func testCalendarTimeZone() throws {
+
+        // Results (My Mac, release build):
+        //
+        // 0.081 us Calendar.timeZone set                             (10000000 iterations) ()
+        //
+        // Conclusions:
+        // - Setting the timeZone of an existing Calendar is cheap (but see below)
+        
+        let tz = TimeZone.current
+        var calendar = Postgres.enUsPosixUtcCalendar
+        
+        try time("Calendar.timeZone set") {
+            calendar.timeZone = tz
+        }
+    }
+    
+    func testCalendarCopy() throws {
+
+        // Results (My Mac, release build):
+        //
+        //  0.234 us Calendar copy                                     (1000000 iterations) America/Los_Angeles (current)
+        // 11.294 us Calendar copy + set timeZone                      (10000 iterations) America/Los_Angeles (current)        //
+        //
+        // Conclusions:
+        // - Creating a copy of a Calendar is cheap, but setting the timeZone on that copy is expensive
+        
+        var calendar = Postgres.enUsPosixUtcCalendar
+        let tz = TimeZone.current
+        calendar.timeZone = tz
+        
+        try time("Calendar copy") {
+            let calendar2 = calendar
+            return calendar2.timeZone
+        }
+        
+        try time("Calendar copy + set timeZone") {
+            var calendar2 = calendar
+            calendar2.timeZone = tz
+            return calendar2.timeZone
+        }
+    }
+    
+    var calendarsByTimeZone = [TimeZone: Calendar]()
+    
+    func testInitializeCalendar() throws {
+        
+        // Results (My Mac, release build):
+        //
+        // 20.362 us Calendar initialize                               (10000 iterations) gregorian (fixed)
+        //  0.203 us Calendar lookup by TimeZone                       (1000000 iterations) gregorian (fixed)
+        //
+        // Conclusions:
+        // - Initializing a calendar is expensive, so caching helps
+
+        let locale = Postgres.enUsPosixLocale
+        let timeZone = TimeZone.current
+        
+        try time("Calendar initialize") {
+            var calendar = Calendar(identifier: .gregorian)
+            calendar.locale = locale
+            calendar.timeZone = timeZone
+            return calendar
+        }
+        
+        try time("Calendar lookup by TimeZone") {
+            
+            semaphore.wait()
+            defer { semaphore.signal() }
+            
+            if let calendar = calendarsByTimeZone[timeZone] {
+                return calendar
+            }
+            
+            var calendar = Calendar(identifier: .gregorian)
+            calendar.locale = locale
+            calendar.timeZone = timeZone
+            calendarsByTimeZone[timeZone] = calendar
+            
+            return calendar
+        }
+    }
 }
 
 // EOF
