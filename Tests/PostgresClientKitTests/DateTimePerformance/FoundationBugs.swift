@@ -31,7 +31,7 @@ class FoundationBugs: XCTestCase {
     
     func testSR10516() throws {
         
-        // https://bugs.swift.org/browse/SR-10515
+        // https://bugs.swift.org/browse/SR-10516
         //
         // Conclusion: fixed (verified in Swift 5.3.32 Linux)
 
@@ -86,7 +86,6 @@ class FoundationBugs: XCTestCase {
 
         // Should be true.
         print("SR11569: dc.isValidDate(in: calendar) = \(dc.isValidDate(in: calendar))")
-        
     }
 }
 

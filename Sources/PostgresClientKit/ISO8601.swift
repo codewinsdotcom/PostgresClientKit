@@ -1,0 +1,523 @@
+//
+//  ISO8601.swift
+//  PostgresClientKit
+//
+//  Copyright 2021 David Pitfield and the PostgresClientKit contributors
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
+
+import Foundation
+
+internal class ISO8601 {
+
+    // 2020-01-02 12:34:56.789-07:00
+    internal static func parseTimestampWithTimeZone(_ value: String)
+        -> (DateComponents, Date, TimeZone)? {
+
+        do {
+            let parser = ISO8601(value)
+            try parser.optionalWhitespace()
+            try parser.date()
+            try parser.whitespace()
+            try parser.time()
+            try parser.optionalWhitespace()
+            try parser.timeZone()
+            try parser.optionalWhitespace()
+            try parser.end()
+            return validateDateComponents(parser.dateComponents)
+        } catch {
+            return nil
+        }
+    }
+
+    // 2020-01-02 12:34:56.789
+    internal static func parseTimestamp(_ value: String)
+        -> (DateComponents, Date, TimeZone)? {
+
+        do {
+            let parser = ISO8601(value)
+            try parser.optionalWhitespace()
+            try parser.date()
+            try parser.whitespace()
+            try parser.time()
+            try parser.optionalWhitespace()
+            try parser.end()
+            return validateDateComponents(parser.dateComponents, in: utcTimeZone)
+        } catch {
+            return nil
+        }
+    }
+
+    // 2020-01-02
+    internal static func parseDate(_ value: String)
+        -> (DateComponents, Date, TimeZone)? {
+
+        do {
+            let parser = ISO8601(value)
+            try parser.optionalWhitespace()
+            try parser.date()
+            try parser.optionalWhitespace()
+            try parser.end()
+            return validateDateComponents(parser.dateComponents, in: utcTimeZone)
+        } catch {
+            return nil
+        }
+    }
+
+    // 12:34:56.789
+    internal static func parseTime(_ value: String)
+        -> (DateComponents, Date, TimeZone)? {
+
+        do {
+            let parser = ISO8601(value)
+            try parser.optionalWhitespace()
+            try parser.time()
+            try parser.optionalWhitespace()
+            try parser.end()
+            return validateDateComponents(parser.dateComponents, in: utcTimeZone)
+        } catch {
+            return nil
+        }
+    }
+
+    // 12:34:56.789-07:00
+    internal static func parseTimeWithTimeZone(_ value: String)
+        -> (DateComponents, Date, TimeZone)? {
+
+        do {
+            let parser = ISO8601(value)
+            try parser.optionalWhitespace()
+            try parser.time()
+            try parser.optionalWhitespace()
+            try parser.timeZone()
+            try parser.optionalWhitespace()
+            try parser.end()
+            return validateDateComponents(parser.dateComponents)
+        } catch {
+            return nil
+        }
+    }
+
+    internal static func validateDateComponents(
+        _ dateComponents: DateComponents,
+        in timeZone: TimeZone? = nil)
+        -> (dateComponents: DateComponents, date: Date, timeZone: TimeZone)? {
+
+        // DateComponents.isValidDate(in:) is buggy (https://bugs.swift.org/browse/SR-11569) and
+        // slow.  We can do better ourselves (6 us versus 9 us).  The basic approach is to roundtrip
+        // from DateComponents to a Date and back without changing the values of the DateComponents
+        // properties.  This is basically the same thing that DateComponents.isValidDate(in:) does;
+        // see https://github.com/apple/swift-corelibs-foundation/blob/main/Sources/Foundation/NSDateComponents.swift.
+        // This approach also exposes the Date as an interim result, which we can tuck away for
+        // later use.
+
+        // If the timeZone property of DateComponents is set, then it is expensive to set the
+        // calendar property.  So check that the calendar property has not been set.
+        assert(dateComponents.calendar == nil)
+
+        // The time zone should be either specified by the caller or already set on the
+        // DateComponents, but not both.
+        assert (
+            (timeZone != nil && dateComponents.timeZone == nil) ||
+            (timeZone == nil && dateComponents.timeZone != nil))
+        let timeZone = timeZone ?? dateComponents.timeZone!
+
+        var dc = dateComponents // don't mutate the original DateComponents
+        dc.timeZone = timeZone
+
+        // Get a Calendar instance for the selected time zone.  Calendar.date(from:) is faster if
+        // the timeZone property of the DateComponents instance equals the timeZone property of the
+        // Calendar instance.  This also works around https://bugs.swift.org/browse/SR-10515.
+        // FIXME: no it doesn't!
+        let calendar = ISO8601.calendarFor(timeZone: timeZone)
+        assert(calendar.timeZone == dc.timeZone)
+
+        // Compute a Date from the DateComponents.
+        guard let date = calendar.date(from: dc) else {
+            return nil
+        }
+
+        // Convert that Date back to a second DateComponents instance.
+        let dc2 = calendar.dateComponents(
+            [ .year, .month, .day, .hour, .minute, .second, .nanosecond], from: date)
+
+        // For each DateComponents property of interest, check that the Date roundtrip preserved
+        // its value.
+        if (dc.year     != nil && dc2.year   != dc.year) ||
+            (dc.month   != nil && dc2.month  != dc.month) ||
+            (dc.day     != nil && dc2.day    != dc.day) ||
+            (dc.hour    != nil && dc2.hour   != dc.hour) ||
+            (dc.minute  != nil && dc2.minute != dc.minute) ||
+            (dc.second  != nil && dc2.second != dc.second) {
+            return nil
+        }
+
+        // Date is backed by a Double (minimum 15 digits precision).  This isn't quite sufficient
+        // to roundtrip with microsecond precision (yet alone nanosecond).  So we just check the
+        // roundtripped value to millisecond resolution.
+        if dc.nanosecond != nil && abs(dc2.nanosecond! - dc.nanosecond!) >= 001_000_000 {
+            return nil
+        }
+
+        // The DateComponents instance is valid.
+        return (dateComponents, date, timeZone)
+    }
+
+//    internal static func date(for dateComponents: DateComponents,
+//                              in timeZone: TimeZone?) throws -> Date {
+//
+//        // Setting the calendar property of DateComponents is expensive.  Check that we aren't.
+//        assert(dateComponents.calendar == nil)
+//
+//        // Check we have the required DateComponents properties.
+//        assert(dateComponents.year != nil)
+//        assert(dateComponents.month != nil)
+//        assert(dateComponents.day != nil)
+//        assert(dateComponents.hour != nil)
+//        assert(dateComponents.minute != nil)
+//        assert(dateComponents.second != nil)
+//        assert(dateComponents.nanosecond != nil)
+//
+//        // The time zone should be either specified by the caller or already set on the
+//        // DateComponents, but not both.
+//        assert (
+//            (timeZone != nil && dateComponents.timeZone == nil) ||
+//            (timeZone == nil && dateComponents.timeZone != nil))
+//        let timeZone = timeZone ?? dateComponents.timeZone!
+//
+//        var dateComponents = dateComponents
+//        dateComponents.timeZone = timeZone
+//
+//        // Get a Calendar instance for the selected time zone.  Calendar.date(from:) is faster if
+//        // the timeZone property of the DateComponents instance equals the timeZone property of the
+//        // Calendar instance.  This also works around https://bugs.swift.org/browse/SR-10515.
+//        let calendar = ISO8601.calendarFor(timeZone: timeZone)
+//        assert(calendar.timeZone == dateComponents.timeZone)
+//
+//        // Force unwrap the computed date.  This is safe because we validated the DateComponents
+//        // instance on the way in.
+//        return calendar.date(from: dateComponents)!
+//    }
+
+
+    //
+    // MARK: Implementation
+    //
+    
+    private struct ParseError: Error { }
+
+    private init(_ value: String) {
+        self.value = value
+        index = value.startIndex
+        dateComponents = DateComponents()
+    }
+
+    private let value: String
+    private var index: String.Index
+    private var dateComponents: DateComponents
+
+    private func date() throws {
+        dateComponents.year = try digits()
+        try dash()
+        dateComponents.month = try digits()
+        try dash()
+        dateComponents.day = try digits()
+    }
+
+    private func time() throws {
+
+        // Notes
+        //
+        // We try to emulate DateFormatter.date(from:) using the "HH:mm:ss.SSS" date pattern (see
+        // http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns).  As
+        // part of this, we truncate fractional seconds after three digits (millisecond resolution).
+        // This works well, since conversions to Date (which is backed by a 64-bit Double) are lossy
+        // even for microseconds, yet alone nanoseconds.
+
+        dateComponents.hour = try digits()
+        try colon()
+        dateComponents.minute = try digits()
+        try colon()
+        dateComponents.second = try digits()
+
+        if try !atEnd && peek() == "." {
+            _ = try next()
+            dateComponents.nanosecond = try fractionalDigits(denominator: 1_000) * 1_000_000
+        }
+    }
+
+    private func timeZone() throws {
+
+        // Notes
+        //
+        // We try to emulate DateFormatter.date(from:) using the "xxxxx" date pattern (see
+        // http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns).
+        //
+        // Timezone Offset
+        // -------- ------
+        // Z        0
+        // +1       3600
+        // +01      3600
+        // +12      43200   (New Zealand)
+        // +145     6300
+        // +0145    6300
+        // +1245    45900   (Chatham Islands)
+        // +12:45   45900
+        //
+        // +1:0     invalid
+        // +1:45    invalid
+        // +13:0    invalid
+        //
+        // (and similarly for "-" instead of "+")
+
+        var offsetSign = 1              // +1 or -1 for positive/negative offsets from GMT
+        var colonPosition: Int? = nil   // number of digits before the colon appears
+        let timeZone: TimeZone
+
+        switch try next() {
+
+        case "Z":
+            timeZone = ISO8601.utcTimeZone
+
+        case "-":
+            offsetSign = -1
+            fallthrough
+
+        case "+":
+            var digits = [Int]()
+
+            while !atEnd && digits.count < 4 {
+                let ch = try next()
+                switch ch {
+
+                case ":":
+                    if colonPosition != nil { throw ParseError() } // can have only one colon
+                    colonPosition = digits.count
+
+                case "0": digits.append(0)
+                case "1": digits.append(1)
+                case "2": digits.append(2)
+                case "3": digits.append(3)
+                case "4": digits.append(4)
+                case "5": digits.append(5)
+                case "6": digits.append(6)
+                case "7": digits.append(7)
+                case "8": digits.append(8)
+                case "9": digits.append(9)
+
+                default:
+                    break
+                }
+            }
+
+            switch (colonPosition, digits.count) {
+            case (nil, _):  break // no colon, ok
+            case (2, 4):    break // "+01:30", ok
+            default:        throw ParseError()
+            }
+
+            let offset: Int
+            switch digits.count {
+            case 1: offset =  3600 * digits[0]
+            case 2: offset = 36000 * digits[0] + 3600 * digits[1]
+            case 3: offset =  3600 * digits[0] +  600 * digits[1] +  60 * digits[2]
+            case 4: offset = 36000 * digits[0] + 3600 * digits[1] + 600 * digits[2] + 60 * digits[3]
+            default: throw ParseError()
+            }
+
+            timeZone = try ISO8601.timeZoneFor(secondsFromGMT: offsetSign * offset)
+
+        default:
+            throw ParseError()
+        }
+
+        dateComponents.timeZone = timeZone
+    }
+    
+    
+    //
+    // MARK: Low-level parse methods
+    //
+    
+    /// Are we at the end of the input string?
+    private var atEnd: Bool {
+        return index == value.endIndex
+    }
+
+    /// Gets the next character without consuming it.
+    private func peek() throws -> Character {
+        if atEnd { throw ParseError() }
+        return value[index]
+    }
+
+    /// Consumes the next character.
+    private func next() throws -> Character {
+        let next = try peek()
+        index = value.index(after: index)
+        return next
+    }
+
+    /// Consumes zero or more spaces.
+    private func optionalWhitespace() throws {
+        while try !atEnd && peek() == " " {
+            _ = try next()
+        }
+    }
+
+    /// Consumes one or more spaces.
+    private func whitespace() throws {
+        if try next() != " " {
+            throw ParseError()
+        }
+
+        try optionalWhitespace()
+    }
+
+    /// Consumes a dash.
+    private func dash() throws {
+        if try next() != "-" {
+            throw ParseError()
+        }
+    }
+
+    /// Consumes a colon.
+    private func colon() throws {
+        if try next() != ":" {
+            throw ParseError()
+        }
+    }
+
+    /// Consumes one or more digits, 0 to 9.
+    private func digits() throws -> Int {
+
+        var value = -1
+
+        while !atEnd {
+            let ch = try peek()
+            if ch < "0" || ch > "9" { break }
+            value = (value == -1 ? 0 : 10 * value) + Int(try next().wholeNumberValue!)
+        }
+
+        if value == -1 {
+            throw ParseError()
+        }
+
+        return value
+    }
+
+    /// Consumes one or more digits to the right of the (already consumed) decimal point.
+    private func fractionalDigits(denominator: Int) throws -> Int {
+
+        var value = -1
+        var multiplier = denominator / 10
+
+        while !atEnd {
+            let ch = try peek()
+            if ch < "0" || ch > "9" { break }
+            value = (value == -1 ? 0 : value) + multiplier * Int(try next().wholeNumberValue!)
+            multiplier /= 10
+        }
+
+        if value == -1 {
+            throw ParseError()
+        }
+
+        return value
+    }
+
+    /// Checks we are at the end of the input string.
+    private func end() throws {
+        if !atEnd {
+            throw ParseError()
+        }
+    }
+    
+    
+    //
+    // MARK: Date/time localization
+    //
+
+    private static let enUsPosixLocale = Locale(identifier: "en_US_POSIX")
+
+    private static let utcTimeZone = TimeZone(secondsFromGMT: 0)!
+
+
+    //
+    // MARK: TimeZone cache
+    //
+    // TimeZone(secondsFromGMT:) takes about 3 us, so it's worth caching them.
+    //
+
+    private static var timeZones = [Int : TimeZone]()
+    private static let timeZonesSemaphore = DispatchSemaphore(value: 1)
+
+    private static func timeZoneFor(secondsFromGMT: Int) throws -> TimeZone {
+
+        timeZonesSemaphore.wait()
+        defer { timeZonesSemaphore.signal() }
+
+        if let timeZone = timeZones[secondsFromGMT] {
+            return timeZone
+        }
+
+        guard let timeZone = TimeZone(secondsFromGMT: secondsFromGMT) else {
+            throw ParseError()
+        }
+
+        timeZones[secondsFromGMT] = timeZone
+
+        print("Created time zone for \(secondsFromGMT)") // FIXME
+
+        return timeZone
+    }
+
+
+    //
+    // MARK: Calendar cache
+    //
+    // Creating a Calendar instance is slow, whether by initializing one and setting its properties
+    // (about 20 us), or copying an existing instance and tweaking the time zone (about 11 us).  So
+    // it's worthwhile caching them.
+    //
+
+    private static let enUsPosixUtcCalendar: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = enUsPosixLocale
+        calendar.timeZone = utcTimeZone
+        return calendar
+    }()
+
+    private static var calendars = [TimeZone : Calendar]()
+    private static let calendarsSemaphore = DispatchSemaphore(value: 1)
+
+    private static func calendarFor(timeZone: TimeZone) -> Calendar {
+
+        calendarsSemaphore.wait()
+        defer { calendarsSemaphore.signal() }
+
+        if let calendar = calendars[timeZone] {
+            return calendar
+        }
+
+        var calendar = enUsPosixUtcCalendar // FIXME: may not workaround SR-10515
+        calendar.timeZone = timeZone
+        calendars[timeZone] = calendar
+
+        print("Created calendar for \(timeZone)") // FIXME
+
+        return calendar
+    }
+}
+
+// EOF
