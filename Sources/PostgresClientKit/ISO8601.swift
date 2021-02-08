@@ -254,6 +254,8 @@ internal class ISO8601 {
         if try !atEnd && peek() == "." {
             _ = try next()
             dateComponents.nanosecond = try fractionalDigits(denominator: 1_000) * 1_000_000
+        } else {
+            dateComponents.nanosecond = 0
         }
     }
 
