@@ -566,8 +566,76 @@ class Analysis: XCTestCase {
         }
     }
     
-    func testDateFormatter() throws {
+    class DateComponentsHolder: NSObject {
+        var dc = DateComponents()
+    }
+    
+    func testFoundationPrimitives() throws {
         
+        // macOS
+        //
+        // Test Case '-[PostgresClientKitTests.Analysis testDateFormatter]' started.
+        //    70.232 us tstzFormatter String->Date                        (10000 iterations) Optional(2001-02-03 12:34:56 +0000)
+        //    52.849 us tsFormatter String->Date                          (10000 iterations) Optional(2001-02-03 12:34:56 +0000)
+        //    42.799 us dFormatter String->Date                           (10000 iterations) Optional(2001-02-03 00:00:00 +0000)
+        //    49.390 us tFormatter String->Date                           (10000 iterations) Optional(2000-01-01 12:34:56 +0000)
+        //     3.448 us tstzFormatter Date->String                        (100000 iterations) 2001-02-03 12:34:56.789+00:00
+        //     2.940 us tsFormatter Date->String                          (100000 iterations) 2001-02-03 12:34:56.789
+        //     1.842 us dFormatter Date->String                           (100000 iterations) 2001-02-03
+        //     1.997 us tFormatter Date->String                           (100000 iterations) 12:34:56.789
+        //     2.896 us tstz Date->DateComponents (no calendar -- API chan(100000 iterations) timeZone: GMT (fixed) year: 2001 month: 2 day: 3 hour: 12 minute: 34 second: 56 nanosecond: 789000034 isLeapMonth: false
+        //    23.127 us tstz Date->DateComponents (calendar)              (10000 iterations) calendar: gregorian (fixed) timeZone: GMT (fixed) year: 2001 month: 2 day: 3 hour: 12 minute: 34 second: 56 nanosecond: 789000034 isLeapMonth: false
+        // *  15.309 us tstz Date->DateComponents (faster calendar)       (10000 iterations) calendar: gregorian (fixed) timeZone: GMT (fixed) year: 2001 month: 2 day: 3 hour: 12 minute: 34 second: 56 nanosecond: 789000034 isLeapMonth: false
+        //     4.780 us tstz Date->DateComponents (fastest calendar)      (100000 iterations) calendar: gregorian (fixed) timeZone: GMT (fixed) year: 2001 month: 2 day: 3 hour: 12 minute: 34 second: 56 nanosecond: 789000034 isLeapMonth: false
+        //     5.397 us tstz Date->DateComponents (using threadDictionary)(100000 iterations) calendar: gregorian (fixed) timeZone: GMT (fixed) year: 2001 month: 2 day: 3 hour: 12 minute: 34 second: 56 nanosecond: 789000034 isLeapMonth: false
+        // *  10.530 us DateComponents.calendar mutation utc              (10000 iterations) calendar: gregorian (fixed) isLeapMonth: false
+        // *  26.597 us DateComponents.calendar mutation +01:00           (10000 iterations) calendar: gregorian (fixed) isLeapMonth: false
+        //     2.829 us ts Date->DateComponents                           (100000 iterations) year: 2001 month: 2 day: 3 hour: 13 minute: 34 second: 56 nanosecond: 789000034 isLeapMonth: false
+        //     2.485 us d Date->DateComponents                            (100000 iterations) year: 2001 month: 2 day: 3 isLeapMonth: false
+        //     2.525 us t Date->DateComponents                            (100000 iterations) hour: 13 minute: 34 second: 56 nanosecond: 789000034 isLeapMonth: false
+        //    27.033 us DateComponents->Date (different timeZone)         (10000 iterations) Optional(2001-02-03 11:34:56 +0000)
+        // *   1.357 us DateComponents->Date (same timeZone)              (100000 iterations) Optional(2001-02-03 11:34:56 +0000)
+        //     1.261 us DateComponents->Date (no timeZone)                (100000 iterations) Optional(2001-02-03 11:34:56 +0000)
+        //    47.163 us DateComponents.isValidDate(in:) (UTC vs +1)       (10000 iterations) false
+        //    28.970 us DateComponents.isValidDate(in:) (+1 vs +1)        (10000 iterations) true
+        //    28.719 us DateComponents.isValidDate(in:) (+1 vs nil)       (10000 iterations) true
+        //    12.464 us DateComponents.isValidDate(in:) (UTC vs nil)      (10000 iterations) true
+        //    12.598 us DateComponents.isValidDate(in:) (UTC vs UTC)      (10000 iterations) true
+        //    22.673 us Postgres.isValidDate(_:) (timeZone set)           (10000 iterations) true
+        //    12.731 us Postgres.isValidDate(_:) (timeZone not set)       (10000 iterations) true
+        //
+        // Linux VM
+        //
+        // Test Case 'Analysis.testDateFormatter' started at 2021-02-08 12:07:53.930
+        //    52.654 us tstzFormatter String->Date                        (10000 iterations) Optional(2001-02-03 12:34:56 +0000)
+        //    42.640 us tsFormatter String->Date                          (10000 iterations) Optional(2001-02-03 12:34:56 +0000)
+        //    35.507 us dFormatter String->Date                           (10000 iterations) Optional(2001-02-03 00:00:00 +0000)
+        //    36.500 us tFormatter String->Date                           (10000 iterations) Optional(2000-01-01 12:34:56 +0000)
+        //     2.438 us tstzFormatter Date->String                        (100000 iterations) 2001-02-03 12:34:56.789+00:00
+        //     2.238 us tsFormatter Date->String                          (100000 iterations) 2001-02-03 12:34:56.789
+        //     1.395 us dFormatter Date->String                           (100000 iterations) 2001-02-03
+        //     1.480 us tFormatter Date->String                           (100000 iterations) 12:34:56.789
+        //     3.394 us tstz Date->DateComponents (no calendar -- API chan(100000 iterations) <NSDateComponents: 0x000056074bd2a4c0>
+        //    28.740 us tstz Date->DateComponents (calendar)              (10000 iterations) <NSDateComponents: 0x000056074bd28300>
+        // *   3.517 us tstz Date->DateComponents (faster calendar)       (100000 iterations) <NSDateComponents: 0x000056074bd29240>
+        //     4.680 us tstz Date->DateComponents (fastest calendar)      (100000 iterations) <NSDateComponents: 0x000056074bd2a4c0>
+        //     7.290 us tstz Date->DateComponents (using threadDictionary)(100000 iterations) <NSDateComponents: 0x000056074bd260b0>
+        // *   0.378 us DateComponents.calendar mutation utc              (1000000 iterations) <NSDateComponents: 0x000056074bd26e30>
+        // *   0.369 us DateComponents.calendar mutation +01:00           (1000000 iterations) <NSDateComponents: 0x000056074bd26e30>
+        //     2.873 us ts Date->DateComponents                           (100000 iterations) <NSDateComponents: 0x000056074bd26060>
+        //     2.178 us d Date->DateComponents                            (100000 iterations) <NSDateComponents: 0x000056074bd212f0>
+        //     2.243 us t Date->DateComponents                            (100000 iterations) <NSDateComponents: 0x000056074bd21430>
+        //    28.684 us DateComponents->Date (different timeZone)         (10000 iterations) Optional(2001-02-03 11:34:56 +0000)
+        // *  28.019 us DateComponents->Date (same timeZone)              (10000 iterations) Optional(2001-02-03 11:34:56 +0000)
+        //     2.409 us DateComponents->Date (no timeZone)                (100000 iterations) Optional(2001-02-03 11:34:56 +0000)
+        //   114.829 us DateComponents.isValidDate(in:) (UTC vs +1)       (1000 iterations) true
+        //   113.536 us DateComponents.isValidDate(in:) (+1 vs +1)        (1000 iterations) true
+        //    60.368 us DateComponents.isValidDate(in:) (+1 vs nil)       (10000 iterations) true
+        //    41.459 us DateComponents.isValidDate(in:) (UTC vs nil)      (10000 iterations) true
+        //    63.344 us DateComponents.isValidDate(in:) (UTC vs UTC)      (10000 iterations) true
+        //   111.414 us Postgres.isValidDate(_:) (timeZone set)           (1000 iterations) true
+        //    81.204 us Postgres.isValidDate(_:) (timeZone not set)       (10000 iterations) true
+
         let tstzFormatter: DateFormatter = {
             let df = DateFormatter()
             df.calendar = Postgres.enUsPosixUtcCalendar
@@ -654,7 +722,7 @@ class Analysis: XCTestCase {
         //
         
         var calendar = Postgres.enUsPosixUtcCalendar
-        calendar.timeZone = TimeZone(secondsFromGMT: 3600)!
+//        calendar.timeZone = TimeZone(secondsFromGMT: 3600)!
         
         try time("tstz Date->DateComponents (no calendar -- API change!)") {
             calendar.dateComponents(
@@ -694,6 +762,50 @@ class Analysis: XCTestCase {
             return dc2
         }
 
+        try time("tstz Date->DateComponents (using threadDictionary)") {
+            
+            let threadDictionary = Thread.current.threadDictionary
+            var dch = threadDictionary["xyzzy"] as? DateComponentsHolder
+            
+            if dch == nil {
+                dch = DateComponentsHolder()
+                threadDictionary["xyzzy"] = dch
+            }
+
+            let dc = calendar.dateComponents(
+                [ .year, .month, .day, .hour, .minute, .second, .nanosecond, .timeZone], from: d)
+            
+            dch!.dc.calendar = calendar
+            dch!.dc.year = dc.year
+            dch!.dc.month = dc.month
+            dch!.dc.day = dc.day
+            dch!.dc.hour = dc.hour
+            dch!.dc.minute = dc.minute
+            dch!.dc.second = dc.second
+            dch!.dc.nanosecond = dc.nanosecond
+            dch!.dc.timeZone = dc.timeZone
+            
+            return dch!.dc
+        }
+        
+        let c1 = Postgres.enUsPosixUtcCalendar
+        var c2 = Postgres.enUsPosixUtcCalendar
+        c2.timeZone = TimeZone(secondsFromGMT: 3600)!
+        
+        try time("DateComponents.calendar mutation utc") {
+            var dc = DateComponents()
+            dc.calendar = c1
+            return dc
+        }
+
+        try time("DateComponents.calendar mutation +01:00") {
+            var dc = DateComponents()
+            dc.calendar = c2
+            return dc
+        }
+
+        calendar.timeZone = TimeZone(secondsFromGMT: 3600)!
+        
         try time("ts Date->DateComponents") {
             calendar.dateComponents(
                 [ .year, .month, .day, .hour, .minute, .second, .nanosecond], from: d)

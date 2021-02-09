@@ -6,6 +6,15 @@ extension Analysis {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__Analysis = [
+        ("test", test),
+        ("testCalendarCopy", testCalendarCopy),
+        ("testCalendarTimeZone", testCalendarTimeZone),
+        ("testDateComponentsCalendar", testDateComponentsCalendar),
+        ("testDateComponentsTimeZone", testDateComponentsTimeZone),
+        ("testFoundationPrimitives", testFoundationPrimitives),
+        ("testInitializeCalendar", testInitializeCalendar),
+        ("testInitializeTimeZone", testInitializeTimeZone),
+        ("testIsValidDate", testIsValidDate),
         ("testPostgresTimestamp", testPostgresTimestamp),
         ("testPostgresTimestampWithTimeZone", testPostgresTimestampWithTimeZone),
         ("testSynchronizationPerformance", testSynchronizationPerformance),
