@@ -19,12 +19,19 @@
 
 import Foundation
 
+/// Parses and validates ISO8601 dates and times.
 internal class ISO8601 {
 
-    // 2020-01-02 12:34:56.789-07:00
-    internal static func parseTimestampWithTimeZone(_ value: String)
-        -> (DateComponents, Date, TimeZone)? {
-
+    /// Gets a `Date` for the moment of time described by the specified string.
+    ///
+    /// The string must conform to either the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `yyyy-MM-dd HH:mm:ss.SSSxxxxx` (for example, `2019-03-14 16:25:19.365+00:00`) or
+    /// `yyyy-MM-dd HH:mm:ssxxxxx` (for example, `2019-03-14 16:25:19+00:00`).
+    ///
+    /// - Parameter value: the string
+    /// - Returns: the `Date`, or `nil` if the string is invalid
+    internal static func parseTimestampWithTimeZone(_ value: String) -> Date? {
         do {
             let parser = ISO8601(value)
             try parser.optionalWhitespace()
@@ -35,16 +42,32 @@ internal class ISO8601 {
             try parser.timeZone()
             try parser.optionalWhitespace()
             try parser.end()
-            return validateDateComponents(parser.dateComponents)
+            return validateDateComponents(parser.dateComponents)?.date
         } catch {
             return nil
         }
     }
-
-    // 2020-01-02 12:34:56.789
-    internal static func parseTimestamp(_ value: String)
-        -> (DateComponents, Date, TimeZone)? {
-
+    
+    /// Gets a `DateComponents` for the specified string.
+    ///
+    /// The string must conform to either the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `yyyy-MM-dd HH:mm:ss.SSS` (for example, `2019-03-14 16:25:19.365`) or
+    /// `yyyy-MM-dd HH:mm:ss` (for example, `2019-03-14 16:25:19`) .
+    ///
+    /// The returned value has the following components set:
+    ///
+    /// - `year`
+    /// - `month`
+    /// - `day`
+    /// - `hour`
+    /// - `minute`
+    /// - `second`
+    /// - `nanosecond`
+    ///
+    /// - Parameter value: the string
+    /// - Returns: the `DateComponents`, or `nil` if the string is invalid
+    internal static func parseTimestamp(_ value: String) -> DateComponents? {
         do {
             let parser = ISO8601(value)
             try parser.optionalWhitespace()
@@ -53,48 +76,85 @@ internal class ISO8601 {
             try parser.time()
             try parser.optionalWhitespace()
             try parser.end()
-            return validateDateComponents(parser.dateComponents, in: utcTimeZone)
+            return validateDateComponents(parser.dateComponents, in: utcTimeZone)?.dateComponents
         } catch {
             return nil
         }
     }
 
-    // 2020-01-02
-    internal static func parseDate(_ value: String)
-        -> (DateComponents, Date, TimeZone)? {
-
+    /// Gets a `DateComponents` for the specified string.
+    ///
+    /// The string must conform to the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `yyyy-MM-dd`.  For example, `2019-03-14`.
+    ///
+    /// The returned value has the following components set:
+    ///
+    /// - `year`
+    /// - `month`
+    /// - `day`
+    ///
+    /// - Parameter value: the string
+    /// - Returns: the `DateComponents`, or `nil` if the string is invalid
+    internal static func parseDate(_ value: String) -> DateComponents? {
         do {
             let parser = ISO8601(value)
             try parser.optionalWhitespace()
             try parser.date()
             try parser.optionalWhitespace()
             try parser.end()
-            return validateDateComponents(parser.dateComponents, in: utcTimeZone)
+            return validateDateComponents(parser.dateComponents, in: utcTimeZone)?.dateComponents
         } catch {
             return nil
         }
     }
 
-    // 12:34:56.789
-    internal static func parseTime(_ value: String)
-        -> (DateComponents, Date, TimeZone)? {
-
+    /// Gets a `DateComponents` for the specified string.
+    ///
+    /// The string must conform to either the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `HH:mm:ss.SSS` (for example, `16:25:19.365`) or `HH:mm:ss` (for example, `16:25:19`).
+    ///
+    /// The returned value has the following components set:
+    ///
+    /// - `hour`
+    /// - `minute`
+    /// - `second`
+    /// - `nanosecond`
+    ///
+    /// - Parameter value: the string
+    /// - Returns: the `DateComponents`, or `nil` if the string is invalid
+    internal static func parseTime(_ value: String) -> DateComponents? {
         do {
             let parser = ISO8601(value)
             try parser.optionalWhitespace()
             try parser.time()
             try parser.optionalWhitespace()
             try parser.end()
-            return validateDateComponents(parser.dateComponents, in: utcTimeZone)
+            return validateDateComponents(parser.dateComponents, in: utcTimeZone)?.dateComponents
         } catch {
             return nil
         }
     }
 
-    // 12:34:56.789-07:00
-    internal static func parseTimeWithTimeZone(_ value: String)
-        -> (DateComponents, Date, TimeZone)? {
-
+    /// Gets a `DateComponents` for the specified string.
+    ///
+    /// The string must conform to either the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `HH:mm:ss.SSSxxxxx` (for example, `20:10:05.128-07:00`) or
+    /// `HH:mm:ssxxxxx` (for example, `20:10:05-07:00`).
+    ///
+    /// The returned value has the following components set:
+    ///
+    /// - `hour`
+    /// - `minute`
+    /// - `second`
+    /// - `nanosecond`
+    /// - `timeZone`
+    ///
+    /// - Parameter value: the string
+    /// - Returns: the `DateComponents`, or `nil` if the string is invalid
+    internal static func parseTimeWithTimeZone(_ value: String) -> DateComponents? {
         do {
             let parser = ISO8601(value)
             try parser.optionalWhitespace()
@@ -103,27 +163,35 @@ internal class ISO8601 {
             try parser.timeZone()
             try parser.optionalWhitespace()
             try parser.end()
-            return validateDateComponents(parser.dateComponents)
+            return validateDateComponents(parser.dateComponents)?.dateComponents
         } catch {
             return nil
         }
     }
-
+    
+    /// Validates the specified `DateComponents` value.
+    ///
+    /// The validation is performed using the time zone specified by either the value of the
+    /// `timeZone` argument or the value of `dateComponents.timeZone`.  These are mutually
+    /// exclusive and only one of them must be set.
+    ///
+    /// - Parameters:
+    ///   - dateComponents: the value to validate
+    ///   - timeZone: the time zone to use; see above
+    /// - Returns: a (`DateComponents`, `Date`) tuple, or `nil` if invalid
     internal static func validateDateComponents(
-        _ dateComponents: DateComponents,
-        in timeZone: TimeZone? = nil)
-        -> (dateComponents: DateComponents, date: Date, timeZone: TimeZone)? {
+        _ dateComponents: DateComponents, in timeZone: TimeZone? = nil) ->
+        (dateComponents: DateComponents, date: Date)? {
 
         // DateComponents.isValidDate(in:) is buggy (https://bugs.swift.org/browse/SR-11569) and
-        // slow.  We can do better ourselves (6 us versus 9 us).  The basic approach is to roundtrip
-        // from DateComponents to a Date and back without changing the values of the DateComponents
-        // properties.  This is basically the same thing that DateComponents.isValidDate(in:) does;
-        // see https://github.com/apple/swift-corelibs-foundation/blob/main/Sources/Foundation/NSDateComponents.swift.
-        // This approach also exposes the Date as an interim result, which we can tuck away for
-        // later use.
+        // slow (up to 114 us on Linux).  We can do better ourselves (~6 us).  The basic idea is
+        // to see if we can convert from DateComponents to Date and back without changing the
+        // DateComponents property values.  This approach exposes the Date as an interim result,
+        // which is handy.
 
-        // If the timeZone property of DateComponents is set, then it is expensive to set the
-        // calendar property.  So check that the calendar property has not been set.
+        // Check that the calendar property of DateComponents has not been set.  Doing so can
+        // be expensive if the timeZone property is already set to a different time zone than
+        // that of the calendar.
         assert(dateComponents.calendar == nil)
 
         // The time zone should be either specified by the caller or already set on the
@@ -139,7 +207,6 @@ internal class ISO8601 {
         // Get a Calendar instance for the selected time zone.  Calendar.date(from:) is faster if
         // the timeZone property of the DateComponents instance equals the timeZone property of the
         // Calendar instance.  This also works around https://bugs.swift.org/browse/SR-10515.
-        // FIXME: no it doesn't!
         let calendar = ISO8601.calendarFor(timeZone: timeZone)
         assert(calendar.timeZone == dc.timeZone)
 
@@ -171,44 +238,8 @@ internal class ISO8601 {
         }
 
         // The DateComponents instance is valid.
-        return (dateComponents, date, timeZone)
+        return (dateComponents, date)
     }
-
-//    internal static func date(for dateComponents: DateComponents,
-//                              in timeZone: TimeZone?) throws -> Date {
-//
-//        // Setting the calendar property of DateComponents is expensive.  Check that we aren't.
-//        assert(dateComponents.calendar == nil)
-//
-//        // Check we have the required DateComponents properties.
-//        assert(dateComponents.year != nil)
-//        assert(dateComponents.month != nil)
-//        assert(dateComponents.day != nil)
-//        assert(dateComponents.hour != nil)
-//        assert(dateComponents.minute != nil)
-//        assert(dateComponents.second != nil)
-//        assert(dateComponents.nanosecond != nil)
-//
-//        // The time zone should be either specified by the caller or already set on the
-//        // DateComponents, but not both.
-//        assert (
-//            (timeZone != nil && dateComponents.timeZone == nil) ||
-//            (timeZone == nil && dateComponents.timeZone != nil))
-//        let timeZone = timeZone ?? dateComponents.timeZone!
-//
-//        var dateComponents = dateComponents
-//        dateComponents.timeZone = timeZone
-//
-//        // Get a Calendar instance for the selected time zone.  Calendar.date(from:) is faster if
-//        // the timeZone property of the DateComponents instance equals the timeZone property of the
-//        // Calendar instance.  This also works around https://bugs.swift.org/browse/SR-10515.
-//        let calendar = ISO8601.calendarFor(timeZone: timeZone)
-//        assert(calendar.timeZone == dateComponents.timeZone)
-//
-//        // Force unwrap the computed date.  This is safe because we validated the DateComponents
-//        // instance on the way in.
-//        return calendar.date(from: dateComponents)!
-//    }
 
 
     //
@@ -223,9 +254,9 @@ internal class ISO8601 {
         dateComponents = DateComponents()
     }
 
-    private let value: String
-    private var index: String.Index
-    private var dateComponents: DateComponents
+    private let value: String                   // the string to parse
+    private var index: String.Index             // parser's current position in that string
+    private var dateComponents: DateComponents  // accumulates the parse output
 
     private func date() throws {
         dateComponents.year = try digits()
@@ -237,8 +268,6 @@ internal class ISO8601 {
 
     private func time() throws {
 
-        // Notes
-        //
         // We try to emulate DateFormatter.date(from:) using the "HH:mm:ss.SSS" date pattern (see
         // http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns).  As
         // part of this, we truncate fractional seconds after three digits (millisecond resolution).
@@ -261,8 +290,6 @@ internal class ISO8601 {
 
     private func timeZone() throws {
 
-        // Notes
-        //
         // We try to emulate DateFormatter.date(from:) using the "xxxxx" date pattern (see
         // http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns).
         //
@@ -449,10 +476,20 @@ internal class ISO8601 {
     //
     // MARK: Date/time localization
     //
-
+    
+    /// The `en_US_POSIX` locale.
     private static let enUsPosixLocale = Locale(identifier: "en_US_POSIX")
 
+    /// The UTC/GMT time zone.
     private static let utcTimeZone = TimeZone(secondsFromGMT: 0)!
+    
+    /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
+    private static let enUsPosixUtcCalendar: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = enUsPosixLocale
+        calendar.timeZone = utcTimeZone
+        return calendar
+    }()
 
 
     //
@@ -479,8 +516,6 @@ internal class ISO8601 {
 
         timeZones[secondsFromGMT] = timeZone
 
-        print("Created time zone for \(secondsFromGMT)") // FIXME
-
         return timeZone
     }
 
@@ -492,13 +527,6 @@ internal class ISO8601 {
     // (about 20 us), or copying an existing instance and tweaking the time zone (about 11 us).  So
     // it's worthwhile caching them.
     //
-
-    private static let enUsPosixUtcCalendar: Calendar = {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = enUsPosixLocale
-        calendar.timeZone = utcTimeZone
-        return calendar
-    }()
 
     private static var calendars = [TimeZone : Calendar]()
     private static let calendarsSemaphore = DispatchSemaphore(value: 1)
@@ -512,11 +540,10 @@ internal class ISO8601 {
             return calendar
         }
 
-        var calendar = enUsPosixUtcCalendar // FIXME: may not workaround SR-10515
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = enUsPosixLocale
         calendar.timeZone = timeZone
         calendars[timeZone] = calendar
-
-        print("Created calendar for \(timeZone)") // FIXME
 
         return calendar
     }

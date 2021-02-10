@@ -13,24 +13,19 @@ class Analysis: XCTestCase {
     
     func test() throws {
         try time("ISO8601.parseTimestampWithTimeZone(_:)") {
-            let (dc, d, ts) = ISO8601.parseTimestampWithTimeZone("2001-02-03 12:34:56.789-07:00")!
-            return (dc, d, ts)
+            return ISO8601.parseTimestampWithTimeZone("2001-02-03 12:34:56.789-07:00")!
         }
         try time("ISO8601.parseTimestamp(_:)") {
-            let (dc, d, ts) = ISO8601.parseTimestamp("2001-02-03 12:34:56.789")!
-            return (dc, d, ts)
+            return ISO8601.parseTimestamp("2001-02-03 12:34:56.789")!
         }
         try time("ISO8601.parseDate(_:)") {
-            let (dc, d, ts) = ISO8601.parseDate("2001-02-03")!
-            return (dc, d, ts)
+            return ISO8601.parseDate("2001-02-03")!
         }
         try time("ISO8601.parseTime(_:)") {
-            let (dc, d, ts) = ISO8601.parseTime("12:34:56.789")!
-            return (dc, d, ts)
+            return ISO8601.parseTime("12:34:56.789")!
         }
         try time("ISO8601.parseTimeWithTimeZone(_:)") {
-            let (dc, d, ts) = ISO8601.parseTimeWithTimeZone("12:34:56.789-07:00")!
-            return (dc, d, ts)
+            return ISO8601.parseTimeWithTimeZone("12:34:56.789-07:00")!
         }
     }
     
@@ -593,9 +588,9 @@ class Analysis: XCTestCase {
         //     2.829 us ts Date->DateComponents                           (100000 iterations) year: 2001 month: 2 day: 3 hour: 13 minute: 34 second: 56 nanosecond: 789000034 isLeapMonth: false
         //     2.485 us d Date->DateComponents                            (100000 iterations) year: 2001 month: 2 day: 3 isLeapMonth: false
         //     2.525 us t Date->DateComponents                            (100000 iterations) hour: 13 minute: 34 second: 56 nanosecond: 789000034 isLeapMonth: false
-        //    27.033 us DateComponents->Date (different timeZone)         (10000 iterations) Optional(2001-02-03 11:34:56 +0000)
-        // *   1.357 us DateComponents->Date (same timeZone)              (100000 iterations) Optional(2001-02-03 11:34:56 +0000)
-        //     1.261 us DateComponents->Date (no timeZone)                (100000 iterations) Optional(2001-02-03 11:34:56 +0000)
+        //    25.758 us DateComponents->Date (different timeZone)         (10000 iterations) Optional(2001-02-03 11:34:56 +0000)
+        //     1.336 us DateComponents->Date (same timeZone)              (100000 iterations) Optional(2001-02-03 11:34:56 +0000)
+        //     1.215 us DateComponents->Date (no timeZone)                (100000 iterations) Optional(2001-02-03 11:34:56 +0000)
         //    47.163 us DateComponents.isValidDate(in:) (UTC vs +1)       (10000 iterations) false
         //    28.970 us DateComponents.isValidDate(in:) (+1 vs +1)        (10000 iterations) true
         //    28.719 us DateComponents.isValidDate(in:) (+1 vs nil)       (10000 iterations) true
@@ -625,9 +620,9 @@ class Analysis: XCTestCase {
         //     2.873 us ts Date->DateComponents                           (100000 iterations) <NSDateComponents: 0x000056074bd26060>
         //     2.178 us d Date->DateComponents                            (100000 iterations) <NSDateComponents: 0x000056074bd212f0>
         //     2.243 us t Date->DateComponents                            (100000 iterations) <NSDateComponents: 0x000056074bd21430>
-        //    28.684 us DateComponents->Date (different timeZone)         (10000 iterations) Optional(2001-02-03 11:34:56 +0000)
-        // *  28.019 us DateComponents->Date (same timeZone)              (10000 iterations) Optional(2001-02-03 11:34:56 +0000)
-        //     2.409 us DateComponents->Date (no timeZone)                (100000 iterations) Optional(2001-02-03 11:34:56 +0000)
+        //    28.542 us DateComponents->Date (different timeZone)         (10000 iterations) Optional(2001-02-03 11:34:56 +0000)
+        //     2.078 us DateComponents->Date (same timeZone)              (100000 iterations) Optional(2001-02-03 11:34:56 +0000)
+        //     2.344 us DateComponents->Date (no timeZone)                (100000 iterations) Optional(2001-02-03 11:34:56 +0000)
         //   114.829 us DateComponents.isValidDate(in:) (UTC vs +1)       (1000 iterations) true
         //   113.536 us DateComponents.isValidDate(in:) (+1 vs +1)        (1000 iterations) true
         //    60.368 us DateComponents.isValidDate(in:) (+1 vs nil)       (10000 iterations) true
@@ -842,7 +837,7 @@ class Analysis: XCTestCase {
             calendar.date(from: dc)
         }
         
-        calendar.timeZone = TimeZone(secondsFromGMT: 3600)!
+        calendar.timeZone = dc.timeZone!
 
         try time("DateComponents->Date (same timeZone)") {
             calendar.date(from: dc)
