@@ -91,11 +91,11 @@ public struct PostgresDate: PostgresValueConvertible, Equatable, CustomStringCon
     /// - Parameter string: the string
     public init?(_ string: String) {
         
-        guard let date = PostgresDate.formatter.date(from: string) else {
+        guard let dc = ISO8601.parseDate(string) else {
             return nil
         }
         
-        self.init(date: date, in: PostgresDate.formatter.timeZone)
+        inner = Inner(dateComponents: dc)
     }
     
     /// A `DateComponents` value for this `PostgresDate`.
@@ -118,13 +118,11 @@ public struct PostgresDate: PostgresValueConvertible, Equatable, CustomStringCon
     /// - Returns: the moment in time
     public func date(in timeZone: TimeZone) -> Date {
         var dc = inner.dateComponents
-        dc.calendar = Postgres.enUsPosixUtcCalendar
-        dc.timeZone = timeZone
         dc.hour = 0
         dc.minute = 0
         dc.second = 0
         dc.nanosecond = 0
-        return Postgres.enUsPosixUtcCalendar.date(from: dc)! // validated components on the way in
+        return ISO8601.date(from: dc, in: timeZone)! // validated components on the way in
     }
     
     

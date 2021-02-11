@@ -188,7 +188,54 @@ internal class ISO8601 {
         // to see if we can convert from DateComponents to Date and back without changing the
         // DateComponents property values.  This approach exposes the Date as an interim result,
         // which is handy.
+        
+        // Compute a Date from the DateComponents.
+        guard let (date, calendar) = dateAndCalendar(from: dateComponents, in: timeZone) else {
+            return nil
+        }
 
+        // Convert that Date back to a second DateComponents instance.
+        let dc = calendar.dateComponents(
+            [ .year, .month, .day, .hour, .minute, .second, .nanosecond], from: date)
+
+        // For each DateComponents property of interest, check that the Date roundtrip preserved
+        // its value.
+        if (dateComponents.year     != nil && dc.year   != dateComponents.year) ||
+            (dateComponents.month   != nil && dc.month  != dateComponents.month) ||
+            (dateComponents.day     != nil && dc.day    != dateComponents.day) ||
+            (dateComponents.hour    != nil && dc.hour   != dateComponents.hour) ||
+            (dateComponents.minute  != nil && dc.minute != dateComponents.minute) ||
+            (dateComponents.second  != nil && dc.second != dateComponents.second) {
+            return nil
+        }
+
+        // Date is backed by a Double (minimum 15 digits precision).  This isn't quite sufficient
+        // to roundtrip with microsecond precision (yet alone nanosecond).  So we just check the
+        // roundtripped value to millisecond resolution.
+        if dateComponents.nanosecond != nil &&
+            abs(dc.nanosecond! - dateComponents.nanosecond!) >= 001_000_000 {
+            return nil
+        }
+
+        // The DateComponents instance is valid.
+        return (dateComponents, date)
+    }
+    
+    /// Gets a `Date` for the specified `DateComponents`.
+    ///
+    /// - Parameters:
+    ///   - dateComponents: the `DateComponents`; the `timeZone` property must be nil
+    ///   - timeZone: the desired time zone
+    /// - Returns: the `Date`, or `nil` if the specified `DateComponents` is invalid
+    internal static func date(from dateComponents: DateComponents,
+                              in timeZone: TimeZone? = nil) -> Date? {
+        return dateAndCalendar(from: dateComponents, in: timeZone)?.date
+    }
+    
+    private static func dateAndCalendar(
+        from dateComponents: DateComponents, in timeZone: TimeZone?)
+        -> (date: Date, calendar: Calendar)? {
+        
         // Check that the calendar property of DateComponents has not been set.  Doing so can
         // be expensive if the timeZone property is already set to a different time zone than
         // that of the calendar.
@@ -201,44 +248,19 @@ internal class ISO8601 {
             (timeZone == nil && dateComponents.timeZone != nil))
         let timeZone = timeZone ?? dateComponents.timeZone!
 
-        var dc = dateComponents // don't mutate the original DateComponents
-        dc.timeZone = timeZone
+        // Get a Calendar instance for the selected time zone.
+        let calendar = calendarFor(timeZone: timeZone)
 
-        // Get a Calendar instance for the selected time zone.  Calendar.date(from:) is faster if
-        // the timeZone property of the DateComponents instance equals the timeZone property of the
-        // Calendar instance.  This also works around https://bugs.swift.org/browse/SR-10515.
-        let calendar = ISO8601.calendarFor(timeZone: timeZone)
-        assert(calendar.timeZone == dc.timeZone)
-
-        // Compute a Date from the DateComponents.
+        // Calendar.date(from:) is fastest if the DateComponents timeZone property is nil.
+        // This also works around https://bugs.swift.org/browse/SR-10515.
+        var dc = dateComponents
+        dc.timeZone = nil
+        
         guard let date = calendar.date(from: dc) else {
             return nil
         }
-
-        // Convert that Date back to a second DateComponents instance.
-        let dc2 = calendar.dateComponents(
-            [ .year, .month, .day, .hour, .minute, .second, .nanosecond], from: date)
-
-        // For each DateComponents property of interest, check that the Date roundtrip preserved
-        // its value.
-        if (dc.year     != nil && dc2.year   != dc.year) ||
-            (dc.month   != nil && dc2.month  != dc.month) ||
-            (dc.day     != nil && dc2.day    != dc.day) ||
-            (dc.hour    != nil && dc2.hour   != dc.hour) ||
-            (dc.minute  != nil && dc2.minute != dc.minute) ||
-            (dc.second  != nil && dc2.second != dc.second) {
-            return nil
-        }
-
-        // Date is backed by a Double (minimum 15 digits precision).  This isn't quite sufficient
-        // to roundtrip with microsecond precision (yet alone nanosecond).  So we just check the
-        // roundtripped value to millisecond resolution.
-        if dc.nanosecond != nil && abs(dc2.nanosecond! - dc.nanosecond!) >= 001_000_000 {
-            return nil
-        }
-
-        // The DateComponents instance is valid.
-        return (dateComponents, date)
+        
+        return (date, calendar)
     }
 
 
@@ -301,11 +323,11 @@ internal class ISO8601 {
         // +12      43200   (New Zealand)
         // +145     6300
         // +0145    6300
+        // +1:45    6300    (not allowed by DateFormatter, but previously allowed by PostgresTimeWithTimeZone)
         // +1245    45900   (Chatham Islands)
         // +12:45   45900
         //
         // +1:0     invalid
-        // +1:45    invalid
         // +13:0    invalid
         //
         // (and similarly for "-" instead of "+")
@@ -352,6 +374,7 @@ internal class ISO8601 {
 
             switch (colonPosition, digits.count) {
             case (nil, _):  break // no colon, ok
+            case (1, 3):    break // "+1:30", ok
             case (2, 4):    break // "+01:30", ok
             default:        throw ParseError()
             }
@@ -483,14 +506,6 @@ internal class ISO8601 {
     /// The UTC/GMT time zone.
     private static let utcTimeZone = TimeZone(secondsFromGMT: 0)!
     
-    /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
-    private static let enUsPosixUtcCalendar: Calendar = {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = enUsPosixLocale
-        calendar.timeZone = utcTimeZone
-        return calendar
-    }()
-
 
     //
     // MARK: TimeZone cache
@@ -515,6 +530,7 @@ internal class ISO8601 {
         }
 
         timeZones[secondsFromGMT] = timeZone
+        Postgres.logger.fine("Created time zone \(timeZone)")
 
         return timeZone
     }
@@ -543,7 +559,9 @@ internal class ISO8601 {
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = enUsPosixLocale
         calendar.timeZone = timeZone
+        
         calendars[timeZone] = calendar
+        Postgres.logger.fine("Created calendar \(calendar)")
 
         return calendar
     }

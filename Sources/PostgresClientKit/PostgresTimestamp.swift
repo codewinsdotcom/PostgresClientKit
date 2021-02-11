@@ -133,13 +133,11 @@ public struct PostgresTimestamp: PostgresValueConvertible, Equatable, CustomStri
     /// - Parameter string: the string
     public init?(_ string: String) {
         
-        guard let date =
-            PostgresTimestamp.formatter.date(from: string) ??
-            PostgresTimestamp.formatter2.date(from: string) else {
-                return nil
+        guard let dc = ISO8601.parseTimestamp(string) else {
+            return nil
         }
         
-        self.init(date: date, in: PostgresTimestamp.formatter.timeZone)
+        inner = Inner(dateComponents: dc)
     }
     
     /// A `DateComponents` for this `PostgresTimestamp`.
@@ -164,10 +162,7 @@ public struct PostgresTimestamp: PostgresValueConvertible, Equatable, CustomStri
     /// - Parameter timeZone: the time zone
     /// - Returns: the moment in time
     public func date(in timeZone: TimeZone) -> Date {
-        var dc = inner.dateComponents
-        dc.calendar = Postgres.enUsPosixUtcCalendar
-        dc.timeZone = timeZone
-        return Postgres.enUsPosixUtcCalendar.date(from: dc)! // validated components on the way in
+        return ISO8601.date(from: inner.dateComponents, in: timeZone)! // validated components on the way in
     }
     
     

@@ -111,10 +111,8 @@ public struct PostgresTimestampWithTimeZone:
     /// - Parameter string: the string
     public init?(_ string: String) {
         
-        guard let date =
-            PostgresTimestampWithTimeZone.formatter.date(from: string) ??
-            PostgresTimestampWithTimeZone.formatter2.date(from: string) else {
-                return nil
+        guard let date = ISO8601.parseTimestampWithTimeZone(string) else {
+            return nil
         }
         
         self.init(date: date)
