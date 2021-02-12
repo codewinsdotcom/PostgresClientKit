@@ -75,7 +75,6 @@ public struct PostgresTimestampWithTimeZone:
                  timeZone: TimeZone) {
         
         var dc = DateComponents()
-        dc.calendar = Postgres.enUsPosixUtcCalendar
         dc.year = year
         dc.month = month
         dc.day = day
@@ -83,9 +82,8 @@ public struct PostgresTimestampWithTimeZone:
         dc.minute = minute
         dc.second = second
         dc.nanosecond = nanosecond
-        dc.timeZone = timeZone
         
-        guard Postgres.isValidDate(dc), let date = Postgres.enUsPosixUtcCalendar.date(from: dc) else {
+        guard let date = ISO8601.validateDateComponents(dc, in: timeZone)?.date else {
             return nil
         }
         

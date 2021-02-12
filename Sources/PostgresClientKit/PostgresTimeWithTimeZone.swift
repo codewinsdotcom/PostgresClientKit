@@ -64,22 +64,12 @@ public struct PostgresTimeWithTimeZone:
                  second: Int,
                  nanosecond: Int = 0,
                  timeZone: TimeZone) {
-        
-        #if os(Linux)  // temporary workaround for https://bugs.swift.org/browse/SR-10516
-            guard timeZone.nextDaylightSavingTimeTransition == nil ||
-                timeZone.nextDaylightSavingTimeTransition?.timeIntervalSinceReferenceDate == 0.0 else {
-                    
-                Postgres.logger.info(
-                    "timeZone must not observe daylight savings time; use TimeZone(secondsFromGMT:)")
-                return nil
-            }
-        #else
-            guard timeZone.nextDaylightSavingTimeTransition == nil else {
-                Postgres.logger.info(
-                    "timeZone must not observe daylight savings time; use TimeZone(secondsFromGMT:)")
-                return nil
-            }
-        #endif
+
+        if !ISO8601.timeZoneHasFixedOffsetFromUTC(timeZone) {
+            Postgres.logger.info(
+                "timeZone must not observe daylight savings time; use TimeZone(secondsFromGMT:)")
+            return nil
+        }
         
         var dc = DateComponents()
         dc.hour = hour
@@ -88,10 +78,10 @@ public struct PostgresTimeWithTimeZone:
         dc.nanosecond = nanosecond
         dc.timeZone = timeZone
         
-        guard Postgres.isValidDate(dc) else {
+        guard let _ = ISO8601.validateDateComponents(dc) else {
             return nil
         }
-        
+
         inner = Inner(dateComponents: dc)
     }
     
@@ -111,21 +101,16 @@ public struct PostgresTimeWithTimeZone:
     ///   - timeZone: the time zone in which to interpret that moment
     public init?(date: Date, in timeZone: TimeZone) {
         
-        let dc = Postgres.enUsPosixUtcCalendar.dateComponents(in: timeZone, from: date)
+        let dc = ISO8601.dateComponents(from: date, in: timeZone)
         
-        guard let hour = dc.hour,
-            let minute = dc.minute,
-            let second = dc.second,
-            let nanosecond = dc.nanosecond else {
-                // Can't happen.
-                preconditionFailure("Invalid date components from \(date): \(dc)")
-        }
+        var dc2 = DateComponents()
+        dc2.hour = dc.hour
+        dc2.minute = dc.minute
+        dc2.second = dc.second
+        dc2.nanosecond = dc.nanosecond
+        dc2.timeZone = timeZone
         
-        self.init(hour: hour,
-                  minute: minute,
-                  second: second,
-                  nanosecond: nanosecond,
-                  timeZone: timeZone)
+        inner = Inner(dateComponents: dc2)
     }
     
     /// Creates a `PostgresTimeWithTimeZone` from a string.
@@ -247,7 +232,7 @@ public struct PostgresTimeWithTimeZone:
             dc.year = 2000
             dc.month = 1
             dc.day = 1
-            return ISO8601.date(from: dc)! // validated components on the way in
+            return ISO8601.unvalidatedDate(from: dc)! // validated on the way in
         }()
         
         fileprivate lazy var postgresValue: PostgresValue = {

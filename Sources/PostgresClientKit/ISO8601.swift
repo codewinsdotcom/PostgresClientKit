@@ -221,16 +221,73 @@ internal class ISO8601 {
         return (dateComponents, date)
     }
     
-    /// Gets a `Date` for the specified `DateComponents`.
+    /// Gets a `Date` for the specified `DateComponents` without validating them.
+    ///
+    /// The conversion is performed using the time zone specified by either the value of the
+    /// `timeZone` argument or the value of `dateComponents.timeZone`.  These are mutually
+    /// exclusive and only one of them must be set.
     ///
     /// - Parameters:
-    ///   - dateComponents: the `DateComponents`; the `timeZone` property must be nil
-    ///   - timeZone: the desired time zone
+    ///   - dateComponents: the `DateComponents` to convert
+    ///   - timeZone: the time zone to use; see above
     /// - Returns: the `Date`, or `nil` if the specified `DateComponents` is invalid
-    internal static func date(from dateComponents: DateComponents,
-                              in timeZone: TimeZone? = nil) -> Date? {
+    internal static func unvalidatedDate(from dateComponents: DateComponents,
+                                         in timeZone: TimeZone? = nil) -> Date? {
         return dateAndCalendar(from: dateComponents, in: timeZone)?.date
     }
+    
+    
+    /// Gets the `DateComponents` for the specified `Date`.
+    ///
+    /// The returned value has the following components set:
+    ///
+    /// - `year`
+    /// - `month`
+    /// - `day`
+    /// - `hour`
+    /// - `minute`
+    /// - `second`
+    /// - `nanosecond`
+    ///
+    /// Note that neither `calendar` nor `timeZone` are set in the returned value.
+    ///
+    /// - Parameters:
+    ///   - from: the `Date` to convert
+    ///   - timeZone: the time zone to use
+    /// - Returns: the `DateComponents`
+    internal static func dateComponents(from date: Date, in timeZone: TimeZone) -> DateComponents {
+        
+        let calendar = calendarFor(timeZone: timeZone)
+        
+        let dc = calendar.dateComponents(
+            [ .year, .month, .day, .hour, .minute, .second, .nanosecond], from: date)
+
+        return dc
+    }
+    
+    /// Gets whether the specified `TimeZone` has a fixed offset from UTC/GMT (the offset does not
+    /// change due to daylight savings time).
+    ///
+    /// - Parameter timeZone: the `TimeZone` to test
+    /// - Returns: whether it has a fixed offset from UTC/GMT
+    internal static func timeZoneHasFixedOffsetFromUTC(_ timeZone: TimeZone) -> Bool {
+        
+        let fixedOffset: Bool
+        
+        #if os(Linux)  // temporary workaround for https://bugs.swift.org/browse/SR-10516
+        fixedOffset = timeZone.nextDaylightSavingTimeTransition == nil ||
+                timeZone.nextDaylightSavingTimeTransition?.timeIntervalSinceReferenceDate == 0.0
+        #else
+        fixedOffset = timeZone.nextDaylightSavingTimeTransition == nil
+        #endif
+        
+        return fixedOffset
+    }
+    
+
+    //
+    // MARK: Implementation
+    //
     
     private static func dateAndCalendar(
         from dateComponents: DateComponents, in timeZone: TimeZone?)
@@ -263,11 +320,6 @@ internal class ISO8601 {
         return (date, calendar)
     }
 
-
-    //
-    // MARK: Implementation
-    //
-    
     private struct ParseError: Error { }
 
     private init(_ value: String) {
@@ -504,7 +556,7 @@ internal class ISO8601 {
     private static let enUsPosixLocale = Locale(identifier: "en_US_POSIX")
 
     /// The UTC/GMT time zone.
-    private static let utcTimeZone = TimeZone(secondsFromGMT: 0)!
+    internal static let utcTimeZone = TimeZone(secondsFromGMT: 0)!
     
 
     //

@@ -49,7 +49,7 @@ public struct PostgresDate: PostgresValueConvertible, Equatable, CustomStringCon
         dc.month = month
         dc.day = day
         
-        guard Postgres.isValidDate(dc) else {
+        guard let _ = ISO8601.validateDateComponents(dc, in: ISO8601.utcTimeZone) else {
             return nil
         }
         
@@ -67,19 +67,14 @@ public struct PostgresDate: PostgresValueConvertible, Equatable, CustomStringCon
     ///   - timeZone: the time zone in which to interpret that moment
     public init(date: Date, in timeZone: TimeZone) {
         
-        let dc = Postgres.enUsPosixUtcCalendar.dateComponents(in: timeZone, from: date)
+        let dc = ISO8601.dateComponents(from: date, in: timeZone)
         
-        guard let year = dc.year,
-            let month = dc.month,
-            let day = dc.day else {
-                // Can't happen.
-                preconditionFailure("Invalid date components from \(date): \(dc)")
-        }
+        var dc2 = DateComponents()
+        dc2.year = dc.year
+        dc2.month = dc.month
+        dc2.day = dc.day
         
-        self.init(year: year,
-                  month: month,
-                  day: day)!
-
+        inner = Inner(dateComponents: dc2)
     }
     
     /// Creates a `PostgresDate` from a string.
@@ -122,7 +117,7 @@ public struct PostgresDate: PostgresValueConvertible, Equatable, CustomStringCon
         dc.minute = 0
         dc.second = 0
         dc.nanosecond = 0
-        return ISO8601.date(from: dc, in: timeZone)! // validated components on the way in
+        return ISO8601.unvalidatedDate(from: dc, in: timeZone)! // validated on the way in
     }
     
     
