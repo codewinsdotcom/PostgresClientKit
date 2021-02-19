@@ -168,26 +168,6 @@ public struct PostgresTime: PostgresValueConvertible, Equatable, CustomStringCon
     // MARK: Implementation
     //
 
-    /// Formats Postgres `TIME` values.
-    private static let formatter: DateFormatter = {
-        let df = DateFormatter()
-        df.calendar = Postgres.enUsPosixUtcCalendar
-        df.dateFormat = "HH:mm:ss.SSS"
-        df.locale = Postgres.enUsPosixLocale
-        df.timeZone = Postgres.utcTimeZone
-        return df
-    }()
-    
-    /// Alternative formatter for parsing Postgres `TIME` values.
-    private static let formatter2: DateFormatter = {
-        let df = DateFormatter()
-        df.calendar = Postgres.enUsPosixUtcCalendar
-        df.dateFormat = "HH:mm:ss"
-        df.locale = Postgres.enUsPosixLocale
-        df.timeZone = Postgres.utcTimeZone
-        return df
-    }()
-    
     // Inner class to allow the struct to be immutable yet have lazily instantiated properties.
     private let inner: Inner
     
@@ -199,17 +179,8 @@ public struct PostgresTime: PostgresValueConvertible, Equatable, CustomStringCon
         
         fileprivate let dateComponents: DateComponents
         
-        fileprivate lazy var postgresValue: PostgresValue = {
-            var dc = dateComponents
-            dc.calendar = Postgres.enUsPosixUtcCalendar
-            dc.timeZone = Postgres.utcTimeZone
-            dc.year = 2000
-            dc.month = 1
-            dc.day = 1
-            let d = Postgres.enUsPosixUtcCalendar.date(from: dc)!
-            let s = PostgresTime.formatter.string(from: d)
-            return PostgresValue(s)
-        }()
+        fileprivate lazy var postgresValue = PostgresValue(ISO8601.formatTime(
+            validatedDateComponents: dateComponents)) // validated on the way in
     }
 }
 

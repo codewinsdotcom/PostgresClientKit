@@ -236,7 +236,6 @@ internal class ISO8601 {
         return dateAndCalendar(from: dateComponents, in: timeZone)?.date
     }
     
-    
     /// Gets the `DateComponents` for the specified `Date`.
     ///
     /// The returned value has the following components set:
@@ -265,6 +264,74 @@ internal class ISO8601 {
         return dc
     }
     
+    /// Gets a string for the specified `Date` using the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `yyyy-MM-dd HH:mm:ss.SSSxxxxx` (for example, `2019-03-14 16:25:19.365+00:00`).
+    ///
+    /// - Parameter date: the `Date`
+    /// - Returns: the string
+    internal static func formatTimestampWithTimeZone(date: Date) -> String {
+        return timestampWithTimeZoneFormatter.string(from: date)
+    }
+    
+    /// Gets a string for the specified `DateComponents` using the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `yyyy-MM-dd HH:mm:ss.SSS` (for example, `2019-03-14 16:25:19.365`).
+    ///
+    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
+    /// - Returns: the string
+    internal static func formatTimestamp(validatedDateComponents: DateComponents) -> String {
+        let date = unvalidatedDate(from: validatedDateComponents, in: utcTimeZone)!
+        return timestampFormatter.string(from: date)
+    }
+    
+    /// Gets a string for the specified `DateComponents` using the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `yyyy-MM-dd` (for example, `2019-03-14`).
+    ///
+    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
+    /// - Returns: the string
+    internal static func formatDate(validatedDateComponents: DateComponents) -> String {
+        var dc = validatedDateComponents
+        dc.hour = 0
+        dc.minute = 0
+        dc.second = 0
+        dc.nanosecond = 0
+        let date = unvalidatedDate(from: dc, in: utcTimeZone)!
+        return dateFormatter.string(from: date)
+    }
+    
+    /// Gets a string for the specified `DateComponents` using the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `HH:mm:ss.SSS` (for example, `16:25:19.365`).
+    ///
+    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
+    /// - Returns: the string
+    internal static func formatTime(validatedDateComponents: DateComponents) -> String {
+        var dc = validatedDateComponents
+        dc.year = 2000
+        dc.month = 1
+        dc.day = 1
+        let date = unvalidatedDate(from: dc, in: utcTimeZone)!
+        return timeFormatter.string(from: date)
+    }
+    
+    /// Gets a string for the specified `DateComponents` using the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `HH:mm:ss.SSSxxxxx` (for example, `20:10:05.128-07:00`).
+    ///
+    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
+    /// - Returns: the string
+    internal static func formatTimeWithTimeZone(validatedDateComponents: DateComponents) -> String {
+        var dc = validatedDateComponents
+        dc.year = 2000
+        dc.month = 1
+        dc.day = 1
+        let date = unvalidatedDate(from: dc)!
+        return timeWithTimeZoneFormatterFor(timeZone: dc.timeZone!).string(from: date)
+    }
+    
+
     /// Gets whether the specified `TimeZone` has a fixed offset from UTC/GMT (the offset does not
     /// change due to daylight savings time).
     ///
@@ -557,8 +624,11 @@ internal class ISO8601 {
 
     /// The UTC/GMT time zone.
     internal static let utcTimeZone = TimeZone(secondsFromGMT: 0)!
-    
 
+    /// A calendar for the UTC/GMT time zone.
+    internal static let enUsPosixUtcCalendar = calendarFor(timeZone: utcTimeZone)
+    
+    
     //
     // MARK: TimeZone cache
     //
@@ -616,6 +686,74 @@ internal class ISO8601 {
         Postgres.logger.fine("Created calendar \(calendar)")
 
         return calendar
+    }
+    
+    
+    //
+    // MARK: DateFormatters
+    //
+    // Used for conversion to String.  In formatting PostgresTimeWithTimeZone values, a different
+    // formatter is required for each time zone.
+    //
+    
+    private static let timestampWithTimeZoneFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.calendar = enUsPosixUtcCalendar
+        df.dateFormat = "yyyy-MM-dd HH:mm:ss.SSSxxxxx"
+        df.locale = enUsPosixLocale
+        df.timeZone = utcTimeZone
+        return df
+    }()
+
+    private static let timestampFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.calendar = enUsPosixUtcCalendar
+        df.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
+        df.locale = enUsPosixLocale
+        df.timeZone = utcTimeZone
+        return df
+    }()
+
+    private static let dateFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.calendar = enUsPosixUtcCalendar
+        df.dateFormat = "yyyy-MM-dd"
+        df.locale = enUsPosixLocale
+        df.timeZone = utcTimeZone
+        return df
+    }()
+    
+    private static let timeFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.calendar = enUsPosixUtcCalendar
+        df.dateFormat = "HH:mm:ss.SSS"
+        df.locale = enUsPosixLocale
+        df.timeZone = utcTimeZone
+        return df
+    }()
+
+    private static var timeWithTimeZoneFormatters = [TimeZone : DateFormatter]()
+    private static let timeWithTimeZoneFormattersSemaphore = DispatchSemaphore(value: 1)
+
+    private static func timeWithTimeZoneFormatterFor(timeZone: TimeZone) -> DateFormatter {
+
+        timeWithTimeZoneFormattersSemaphore.wait()
+        defer { timeWithTimeZoneFormattersSemaphore.signal() }
+
+        if let formatter = timeWithTimeZoneFormatters[timeZone] {
+            return formatter
+        }
+
+        let formatter = DateFormatter()
+        formatter.calendar = calendarFor(timeZone: timeZone)
+        formatter.dateFormat = "HH:mm:ss.SSSxxxxx"
+        formatter.locale = enUsPosixLocale
+        formatter.timeZone = timeZone
+
+        timeWithTimeZoneFormatters[timeZone] = formatter
+        Postgres.logger.fine("Created timeWithTimeZoneFormatter for \(timeZone)")
+
+        return formatter
     }
 }
 

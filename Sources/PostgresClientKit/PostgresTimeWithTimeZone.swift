@@ -196,26 +196,6 @@ public struct PostgresTimeWithTimeZone:
     // MARK: Implementation
     //
     
-    /// Formats Postgres `TIME WITH TIME ZONE` values (excluding the terminal time zone part).
-    private static let formatter: DateFormatter = {
-        let df = DateFormatter()
-        df.calendar = Postgres.enUsPosixUtcCalendar
-        df.dateFormat = "HH:mm:ss.SSS"
-        df.locale = Postgres.enUsPosixLocale
-        df.timeZone = Postgres.utcTimeZone
-        return df
-    }()
-    
-    /// Alternate formatter for parsing Postgres `TIME WITH TIME ZONE` values (excluding the terminal time zone part).
-    private static let formatter2: DateFormatter = {
-        let df = DateFormatter()
-        df.calendar = Postgres.enUsPosixUtcCalendar
-        df.dateFormat = "HH:mm:ss"
-        df.locale = Postgres.enUsPosixLocale
-        df.timeZone = Postgres.utcTimeZone
-        return df
-    }()
-    
     // Inner class to allow the struct to be immutable yet have lazily instantiated properties.
     private let inner: Inner
     
@@ -235,26 +215,8 @@ public struct PostgresTimeWithTimeZone:
             return ISO8601.unvalidatedDate(from: dc)! // validated on the way in
         }()
         
-        fileprivate lazy var postgresValue: PostgresValue = {
-            
-            var dc = dateComponents
-            dc.calendar = Postgres.enUsPosixUtcCalendar
-            dc.timeZone = Postgres.utcTimeZone // since formatter assumes UTC; timeZone handled below
-            dc.year = 2000
-            dc.month = 1
-            dc.day = 1
-            let d = Postgres.enUsPosixUtcCalendar.date(from: dc)!
-            let s = PostgresTimeWithTimeZone.formatter.string(from: d)
-            
-            var offset = dateComponents.timeZone!.secondsFromGMT()
-            var timeZoneString = (offset < 0) ? "-" : "+"
-            offset = abs(offset)
-            let offsetHH = offset / 3600
-            let offsetMM = (offset % 3600) / 60
-            timeZoneString += String(format: "%02d:%02d", offsetHH, offsetMM)
-            
-            return PostgresValue(s + timeZoneString)
-        }()
+        fileprivate lazy var postgresValue = PostgresValue(ISO8601.formatTimeWithTimeZone(
+            validatedDateComponents: dateComponents)) // validated on the way in
     }
 }
 

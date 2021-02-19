@@ -904,6 +904,45 @@ class Analysis: XCTestCase {
             Postgres.isValidDate(dc)
         }
     }
+    
+    func testFormatting() throws {
+        let enUsPosixLocale = Locale(identifier: "en_US_POSIX")
+        let utcTimeZone = TimeZone(secondsFromGMT: 0)!
+
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = enUsPosixLocale
+        calendar.timeZone = utcTimeZone
+
+        let df = DateFormatter()
+        df.calendar = calendar
+        df.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
+        df.locale = enUsPosixLocale
+        df.timeZone = utcTimeZone
+
+        let s1 = "1999-02-03 12:34:56.365"
+        let d1 = df.date(from: s1)!
+        let dc1 = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second, .nanosecond], from: d1)
+
+        try time("DC DateFormatter") {
+            let d2 = calendar.date(from: dc1)!
+            return df.string(from: d2)
+        }
+        
+        try time("DC String format") {
+            String(format: "%04d-%02d-%02d %02d:%02d:%02d.%03d",
+                   dc1.year!, dc1.month!, dc1.day!, dc1.hour!, dc1.minute!, dc1.second!, dc1.nanosecond! / 1_000_000)
+        }
+        
+        try time("D DateFormatter") {
+            return df.string(from: d1)
+        }
+        
+        try time("D String format") {
+            let dc2 = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second, .nanosecond], from: d1)
+            return String(format: "%04d-%02d-%02d %02d:%02d:%02d.%03d",
+                   dc2.year!, dc2.month!, dc2.day!, dc2.hour!, dc2.minute!, dc2.second!, dc2.nanosecond! / 1_000_000)
+        }
+    }
 }
 
 // EOF

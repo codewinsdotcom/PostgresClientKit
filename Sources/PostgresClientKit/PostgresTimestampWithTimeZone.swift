@@ -178,26 +178,6 @@ public struct PostgresTimestampWithTimeZone:
     // MARK: Implementation
     //
 
-    /// Formats Postgres `TIMESTAMP WITH TIME ZONE` values.
-    private static let formatter: DateFormatter = {
-        let df = DateFormatter()
-        df.calendar = Postgres.enUsPosixUtcCalendar
-        df.dateFormat = "yyyy-MM-dd HH:mm:ss.SSSxxxxx"
-        df.locale = Postgres.enUsPosixLocale
-        df.timeZone = Postgres.utcTimeZone
-        return df
-    }()
-
-    /// Alternative formattter for parsing Postgres `TIMESTAMP WITH TIME ZONE` values.
-    private static let formatter2: DateFormatter = {
-        let df = DateFormatter()
-        df.calendar = Postgres.enUsPosixUtcCalendar
-        df.dateFormat = "yyyy-MM-dd HH:mm:ssxxxxx"
-        df.locale = Postgres.enUsPosixLocale
-        df.timeZone = Postgres.utcTimeZone
-        return df
-    }()
-
     // Inner class to allow the struct to be immutable yet have lazily instantiated properties.
     private let inner: Inner
     
@@ -209,20 +189,15 @@ public struct PostgresTimestampWithTimeZone:
         
         fileprivate let date: Date
         
-        fileprivate lazy var dateComponents: DateComponents =
-            Postgres.enUsPosixUtcCalendar.dateComponents([
-                .calendar,
-                .year,
-                .month,
-                .day,
-                .hour,
-                .minute,
-                .second,
-                .nanosecond,
-                .timeZone], from: date)
+        fileprivate lazy var dateComponents : DateComponents = {
+            var dc = ISO8601.dateComponents(from: date, in: ISO8601.utcTimeZone)
+            dc.calendar = ISO8601.enUsPosixUtcCalendar // slow but required for backward API compatibility
+            dc.timeZone = ISO8601.utcTimeZone
+            return dc
+        }()
         
-        fileprivate lazy var postgresValue: PostgresValue = PostgresValue(
-            PostgresTimestampWithTimeZone.formatter.string(from: date))
+        fileprivate lazy var postgresValue =
+            PostgresValue(ISO8601.formatTimestampWithTimeZone(date: date))
     }
 }
 
