@@ -128,7 +128,7 @@ public struct PostgresTime: PostgresValueConvertible, Equatable, CustomStringCon
         dc.year = 2000
         dc.month = 1
         dc.day = 1
-        return ISO8601.unvalidatedDate(from: dc, in: timeZone)! // validated on the way in
+        return ISO8601.unvalidatedDate(from: dc, in: timeZone) // validated on the way in
     }
     
     

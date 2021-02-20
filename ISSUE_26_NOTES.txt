@@ -92,5 +92,3 @@ TO DO
 - check whether workarounds for Swift bugs are still required
 - Review FIXME & DELME
 - Check test coverage (e.g. ISO8601 parsing)
-- check non-private APIs in ISO8601
-

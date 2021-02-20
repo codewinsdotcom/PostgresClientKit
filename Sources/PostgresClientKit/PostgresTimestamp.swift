@@ -143,7 +143,7 @@ public struct PostgresTimestamp: PostgresValueConvertible, Equatable, CustomStri
     /// - Parameter timeZone: the time zone
     /// - Returns: the moment in time
     public func date(in timeZone: TimeZone) -> Date {
-        return ISO8601.unvalidatedDate(from: inner.dateComponents, in: timeZone)! // validated on the way in
+        return ISO8601.unvalidatedDate(from: inner.dateComponents, in: timeZone) // validated on the way in
     }
     
     

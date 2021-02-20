@@ -11,6 +11,7 @@ extension Analysis {
         ("testCalendarTimeZone", testCalendarTimeZone),
         ("testDateComponentsCalendar", testDateComponentsCalendar),
         ("testDateComponentsTimeZone", testDateComponentsTimeZone),
+        ("testFormatting", testFormatting),
         ("testFoundationPrimitives", testFoundationPrimitives),
         ("testInitializeCalendar", testInitializeCalendar),
         ("testInitializeTimeZone", testInitializeTimeZone),

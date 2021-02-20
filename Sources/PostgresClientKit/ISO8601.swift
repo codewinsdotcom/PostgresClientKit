@@ -19,8 +19,12 @@
 
 import Foundation
 
-/// Parses and validates ISO8601 dates and times.
+/// Processes ISO8601 dates and times.
 internal class ISO8601 {
+    
+    //
+    // MARK: Parsing string representations
+    //
 
     /// Gets a `Date` for the moment of time described by the specified string.
     ///
@@ -169,7 +173,84 @@ internal class ISO8601 {
         }
     }
     
-    /// Validates the specified `DateComponents` value.
+    
+    //
+    // MARK: Forming string representations
+    //
+    
+    /// Gets a string for the specified `Date` using the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `yyyy-MM-dd HH:mm:ss.SSSxxxxx` (for example, `2019-03-14 16:25:19.365+00:00`).
+    ///
+    /// - Parameter date: the `Date`
+    /// - Returns: the string
+    internal static func formatTimestampWithTimeZone(date: Date) -> String {
+        return timestampWithTimeZoneFormatter.string(from: date)
+    }
+    
+    /// Gets a string for the specified `DateComponents` using the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `yyyy-MM-dd HH:mm:ss.SSS` (for example, `2019-03-14 16:25:19.365`).
+    ///
+    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
+    /// - Returns: the string
+    internal static func formatTimestamp(validatedDateComponents: DateComponents) -> String {
+        let date = unvalidatedDate(from: validatedDateComponents, in: utcTimeZone)
+        return timestampFormatter.string(from: date)
+    }
+    
+    /// Gets a string for the specified `DateComponents` using the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `yyyy-MM-dd` (for example, `2019-03-14`).
+    ///
+    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
+    /// - Returns: the string
+    internal static func formatDate(validatedDateComponents: DateComponents) -> String {
+        var dc = validatedDateComponents
+        dc.hour = 0
+        dc.minute = 0
+        dc.second = 0
+        dc.nanosecond = 0
+        let date = unvalidatedDate(from: dc, in: utcTimeZone)
+        return dateFormatter.string(from: date)
+    }
+    
+    /// Gets a string for the specified `DateComponents` using the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `HH:mm:ss.SSS` (for example, `16:25:19.365`).
+    ///
+    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
+    /// - Returns: the string
+    internal static func formatTime(validatedDateComponents: DateComponents) -> String {
+        var dc = validatedDateComponents
+        dc.year = 2000
+        dc.month = 1
+        dc.day = 1
+        let date = unvalidatedDate(from: dc, in: utcTimeZone)
+        return timeFormatter.string(from: date)
+    }
+    
+    /// Gets a string for the specified `DateComponents` using the [date format pattern](
+    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
+    /// `HH:mm:ss.SSSxxxxx` (for example, `20:10:05.128-07:00`).
+    ///
+    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
+    /// - Returns: the string
+    internal static func formatTimeWithTimeZone(validatedDateComponents: DateComponents) -> String {
+        var dc = validatedDateComponents
+        dc.year = 2000
+        dc.month = 1
+        dc.day = 1
+        let date = unvalidatedDate(from: dc)
+        return timeWithTimeZoneFormatterFor(timeZone: dc.timeZone!).string(from: date)
+    }
+    
+    
+    //
+    // MARK: Conversion between Date and DateComponents
+    //
+    
+    /// Validates the specified `DateComponents` value and converts them to a `Date`.
     ///
     /// The validation is performed using the time zone specified by either the value of the
     /// `timeZone` argument or the value of `dateComponents.timeZone`.  These are mutually
@@ -230,10 +311,10 @@ internal class ISO8601 {
     /// - Parameters:
     ///   - dateComponents: the `DateComponents` to convert
     ///   - timeZone: the time zone to use; see above
-    /// - Returns: the `Date`, or `nil` if the specified `DateComponents` is invalid
+    /// - Returns: the `Date`
     internal static func unvalidatedDate(from dateComponents: DateComponents,
-                                         in timeZone: TimeZone? = nil) -> Date? {
-        return dateAndCalendar(from: dateComponents, in: timeZone)?.date
+                                         in timeZone: TimeZone? = nil) -> Date {
+        return dateAndCalendar(from: dateComponents, in: timeZone)!.date
     }
     
     /// Gets the `DateComponents` for the specified `Date`.
@@ -264,74 +345,17 @@ internal class ISO8601 {
         return dc
     }
     
-    /// Gets a string for the specified `Date` using the [date format pattern](
-    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
-    /// `yyyy-MM-dd HH:mm:ss.SSSxxxxx` (for example, `2019-03-14 16:25:19.365+00:00`).
-    ///
-    /// - Parameter date: the `Date`
-    /// - Returns: the string
-    internal static func formatTimestampWithTimeZone(date: Date) -> String {
-        return timestampWithTimeZoneFormatter.string(from: date)
-    }
     
-    /// Gets a string for the specified `DateComponents` using the [date format pattern](
-    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
-    /// `yyyy-MM-dd HH:mm:ss.SSS` (for example, `2019-03-14 16:25:19.365`).
-    ///
-    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
-    /// - Returns: the string
-    internal static func formatTimestamp(validatedDateComponents: DateComponents) -> String {
-        let date = unvalidatedDate(from: validatedDateComponents, in: utcTimeZone)!
-        return timestampFormatter.string(from: date)
-    }
-    
-    /// Gets a string for the specified `DateComponents` using the [date format pattern](
-    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
-    /// `yyyy-MM-dd` (for example, `2019-03-14`).
-    ///
-    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
-    /// - Returns: the string
-    internal static func formatDate(validatedDateComponents: DateComponents) -> String {
-        var dc = validatedDateComponents
-        dc.hour = 0
-        dc.minute = 0
-        dc.second = 0
-        dc.nanosecond = 0
-        let date = unvalidatedDate(from: dc, in: utcTimeZone)!
-        return dateFormatter.string(from: date)
-    }
-    
-    /// Gets a string for the specified `DateComponents` using the [date format pattern](
-    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
-    /// `HH:mm:ss.SSS` (for example, `16:25:19.365`).
-    ///
-    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
-    /// - Returns: the string
-    internal static func formatTime(validatedDateComponents: DateComponents) -> String {
-        var dc = validatedDateComponents
-        dc.year = 2000
-        dc.month = 1
-        dc.day = 1
-        let date = unvalidatedDate(from: dc, in: utcTimeZone)!
-        return timeFormatter.string(from: date)
-    }
-    
-    /// Gets a string for the specified `DateComponents` using the [date format pattern](
-    /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
-    /// `HH:mm:ss.SSSxxxxx` (for example, `20:10:05.128-07:00`).
-    ///
-    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
-    /// - Returns: the string
-    internal static func formatTimeWithTimeZone(validatedDateComponents: DateComponents) -> String {
-        var dc = validatedDateComponents
-        dc.year = 2000
-        dc.month = 1
-        dc.day = 1
-        let date = unvalidatedDate(from: dc)!
-        return timeWithTimeZoneFormatterFor(timeZone: dc.timeZone!).string(from: date)
-    }
-    
+    //
+    // MARK: Calendars and time zones
+    //
 
+    /// The UTC/GMT time zone.
+    internal static let utcTimeZone = TimeZone(secondsFromGMT: 0)!
+
+    /// A calendar for the UTC/GMT time zone.
+    internal static let enUsPosixUtcCalendar = calendarFor(timeZone: utcTimeZone)
+    
     /// Gets whether the specified `TimeZone` has a fixed offset from UTC/GMT (the offset does not
     /// change due to daylight savings time).
     ///
@@ -353,39 +377,8 @@ internal class ISO8601 {
     
 
     //
-    // MARK: Implementation
+    // MARK: Parser implementation
     //
-    
-    private static func dateAndCalendar(
-        from dateComponents: DateComponents, in timeZone: TimeZone?)
-        -> (date: Date, calendar: Calendar)? {
-        
-        // Check that the calendar property of DateComponents has not been set.  Doing so can
-        // be expensive if the timeZone property is already set to a different time zone than
-        // that of the calendar.
-        assert(dateComponents.calendar == nil)
-
-        // The time zone should be either specified by the caller or already set on the
-        // DateComponents, but not both.
-        assert (
-            (timeZone != nil && dateComponents.timeZone == nil) ||
-            (timeZone == nil && dateComponents.timeZone != nil))
-        let timeZone = timeZone ?? dateComponents.timeZone!
-
-        // Get a Calendar instance for the selected time zone.
-        let calendar = calendarFor(timeZone: timeZone)
-
-        // Calendar.date(from:) is fastest if the DateComponents timeZone property is nil.
-        // This also works around https://bugs.swift.org/browse/SR-10515.
-        var dc = dateComponents
-        dc.timeZone = nil
-        
-        guard let date = calendar.date(from: dc) else {
-            return nil
-        }
-        
-        return (date, calendar)
-    }
 
     private struct ParseError: Error { }
 
@@ -613,18 +606,7 @@ internal class ISO8601 {
             throw ParseError()
         }
     }
-    
-    
-    //
-    // MARK: Date/time localization
-    //
-    
-    /// The UTC/GMT time zone.
-    internal static let utcTimeZone = TimeZone(secondsFromGMT: 0)!
 
-    /// A calendar for the UTC/GMT time zone.
-    internal static let enUsPosixUtcCalendar = calendarFor(timeZone: utcTimeZone)
-    
     
     //
     // MARK: TimeZone cache
@@ -687,10 +669,7 @@ internal class ISO8601 {
     
     
     //
-    // MARK: DateFormatters
-    //
-    // Used for conversion to String.  In formatting PostgresTimeWithTimeZone values, a different
-    // formatter is required for each time zone.
+    // MARK: DateFormatters used to form string representations
     //
     
     private static let timestampWithTimeZoneFormatter: DateFormatter = {
@@ -728,7 +707,8 @@ internal class ISO8601 {
         df.timeZone = utcTimeZone
         return df
     }()
-
+    
+    // For PostgresTimeWithTimeZone values, a different formatter is required for each time zone.
     private static var timeWithTimeZoneFormatters = [TimeZone : DateFormatter]()
     private static let timeWithTimeZoneFormattersSemaphore = DispatchSemaphore(value: 1)
 
@@ -751,6 +731,42 @@ internal class ISO8601 {
         Postgres.logger.fine("Created timeWithTimeZoneFormatter for \(timeZone)")
 
         return formatter
+    }
+    
+    
+    //
+    // MARK: Other implementation
+    //
+    
+    private static func dateAndCalendar(
+        from dateComponents: DateComponents, in timeZone: TimeZone?)
+        -> (date: Date, calendar: Calendar)? {
+        
+        // Check that the calendar property of DateComponents has not been set.  Doing so can
+        // be expensive if the timeZone property is already set to a different time zone than
+        // that of the calendar.
+        assert(dateComponents.calendar == nil)
+
+        // The time zone should be either specified by the caller or already set on the
+        // DateComponents, but not both.
+        assert (
+            (timeZone != nil && dateComponents.timeZone == nil) ||
+            (timeZone == nil && dateComponents.timeZone != nil))
+        let timeZone = timeZone ?? dateComponents.timeZone!
+
+        // Get a Calendar instance for the selected time zone.
+        // This also works around https://bugs.swift.org/browse/SR-10515.
+        let calendar = calendarFor(timeZone: timeZone)
+
+        // Calendar.date(from:) is faster if the DateComponents timeZone property is nil.
+        var dc = dateComponents
+        dc.timeZone = nil
+        
+        guard let date = calendar.date(from: dc) else {
+            return nil
+        }
+        
+        return (date, calendar)
     }
 }
 

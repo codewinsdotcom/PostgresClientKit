@@ -117,7 +117,7 @@ public struct PostgresDate: PostgresValueConvertible, Equatable, CustomStringCon
         dc.minute = 0
         dc.second = 0
         dc.nanosecond = 0
-        return ISO8601.unvalidatedDate(from: dc, in: timeZone)! // validated on the way in
+        return ISO8601.unvalidatedDate(from: dc, in: timeZone) // validated on the way in
     }
     
     
