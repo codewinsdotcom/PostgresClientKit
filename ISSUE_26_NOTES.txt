@@ -92,6 +92,5 @@ TO DO
 - check whether workarounds for Swift bugs are still required
 - Review FIXME & DELME
 - Check test coverage (e.g. ISO8601 parsing)
-- clean up Postgres.swift
-- Consider moving Date -> String conversions to ISO8601.swift
 - check non-private APIs in ISO8601
+

@@ -619,9 +619,6 @@ internal class ISO8601 {
     // MARK: Date/time localization
     //
     
-    /// The `en_US_POSIX` locale.
-    private static let enUsPosixLocale = Locale(identifier: "en_US_POSIX")
-
     /// The UTC/GMT time zone.
     internal static let utcTimeZone = TimeZone(secondsFromGMT: 0)!
 
@@ -679,7 +676,7 @@ internal class ISO8601 {
         }
 
         var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = enUsPosixLocale
+        calendar.locale = Postgres.enUsPosixLocale
         calendar.timeZone = timeZone
         
         calendars[timeZone] = calendar
@@ -700,7 +697,7 @@ internal class ISO8601 {
         let df = DateFormatter()
         df.calendar = enUsPosixUtcCalendar
         df.dateFormat = "yyyy-MM-dd HH:mm:ss.SSSxxxxx"
-        df.locale = enUsPosixLocale
+        df.locale = Postgres.enUsPosixLocale
         df.timeZone = utcTimeZone
         return df
     }()
@@ -709,7 +706,7 @@ internal class ISO8601 {
         let df = DateFormatter()
         df.calendar = enUsPosixUtcCalendar
         df.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
-        df.locale = enUsPosixLocale
+        df.locale = Postgres.enUsPosixLocale
         df.timeZone = utcTimeZone
         return df
     }()
@@ -718,7 +715,7 @@ internal class ISO8601 {
         let df = DateFormatter()
         df.calendar = enUsPosixUtcCalendar
         df.dateFormat = "yyyy-MM-dd"
-        df.locale = enUsPosixLocale
+        df.locale = Postgres.enUsPosixLocale
         df.timeZone = utcTimeZone
         return df
     }()
@@ -727,7 +724,7 @@ internal class ISO8601 {
         let df = DateFormatter()
         df.calendar = enUsPosixUtcCalendar
         df.dateFormat = "HH:mm:ss.SSS"
-        df.locale = enUsPosixLocale
+        df.locale = Postgres.enUsPosixLocale
         df.timeZone = utcTimeZone
         return df
     }()
@@ -747,7 +744,7 @@ internal class ISO8601 {
         let formatter = DateFormatter()
         formatter.calendar = calendarFor(timeZone: timeZone)
         formatter.dateFormat = "HH:mm:ss.SSSxxxxx"
-        formatter.locale = enUsPosixLocale
+        formatter.locale = Postgres.enUsPosixLocale
         formatter.timeZone = timeZone
 
         timeWithTimeZoneFormatters[timeZone] = formatter

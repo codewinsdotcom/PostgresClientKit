@@ -942,7 +942,71 @@ class Analysis: XCTestCase {
             return String(format: "%04d-%02d-%02d %02d:%02d:%02d.%03d",
                    dc2.year!, dc2.month!, dc2.day!, dc2.hour!, dc2.minute!, dc2.second!, dc2.nanosecond! / 1_000_000)
         }
+
+        try time("PostgresTimestamp(_:)") {
+            PostgresTimestamp("1999-02-03 12:34:56.365")!
+        }
+        
+        try time("PostgresTimestamp.postgresValue") {
+            let ts = PostgresTimestamp("1999-02-03 12:34:56.365")!
+            return ts.postgresValue
+        }
     }
+}
+
+fileprivate extension Postgres {
+    
+    /// Temporary workaround for https://bugs.swift.org/browse/SR-11569.
+    static func isValidDate(_ dc: DateComponents) -> Bool {
+        
+        var calendar = dc.calendar ?? enUsPosixUtcCalendar
+        
+        if let timeZone = dc.timeZone {
+            calendar.timeZone = timeZone
+        }
+        
+        return dc.isValidDate(in: calendar)
+    }
+
+    #if os(Linux) // temporary workaround for https://bugs.swift.org/browse/SR-10515
+    
+        /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
+        static var enUsPosixUtcCalendar: Calendar {
+            
+            let threadDictionary = Thread.current.threadDictionary
+            var calendar = threadDictionary["enUsPosixUtcCalendar"] as? Calendar
+            
+            if calendar == nil {
+                calendar = Calendar(identifier: .gregorian)
+                calendar!.locale = enUsPosixLocale
+                calendar!.timeZone = utcTimeZone
+                threadDictionary["enUsPosixUtcCalendar"] = calendar!
+            }
+            
+            calendar!.timeZone = utcTimeZone
+            
+            return calendar!
+        }
+    
+    #else
+    
+        /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
+        static let enUsPosixUtcCalendar: Calendar = {
+            var calendar = Calendar(identifier: .gregorian)
+            calendar.locale = enUsPosixLocale
+            calendar.timeZone = utcTimeZone
+            return calendar
+        }()
+    
+    #endif
+    
+    
+    //
+    // MARK: Localization
+    //
+    
+    /// The UTC/GMT time zone.
+    static let utcTimeZone = TimeZone(secondsFromGMT: 0)!
 }
 
 // EOF

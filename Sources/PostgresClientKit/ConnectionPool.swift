@@ -644,7 +644,7 @@ public class ConnectionPool {
                 let now = Date()
                 let nowSeconds = Int(now.timeIntervalSinceReferenceDate)
                 
-                let midnightUtc = Postgres.enUsPosixUtcCalendar.startOfDay(for: now)
+                let midnightUtc = ISO8601.enUsPosixUtcCalendar.startOfDay(for: now)
                 let midnightUtcSeconds = Int(midnightUtc.timeIntervalSinceReferenceDate)
                 
                 let intervalSeconds = max(interval, 1) // prevent division by 0

@@ -53,53 +53,6 @@ public struct Postgres {
     
     /// The `en_US_POSIX` locale.
     internal static let enUsPosixLocale = Locale(identifier: "en_US_POSIX")
-    
-    /// The UTC/GMT time zone.
-    internal static let utcTimeZone = TimeZone(secondsFromGMT: 0)!
-    
-    #if os(Linux) // temporary workaround for https://bugs.swift.org/browse/SR-10515
-    
-        /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
-        internal static var enUsPosixUtcCalendar: Calendar {
-            
-            let threadDictionary = Thread.current.threadDictionary
-            var calendar = threadDictionary["enUsPosixUtcCalendar"] as? Calendar
-            
-            if calendar == nil {
-                calendar = Calendar(identifier: .gregorian)
-                calendar!.locale = enUsPosixLocale
-                calendar!.timeZone = utcTimeZone
-                threadDictionary["enUsPosixUtcCalendar"] = calendar!
-            }
-            
-            calendar!.timeZone = utcTimeZone
-            
-            return calendar!
-        }
-    
-    #else
-    
-        /// A calendar based on the `en_US_POSIX` locale and the UTC/GMT time zone.
-        internal static let enUsPosixUtcCalendar: Calendar = {
-            var calendar = Calendar(identifier: .gregorian)
-            calendar.locale = enUsPosixLocale
-            calendar.timeZone = utcTimeZone
-            return calendar
-        }()
-    
-    #endif
-    
-    /// Temporary workaround for https://bugs.swift.org/browse/SR-11569.
-    internal static func isValidDate(_ dc: DateComponents) -> Bool {
-        
-        var calendar = dc.calendar ?? enUsPosixUtcCalendar
-        
-        if let timeZone = dc.timeZone {
-            calendar.timeZone = timeZone
-        }
-        
-        return dc.isValidDate(in: calendar)
-    }
 }
 
 
