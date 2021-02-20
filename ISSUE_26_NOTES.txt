@@ -88,7 +88,4 @@ Our idea is to:
 TO DO
 -----
 
-- regenerate API doc & check for changes
-- check whether workarounds for Swift bugs are still required
-- Review FIXME & DELME
 - Check test coverage (e.g. ISO8601 parsing)
