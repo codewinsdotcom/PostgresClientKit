@@ -19,7 +19,7 @@
 
 import Foundation
 
-/// Processes ISO8601 dates and times.
+/// Processes ISO 8601 dates and times.
 internal class ISO8601 {
     
     //
@@ -57,7 +57,7 @@ internal class ISO8601 {
     /// The string must conform to either the [date format pattern](
     /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
     /// `yyyy-MM-dd HH:mm:ss.SSS` (for example, `2019-03-14 16:25:19.365`) or
-    /// `yyyy-MM-dd HH:mm:ss` (for example, `2019-03-14 16:25:19`) .
+    /// `yyyy-MM-dd HH:mm:ss` (for example, `2019-03-14 16:25:19`).
     ///
     /// The returned value has the following components set:
     ///
@@ -192,7 +192,7 @@ internal class ISO8601 {
     /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
     /// `yyyy-MM-dd HH:mm:ss.SSS` (for example, `2019-03-14 16:25:19.365`).
     ///
-    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
+    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be valid
     /// - Returns: the string
     internal static func formatTimestamp(validatedDateComponents: DateComponents) -> String {
         let date = unvalidatedDate(from: validatedDateComponents, in: utcTimeZone)
@@ -203,7 +203,7 @@ internal class ISO8601 {
     /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
     /// `yyyy-MM-dd` (for example, `2019-03-14`).
     ///
-    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
+    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be valid
     /// - Returns: the string
     internal static func formatDate(validatedDateComponents: DateComponents) -> String {
         var dc = validatedDateComponents
@@ -219,7 +219,7 @@ internal class ISO8601 {
     /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
     /// `HH:mm:ss.SSS` (for example, `16:25:19.365`).
     ///
-    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
+    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be valid
     /// - Returns: the string
     internal static func formatTime(validatedDateComponents: DateComponents) -> String {
         var dc = validatedDateComponents
@@ -234,7 +234,7 @@ internal class ISO8601 {
     /// http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns)
     /// `HH:mm:ss.SSSxxxxx` (for example, `20:10:05.128-07:00`).
     ///
-    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be a valid date
+    /// - Parameter validatedDateComponents: the `DateComponents`; assumed to be valid
     /// - Returns: the string
     internal static func formatTimeWithTimeZone(validatedDateComponents: DateComponents) -> String {
         var dc = validatedDateComponents
@@ -254,7 +254,7 @@ internal class ISO8601 {
     ///
     /// The validation is performed using the time zone specified by either the value of the
     /// `timeZone` argument or the value of `dateComponents.timeZone`.  These are mutually
-    /// exclusive and only one of them must be set.
+    /// exclusive and only one of them may be set.
     ///
     /// - Parameters:
     ///   - dateComponents: the value to validate
@@ -267,7 +267,7 @@ internal class ISO8601 {
         // DateComponents.isValidDate(in:) is buggy (https://bugs.swift.org/browse/SR-11569) and
         // slow (up to 114 us on Linux).  We can do better ourselves (~6 us).  The basic idea is
         // to see if we can convert from DateComponents to Date and back without changing the
-        // DateComponents property values.  This approach exposes the Date as an interim result,
+        // DateComponents component values.  This approach exposes the Date as an interim result,
         // which is handy.
         
         // Compute a Date from the DateComponents.
@@ -302,11 +302,11 @@ internal class ISO8601 {
         return (dateComponents, date)
     }
     
-    /// Gets a `Date` for the specified `DateComponents` without validating them.
+    /// Gets a `Date` for the specified `DateComponents` without validating that `DateComponents`.
     ///
     /// The conversion is performed using the time zone specified by either the value of the
     /// `timeZone` argument or the value of `dateComponents.timeZone`.  These are mutually
-    /// exclusive and only one of them must be set.
+    /// exclusive and only one of them may be set.
     ///
     /// - Parameters:
     ///   - dateComponents: the `DateComponents` to convert
@@ -435,8 +435,8 @@ internal class ISO8601 {
         // +12      43200   (New Zealand)
         // +145     6300
         // +0145    6300
-        // +1:45    6300    (not allowed by DateFormatter, but previously allowed by PostgresTimeWithTimeZone)
         // +1245    45900   (Chatham Islands)
+        // +1:45    6300    (not allowed by DateFormatter, but previously allowed by PostgresTimeWithTimeZone)
         // +12:45   45900
         //
         // +1:0     invalid
@@ -654,6 +654,7 @@ internal class ISO8601 {
         defer { calendarsSemaphore.signal() }
 
         if let calendar = calendars[timeZone] {
+            assert(calendar.timeZone == timeZone)
             return calendar
         }
 
@@ -662,7 +663,7 @@ internal class ISO8601 {
         calendar.timeZone = timeZone
         
         calendars[timeZone] = calendar
-        Postgres.logger.fine("Created calendar \(calendar)")
+        Postgres.logger.fine("Created calendar \(calendar) for time zone \(timeZone)")
 
         return calendar
     }
@@ -754,11 +755,11 @@ internal class ISO8601 {
             (timeZone == nil && dateComponents.timeZone != nil))
         let timeZone = timeZone ?? dateComponents.timeZone!
 
-        // Get a Calendar instance for the selected time zone.
-        // This also works around https://bugs.swift.org/browse/SR-10515.
+        // Get a Calendar instance for the selected time zone.  This makes Calendar.date(from:)
+        // faster.  It also works around https://bugs.swift.org/browse/SR-10515.
         let calendar = calendarFor(timeZone: timeZone)
 
-        // Calendar.date(from:) is faster if the DateComponents timeZone property is nil.
+        // Calendar.date(from:) is also faster if the DateComponents timeZone property is nil.
         var dc = dateComponents
         dc.timeZone = nil
         

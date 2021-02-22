@@ -88,4 +88,7 @@ Our idea is to:
 TO DO
 -----
 
+- Review all diffs
 - Check test coverage (e.g. ISO8601 parsing)
+- Remove unnecessary files
+- Update XCTestManifests
