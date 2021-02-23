@@ -204,7 +204,7 @@ public struct ConnectionPoolMetrics: CustomStringConvertible {
         let df = DateFormatter()
         df.locale = Postgres.enUsPosixLocale
         df.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
-        df.timeZone = Postgres.utcTimeZone
+        df.timeZone = ISO8601.utcTimeZone
         return df
     }()
     

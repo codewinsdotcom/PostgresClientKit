@@ -58,7 +58,7 @@ public struct PostgresTime: PostgresValueConvertible, Equatable, CustomStringCon
         dc.second = second
         dc.nanosecond = nanosecond
         
-        guard Postgres.isValidDate(dc) else {
+        guard let _ = ISO8601.validateDateComponents(dc, in: ISO8601.utcTimeZone) else {
             return nil
         }
         
@@ -76,20 +76,15 @@ public struct PostgresTime: PostgresValueConvertible, Equatable, CustomStringCon
     ///   - timeZone: the time zone in which to interpret that moment
     public init(date: Date, in timeZone: TimeZone) {
         
-        let dc = Postgres.enUsPosixUtcCalendar.dateComponents(in: timeZone, from: date)
+        let dc = ISO8601.dateComponents(from: date, in: timeZone)
         
-        guard let hour = dc.hour,
-            let minute = dc.minute,
-            let second = dc.second,
-            let nanosecond = dc.nanosecond else {
-                // Can't happen.
-                preconditionFailure("Invalid date components from \(date): \(dc)")
-        }
+        var dc2 = DateComponents()
+        dc2.hour = dc.hour
+        dc2.minute = dc.minute
+        dc2.second = dc.second
+        dc2.nanosecond = dc.nanosecond
         
-        self.init(hour: hour,
-                  minute: minute,
-                  second: second,
-                  nanosecond: nanosecond)!
+        inner = Inner(dateComponents: dc2)
     }
     
     /// Creates a `PostgresTime` from a string.
@@ -102,13 +97,11 @@ public struct PostgresTime: PostgresValueConvertible, Equatable, CustomStringCon
     /// - Parameter string: the string
     public init?(_ string: String) {
         
-        guard let date =
-            PostgresTime.formatter.date(from: string) ??
-            PostgresTime.formatter2.date(from: string) else {
-                return nil
+        guard let dc = ISO8601.parseTime(string) else {
+            return nil
         }
         
-        self.init(date: date, in: PostgresTime.formatter.timeZone)
+        inner = Inner(dateComponents: dc)
     }
     
     /// A `DateComponents` for this `PostgresTime`.
@@ -132,12 +125,10 @@ public struct PostgresTime: PostgresValueConvertible, Equatable, CustomStringCon
     /// - Returns: the moment in time
     public func date(in timeZone: TimeZone) -> Date {
         var dc = inner.dateComponents
-        dc.calendar = Postgres.enUsPosixUtcCalendar
-        dc.timeZone = timeZone
         dc.year = 2000
         dc.month = 1
         dc.day = 1
-        return Postgres.enUsPosixUtcCalendar.date(from: dc)! // validated components on the way in
+        return ISO8601.unvalidatedDate(from: dc, in: timeZone) // validated on the way in
     }
     
     
@@ -177,26 +168,6 @@ public struct PostgresTime: PostgresValueConvertible, Equatable, CustomStringCon
     // MARK: Implementation
     //
 
-    /// Formats Postgres `TIME` values.
-    private static let formatter: DateFormatter = {
-        let df = DateFormatter()
-        df.calendar = Postgres.enUsPosixUtcCalendar
-        df.dateFormat = "HH:mm:ss.SSS"
-        df.locale = Postgres.enUsPosixLocale
-        df.timeZone = Postgres.utcTimeZone
-        return df
-    }()
-    
-    /// Alternative formatter for parsing Postgres `TIME` values.
-    private static let formatter2: DateFormatter = {
-        let df = DateFormatter()
-        df.calendar = Postgres.enUsPosixUtcCalendar
-        df.dateFormat = "HH:mm:ss"
-        df.locale = Postgres.enUsPosixLocale
-        df.timeZone = Postgres.utcTimeZone
-        return df
-    }()
-    
     // Inner class to allow the struct to be immutable yet have lazily instantiated properties.
     private let inner: Inner
     
@@ -208,17 +179,8 @@ public struct PostgresTime: PostgresValueConvertible, Equatable, CustomStringCon
         
         fileprivate let dateComponents: DateComponents
         
-        fileprivate lazy var postgresValue: PostgresValue = {
-            var dc = dateComponents
-            dc.calendar = Postgres.enUsPosixUtcCalendar
-            dc.timeZone = Postgres.utcTimeZone
-            dc.year = 2000
-            dc.month = 1
-            dc.day = 1
-            let d = Postgres.enUsPosixUtcCalendar.date(from: dc)!
-            let s = PostgresTime.formatter.string(from: d)
-            return PostgresValue(s)
-        }()
+        fileprivate lazy var postgresValue = PostgresValue(ISO8601.formatTime(
+            validatedDateComponents: dateComponents)) // validated on the way in
     }
 }
 
