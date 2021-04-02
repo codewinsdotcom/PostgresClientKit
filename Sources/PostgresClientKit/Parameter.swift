@@ -52,10 +52,11 @@ internal struct Parameter {
                   allowedValues: [ "ISO, MDY", "ISO, DMY", "ISO, YMD" ],
                   valueSetWhenConnecting: "ISO, MDY"),
         
-        // PostgresClientKit requires timestamps and times received from the Postgres server to be
-        // in the UTC/GMT time zone.
+        // By default, PostgresClientKit configures the connection so that timestamps and times
+        // received from the Postgres server are in the UTC/GMT time zone.  This is for backward
+        // compatibility with earlier releases.  See #31.
         Parameter(name: "TimeZone",
-                  allowedValues: [ "GMT" ],
+                  allowedValues: nil,
                   valueSetWhenConnecting: "GMT"),
 
         // PostgresClientKit requires `bytea` values received from the Postgres server to be hex
