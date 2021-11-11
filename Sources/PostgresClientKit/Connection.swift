@@ -136,6 +136,11 @@ public class Connection: CustomStringConvertible {
                 throw PostgresError.sslNotSupported
             }
             
+            // The read buffer should be fully consumed at this point, so that the next byte read
+            // will have passed through SSL/TLS decryption.  If this is not the case, there must
+            // either be a server protocol error or a man-in-the-middle attack.
+            try verifyReadBufferFullyConsumed()
+            
             do {
                 let sslConfig = configuration.sslServiceConfiguration
                 let sslService = try SSLService(usingConfiguration: sslConfig)!
@@ -1210,6 +1215,12 @@ public class Connection: CustomStringConvertible {
         let c = try Character(Unicode.Scalar(readUInt8()))
         
         return c
+    }
+    
+    private func verifyReadBufferFullyConsumed() throws {
+        guard readBufferPosition == readBuffer.count else {
+            throw PostgresError.serverError(description: "response too long")
+        }
     }
     
     private func refillReadBuffer() throws {
