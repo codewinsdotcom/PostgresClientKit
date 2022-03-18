@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name     = "PostgresClientKit"
-  spec.version  = "1.4.1"
+  spec.version  = "1.4.3"
   spec.summary  = "A PostgreSQL client library for Swift. Does not require libpq."
   spec.homepage = "https://github.com/codewinsdotcom/PostgresClientKit"
   spec.license  = "Apache License, Version 2.0"
