@@ -20,7 +20,8 @@
 import Foundation
 
 /// Represents a Postgres `BYTEA` value (a byte array).
-public struct PostgresByteA: PostgresValueConvertible, Equatable, CustomStringConvertible {
+public struct PostgresByteA:
+    PostgresValueConvertible, Equatable, Decodable, CustomStringConvertible {
     
     /// Creates a `PostgresByteA` from the specified `Data`.
     ///
@@ -75,6 +76,24 @@ public struct PostgresByteA: PostgresValueConvertible, Equatable, CustomStringCo
     }
 
     
+    //
+    // MARK: Decodable
+    //
+    
+    public init(from decoder: Decoder) throws {
+        let rawValue = try decoder.singleValueContainer().decode(String.self)
+        
+        guard let value = PostgresByteA(rawValue) else {
+            throw DecodingError.typeMismatch(
+                PostgresByteA.self,
+                DecodingError.Context(codingPath: decoder.codingPath,
+                                      debugDescription: "Invalid value: \(rawValue)"))
+        }
+        
+        self = value
+    }
+
+
     //
     // MARK: CustomStringConvertible
     //

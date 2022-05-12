@@ -490,14 +490,22 @@ public class Connection: CustomStringConvertible {
             
         let cursor = Cursor(statement: statement, columns: columns)
         
+        // Because RowDecoder computes some derived state from the column metadata, we re-use the
+        // same RowDecoder instance for all rows in a cursor in order to amortize this cost.
+        let columnNameRowDecoder = (columns == nil) ? nil : RowDecoder(columns: columns)
+        
         // (The CursorState enum cases capture the Cursor id, rather than the Cursor instance, to
         // avoid a reference cycle.)
-        cursorState = .open(cursorId: cursor.id, bufferedRow: nil)
+        cursorState = .open(cursorId: cursor.id,
+                            columnNameRowDecoder: columnNameRowDecoder,
+                            bufferedRow: nil)
         
         // Retrieve and buffer the first row of the cursor, if any.  We do this to check whether
         // the execution failed, so we can throw an error from this method.
         if let firstRow = try nextRowOfCursor(cursor) {
-            cursorState = .open(cursorId: cursor.id, bufferedRow: firstRow)
+            cursorState = .open(cursorId: cursor.id,
+                                columnNameRowDecoder: columnNameRowDecoder,
+                                bufferedRow: firstRow)
         }
         
         return cursor
@@ -563,7 +571,7 @@ public class Connection: CustomStringConvertible {
         case closed
         
         /// There is a currently open cursor, with an optional buffered row.
-        case open(cursorId: String, bufferedRow: Row?)
+        case open(cursorId: String, columnNameRowDecoder: RowDecoder?, bufferedRow: Row?)
         
         /// There is a currently open cursor, but all rows have been retrieved.
         case drained(cursorId: String)
@@ -650,7 +658,9 @@ public class Connection: CustomStringConvertible {
         case .drained:
             row = nil
             
-        case let .open(cursorId: cursorId, bufferedRow: bufferedRow):
+        case let .open(cursorId: cursorId,
+                       columnNameRowDecoder: columnNameRowDecoder,
+                       bufferedRow: bufferedRow):
             
             do {
                 // Do we have a row buffered?
@@ -658,7 +668,9 @@ public class Connection: CustomStringConvertible {
                     
                     // Yes, so return it.
                     row = bufferedRow
-                    cursorState = .open(cursorId: cursorId, bufferedRow: nil)
+                    cursorState = .open(cursorId: cursorId,
+                                        columnNameRowDecoder: columnNameRowDecoder,
+                                        bufferedRow: nil)
                     
                 } else {
                     
@@ -689,7 +701,8 @@ public class Connection: CustomStringConvertible {
                         cursorState = .drained(cursorId: cursorId)
 
                     case let dataRowResponse as DataRowResponse:
-                        row = Row(columns: dataRowResponse.columns)
+                        row = Row(columns: dataRowResponse.columns,
+                                  columnNameRowDecoder: columnNameRowDecoder)
                         
                     default:
                         log(.warning, "Unexpected response: \(response)")
@@ -741,7 +754,7 @@ public class Connection: CustomStringConvertible {
         case .closed:
             return true
             
-        case let .open(cursorId: cursorId, bufferedRow: _):
+        case let .open(cursorId: cursorId, columnNameRowDecoder: _, bufferedRow: _):
             return cursorId != cursor.id
             
         case let .drained(cursorId: cursorId):

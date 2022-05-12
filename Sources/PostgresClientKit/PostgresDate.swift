@@ -26,7 +26,8 @@ import Foundation
 /// - day
 ///
 /// For example, `2019-03-14`.
-public struct PostgresDate: PostgresValueConvertible, Equatable, CustomStringConvertible {
+public struct PostgresDate:
+    PostgresValueConvertible, Equatable, Decodable, CustomStringConvertible {
     
     /// Creates a `PostgresDate` from components.
     ///
@@ -141,6 +142,24 @@ public struct PostgresDate: PostgresValueConvertible, Equatable, CustomStringCon
     }
 
     
+    //
+    // MARK: Decodable
+    //
+    
+    public init(from decoder: Decoder) throws {
+        let rawValue = try decoder.singleValueContainer().decode(String.self)
+        
+        guard let value = PostgresDate(rawValue) else {
+            throw DecodingError.typeMismatch(
+                PostgresDate.self,
+                DecodingError.Context(codingPath: decoder.codingPath,
+                                      debugDescription: "Invalid value: \(rawValue)"))
+        }
+        
+        self = value
+    }
+
+
     //
     // MARK: CustomStringConvertible
     //

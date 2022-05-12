@@ -85,6 +85,419 @@
                       </section>
                     </div>
                   </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit3RowV18decodeByColumnName_15defaultTimeZonexxm_10Foundation0jK0VSgtKSeRzlF"></a>
+                      <a name="//apple_ref/swift/Method/decodeByColumnName(_:defaultTimeZone:)" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit3RowV18decodeByColumnName_15defaultTimeZonexxm_10Foundation0jK0VSgtKSeRzlF">decodeByColumnName(_:defaultTimeZone:)</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Decodes this <code>Row</code> to create an instance of the specified type.</p>
+
+<p>The type specified must conform to the <code>Decodable</code> protocol.  This method uses the column
+metadata provided by <code><a href="../Classes/Cursor.html#/s:17PostgresClientKit6CursorC7columnsSayAA14ColumnMetadataVGSgvp">Cursor.columns</a></code> to create a new instance of that type whose stored
+properties are set to the values of like-named <code><a href="../Structs/Row.html#/s:17PostgresClientKit3RowV7columnsSayAA0A5ValueVGvp">columns</a></code>.  (To make this column metadata
+available, set <code>retrieveColumnMetadata</code> to <code>true</code> in calling
+<code><a href="../Classes/Statement.html#/s:17PostgresClientKit9StatementC7execute15parameterValues22retrieveColumnMetadataAA6CursorCSayAA0A16ValueConvertible_pSgG_SbtKF">Statement.execute(parameterValues:retrieveColumnMetadata:)</a></code>.)</p>
+
+<p>The supported property types are a superset of the types supported by <code><a href="../Structs/PostgresValue.html">PostgresValue</a></code>:</p>
+
+<table><thead>
+<tr>
+<th>Type of stored property</th>
+<th>Conversion performed</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>Bool</code></td>
+<td><code>postgresValue.bool()</code></td>
+</tr>
+<tr>
+<td><code>String</code></td>
+<td><code>postgresValue.string()</code></td>
+</tr>
+<tr>
+<td><code>Double</code></td>
+<td><code>postgresValue.double()</code></td>
+</tr>
+<tr>
+<td><code>Float</code></td>
+<td><code>Float(postgresValue.double())</code></td>
+</tr>
+<tr>
+<td><code>Int</code></td>
+<td><code>postgresValue.int()</code></td>
+</tr>
+<tr>
+<td><code>Int8</code></td>
+<td><code>Int8(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>Int16</code></td>
+<td><code>Int16(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>Int32</code></td>
+<td><code>Int32(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>Int64</code></td>
+<td><code>Int64(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>UInt</code></td>
+<td><code>UInt(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>UInt8</code></td>
+<td><code>UInt8(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>UInt16</code></td>
+<td><code>UInt16(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>UInt32</code></td>
+<td><code>UInt32(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>UInt64</code></td>
+<td><code>UInt64(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code><a href="../Structs/PostgresByteA.html">PostgresByteA</a></code></td>
+<td><code>postgresValue.byteA()</code></td>
+</tr>
+<tr>
+<td><code><a href="../Structs/PostgresTimestampWithTimeZone.html">PostgresTimestampWithTimeZone</a></code></td>
+<td><code>postgresValue.timestampWithTimeZone()</code></td>
+</tr>
+<tr>
+<td><code><a href="../Structs/PostgresTimestamp.html">PostgresTimestamp</a></code></td>
+<td><code>postgresValue.timestamp()</code></td>
+</tr>
+<tr>
+<td><code><a href="../Structs/PostgresDate.html">PostgresDate</a></code></td>
+<td><code>postgresValue.date()</code></td>
+</tr>
+<tr>
+<td><code><a href="../Structs/PostgresTime.html">PostgresTime</a></code></td>
+<td><code>postgresValue.time()</code></td>
+</tr>
+<tr>
+<td><code><a href="../Structs/PostgresTimeWithTimeZone.html">PostgresTimeWithTimeZone</a></code></td>
+<td><code>postgresValue.timeWithTimeZone()</code></td>
+</tr>
+<tr>
+<td><code>Date</code></td>
+<td>see below</td>
+</tr>
+</tbody></table>
+
+<p>Foundation <code>Date</code> stored properties are decoded as follows:</p>
+
+<ul>
+<li><code>postgresValue.timestampWithTimeZone().date</code>, if successful;</li>
+<li>otherwise <code>postgresValue.timestamp().date(in: defaultTimeZone)</code>, if successful;</li>
+<li>otherwise <code>postgresValue.date().date(in: defaultTimeZone)</code>, if successful;</li>
+<li>otherwise <code>postgresValue.time().date(in: defaultTimeZone)</code>, if successful;</li>
+<li>otherwise <code>postgresValue.timeWithTimeZone().date</code>, if successful</li>
+</ul>
+
+<p>(Instead of <code>Date</code>, consider using <code><a href="../Structs/PostgresTimestampWithTimeZone.html">PostgresTimestampWithTimeZone</a></code>, <code><a href="../Structs/PostgresTimestamp.html">PostgresTimestamp</a></code>,
+<code><a href="../Structs/PostgresDate.html">PostgresDate</a></code>, <code><a href="../Structs/PostgresTime.html">PostgresTime</a></code>, and <code><a href="../Structs/PostgresTimeWithTimeZone.html">PostgresTimeWithTimeZone</a></code> whenever possible.)</p>
+
+<p>Example:</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">Weather</span><span class="p">:</span> <span class="kt">Decodable</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">date</span><span class="p">:</span> <span class="kt">PostgresDate</span>
+    <span class="k">let</span> <span class="nv">city</span><span class="p">:</span> <span class="kt">String</span>
+    <span class="k">let</span> <span class="nv">temp_lo</span><span class="p">:</span> <span class="kt">Int</span>
+    <span class="k">let</span> <span class="nv">temp_hi</span><span class="p">:</span> <span class="kt">Int</span>
+    <span class="k">let</span> <span class="nv">prcp</span><span class="p">:</span> <span class="kt">Double</span><span class="p">?</span>
+<span class="p">}</span>
+
+<span class="k">let</span> <span class="nv">connection</span><span class="p">:</span> <span class="kt">Connection</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="c1">// Note that the columns must have the same names as the Weather</span>
+<span class="c1">// properties, but may be in a different order.</span>
+<span class="k">let</span> <span class="nv">text</span> <span class="o">=</span> <span class="s">"SELECT city, temp_lo, temp_hi, prcp, date FROM weather;"</span>
+<span class="k">let</span> <span class="nv">statement</span> <span class="o">=</span> <span class="k">try</span> <span class="n">connection</span><span class="o">.</span><span class="nf">prepareStatement</span><span class="p">(</span><span class="nv">text</span><span class="p">:</span> <span class="n">text</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">cursor</span> <span class="o">=</span> <span class="k">try</span> <span class="n">statement</span><span class="o">.</span><span class="nf">execute</span><span class="p">(</span><span class="nv">retrieveColumnMetadata</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">row</span> <span class="k">in</span> <span class="n">cursor</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">weather</span> <span class="o">=</span> <span class="k">try</span> <span class="n">row</span><span class="o">.</span><span class="nf">get</span><span class="p">()</span><span class="o">.</span><span class="nf">decodeByColumnName</span><span class="p">(</span><span class="kt">Weather</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+</code></pre>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    <code><a href="../Enums/PostgresError.html#/s:17PostgresClientKit0A5ErrorO26columnMetadataNotAvailableyA2CmF">PostgresError.columnMetadataNotAvailable</a></code> if column metadata is not available;
+      <code>DecodingError</code> if the operation otherwise fails
+
+</div>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">decodeByColumnName</span><span class="o">&lt;</span><span class="kt">T</span><span class="p">:</span> <span class="kt">Decodable</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">type</span><span class="p">:</span> <span class="kt">T</span><span class="o">.</span><span class="k">Type</span><span class="p">,</span>
+                                             <span class="n">defaultTimeZone</span><span class="p">:</span> <span class="kt">TimeZone</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">T</span></code></pre>
+
+                          </div>
+                        </div>
+                        <div>
+                          <h4>Parameters</h4>
+                          <table class="graybox">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>type</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>the type of instance to create</p>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>defaultTimeZone</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>the default time zone for certain conversions to Foundation <code>Date</code>
+(see above); if <code>nil</code> then the UTC time zone is used</p>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div>
+                          <h4>Return Value</h4>
+                          <p>an instance of the specified type</p>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:17PostgresClientKit3RowV19decodeByColumnIndex_15defaultTimeZonexxm_10Foundation0jK0VSgtKSeRzlF"></a>
+                      <a name="//apple_ref/swift/Method/decodeByColumnIndex(_:defaultTimeZone:)" class="dashAnchor"></a>
+                      <a class="token" href="#/s:17PostgresClientKit3RowV19decodeByColumnIndex_15defaultTimeZonexxm_10Foundation0jK0VSgtKSeRzlF">decodeByColumnIndex(_:defaultTimeZone:)</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Decodes this <code>Row</code> to create an instance of the specified type.</p>
+
+<p>The type specified must conform to the <code>Decodable</code> protocol.  This method matches <code><a href="../Structs/Row.html#/s:17PostgresClientKit3RowV7columnsSayAA0A5ValueVGvp">columns</a></code>
+to stored properties based on decoding order: the first property decoded is assigned the
+value of <code>columns[0]</code>, the second property is assigned the value of <code>columns[1]</code>, and so
+on.  By default, a <code>Decodable</code> type decodes its properties in declaration order.  This
+default behavior can be overridden by providing implementations of the <code>CodingKeys</code> enum
+and the <code>init(from:)</code> initializer.  Refer to <a href="https://developer.apple.com/documentation/foundation/archives_and_serialization/encoding_and_decoding_custom_types">Apple&rsquo;s developer documentation</a>
+for further information.</p>
+
+<p>The supported property types are a superset of the types supported by <code><a href="../Structs/PostgresValue.html">PostgresValue</a></code>:</p>
+
+<table><thead>
+<tr>
+<th>Type of stored property</th>
+<th>Conversion performed</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code>Bool</code></td>
+<td><code>postgresValue.bool()</code></td>
+</tr>
+<tr>
+<td><code>String</code></td>
+<td><code>postgresValue.string()</code></td>
+</tr>
+<tr>
+<td><code>Double</code></td>
+<td><code>postgresValue.double()</code></td>
+</tr>
+<tr>
+<td><code>Float</code></td>
+<td><code>Float(postgresValue.double())</code></td>
+</tr>
+<tr>
+<td><code>Int</code></td>
+<td><code>postgresValue.int()</code></td>
+</tr>
+<tr>
+<td><code>Int8</code></td>
+<td><code>Int8(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>Int16</code></td>
+<td><code>Int16(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>Int32</code></td>
+<td><code>Int32(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>Int64</code></td>
+<td><code>Int64(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>UInt</code></td>
+<td><code>UInt(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>UInt8</code></td>
+<td><code>UInt8(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>UInt16</code></td>
+<td><code>UInt16(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>UInt32</code></td>
+<td><code>UInt32(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code>UInt64</code></td>
+<td><code>UInt64(postgresValue.string())</code></td>
+</tr>
+<tr>
+<td><code><a href="../Structs/PostgresByteA.html">PostgresByteA</a></code></td>
+<td><code>postgresValue.byteA()</code></td>
+</tr>
+<tr>
+<td><code><a href="../Structs/PostgresTimestampWithTimeZone.html">PostgresTimestampWithTimeZone</a></code></td>
+<td><code>postgresValue.timestampWithTimeZone()</code></td>
+</tr>
+<tr>
+<td><code><a href="../Structs/PostgresTimestamp.html">PostgresTimestamp</a></code></td>
+<td><code>postgresValue.timestamp()</code></td>
+</tr>
+<tr>
+<td><code><a href="../Structs/PostgresDate.html">PostgresDate</a></code></td>
+<td><code>postgresValue.date()</code></td>
+</tr>
+<tr>
+<td><code><a href="../Structs/PostgresTime.html">PostgresTime</a></code></td>
+<td><code>postgresValue.time()</code></td>
+</tr>
+<tr>
+<td><code><a href="../Structs/PostgresTimeWithTimeZone.html">PostgresTimeWithTimeZone</a></code></td>
+<td><code>postgresValue.timeWithTimeZone()</code></td>
+</tr>
+<tr>
+<td><code>Date</code></td>
+<td>see below</td>
+</tr>
+</tbody></table>
+
+<p>Foundation <code>Date</code> stored properties are decoded as follows:</p>
+
+<ul>
+<li><code>postgresValue.timestampWithTimeZone().date</code>, if successful;</li>
+<li>otherwise <code>postgresValue.timestamp().date(in: defaultTimeZone)</code>, if successful;</li>
+<li>otherwise <code>postgresValue.date().date(in: defaultTimeZone)</code>, if successful;</li>
+<li>otherwise <code>postgresValue.time().date(in: defaultTimeZone)</code>, if successful;</li>
+<li>otherwise <code>postgresValue.timeWithTimeZone().date</code>, if successful</li>
+</ul>
+
+<p>(Instead of <code>Date</code>, consider using <code><a href="../Structs/PostgresTimestampWithTimeZone.html">PostgresTimestampWithTimeZone</a></code>, <code><a href="../Structs/PostgresTimestamp.html">PostgresTimestamp</a></code>,
+<code><a href="../Structs/PostgresDate.html">PostgresDate</a></code>, <code><a href="../Structs/PostgresTime.html">PostgresTime</a></code>, and <code><a href="../Structs/PostgresTimeWithTimeZone.html">PostgresTimeWithTimeZone</a></code> whenever possible.)</p>
+
+<p>Example:</p>
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">Weather</span><span class="p">:</span> <span class="kt">Decodable</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">city</span><span class="p">:</span> <span class="kt">String</span>
+    <span class="k">let</span> <span class="nv">lowestTemperature</span><span class="p">:</span> <span class="kt">Int</span>
+    <span class="k">let</span> <span class="nv">highestTemperature</span><span class="p">:</span> <span class="kt">Int</span>
+    <span class="k">let</span> <span class="nv">precipitation</span><span class="p">:</span> <span class="kt">Double</span><span class="p">?</span>
+    <span class="k">let</span> <span class="nv">date</span><span class="p">:</span> <span class="kt">PostgresDate</span>
+<span class="p">}</span>
+
+<span class="k">let</span> <span class="nv">connection</span><span class="p">:</span> <span class="kt">Connection</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="c1">// Notice that the columns must be in the same order as the Weather</span>
+<span class="c1">// properties, but may have different names.</span>
+<span class="k">let</span> <span class="nv">text</span> <span class="o">=</span> <span class="s">"SELECT city, temp_lo, temp_hi, prcp, date FROM weather;"</span>
+<span class="k">let</span> <span class="nv">statement</span> <span class="o">=</span> <span class="k">try</span> <span class="n">connection</span><span class="o">.</span><span class="nf">prepareStatement</span><span class="p">(</span><span class="nv">text</span><span class="p">:</span> <span class="n">text</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">cursor</span> <span class="o">=</span> <span class="k">try</span> <span class="n">statement</span><span class="o">.</span><span class="nf">execute</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">row</span> <span class="k">in</span> <span class="n">cursor</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">weather</span> <span class="o">=</span> <span class="k">try</span> <span class="n">row</span><span class="o">.</span><span class="nf">get</span><span class="p">()</span><span class="o">.</span><span class="nf">decodeByColumnIndex</span><span class="p">(</span><span class="kt">Weather</span><span class="o">.</span><span class="k">self</span><span class="p">)</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+</code></pre>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    <code>DecodingError</code> if the operation fails
+
+</div>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="n">decodeByColumnIndex</span><span class="o">&lt;</span><span class="kt">T</span><span class="p">:</span> <span class="kt">Decodable</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">type</span><span class="p">:</span> <span class="kt">T</span><span class="o">.</span><span class="k">Type</span><span class="p">,</span>
+                                              <span class="n">defaultTimeZone</span><span class="p">:</span> <span class="kt">TimeZone</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">T</span></code></pre>
+
+                          </div>
+                        </div>
+                        <div>
+                          <h4>Parameters</h4>
+                          <table class="graybox">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>type</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>the type of instance to create</p>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>defaultTimeZone</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>the default time zone for certain conversions to Foundation <code>Date</code>
+(see above); if <code>nil</code> then the UTC time zone is used</p>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div>
+                          <h4>Return Value</h4>
+                          <p>an instance of the specified type</p>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
                 </ul>
               </div>
               <div class="task-group">

@@ -31,7 +31,8 @@ import Foundation
 /// However, [due to a bug](https://stackoverflow.com/questions/23684727) in the Foundation
 /// `DateFormatter` class, only 3 fractional digits are preserved (millisecond resolution) in
 /// values sent to and received from the Postgres server.
-public struct PostgresTime: PostgresValueConvertible, Equatable, CustomStringConvertible {
+public struct PostgresTime:
+    PostgresValueConvertible, Equatable, Decodable, CustomStringConvertible {
     
     /// Creates a `PostgresTime` from components.
     ///
@@ -152,6 +153,24 @@ public struct PostgresTime: PostgresValueConvertible, Equatable, CustomStringCon
     }
 
     
+    //
+    // MARK: Decodable
+    //
+    
+    public init(from decoder: Decoder) throws {
+        let rawValue = try decoder.singleValueContainer().decode(String.self)
+        
+        guard let value = PostgresTime(rawValue) else {
+            throw DecodingError.typeMismatch(
+                PostgresTime.self,
+                DecodingError.Context(codingPath: decoder.codingPath,
+                                      debugDescription: "Invalid value: \(rawValue)"))
+        }
+        
+        self = value
+    }
+
+
     //
     // MARK: CustomStringConvertible
     //

@@ -36,7 +36,7 @@ import Foundation
 /// `DateFormatter` class, only 3 fractional digits are preserved (millisecond resolution) in
 /// values sent to and received from the Postgres server.
 public struct PostgresTimeWithTimeZone:
-    PostgresValueConvertible, Equatable, CustomStringConvertible {
+    PostgresValueConvertible, Equatable, Decodable, CustomStringConvertible {
     
     /// Creates a `PostgresTimeWithTimeZone` from components.
     ///
@@ -180,6 +180,24 @@ public struct PostgresTimeWithTimeZone:
     }
 
     
+    //
+    // MARK: Decodable
+    //
+    
+    public init(from decoder: Decoder) throws {
+        let rawValue = try decoder.singleValueContainer().decode(String.self)
+        
+        guard let value = PostgresTimeWithTimeZone(rawValue) else {
+            throw DecodingError.typeMismatch(
+                PostgresTimeWithTimeZone.self,
+                DecodingError.Context(codingPath: decoder.codingPath,
+                                      debugDescription: "Invalid value: \(rawValue)"))
+        }
+        
+        self = value
+    }
+
+
     //
     // MARK: CustomStringConvertible
     //
