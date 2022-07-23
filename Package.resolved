@@ -3,7 +3,7 @@
     "pins": [
       {
         "package": "Socket",
-        "repositoryURL": "https://github.com/IBM-Swift/BlueSocket.git",
+        "repositoryURL": "https://github.com/Kitura/BlueSocket.git",
         "state": {
           "branch": null,
           "revision": "270f7bd2ea9d81878022d604f4f3577ce6c1703d",
@@ -12,7 +12,7 @@
       },
       {
         "package": "SSLService",
-        "repositoryURL": "https://github.com/IBM-Swift/BlueSSLService",
+        "repositoryURL": "https://github.com/Kitura/BlueSSLService",
         "state": {
           "branch": null,
           "revision": "c249988fb748749739144e7f554710552acdc0bd",

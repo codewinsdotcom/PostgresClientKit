@@ -6,4 +6,4 @@ module: PostgresClientKit
 github_url: https://github.com/codewinsdotcom/PostgresClientKit
 disable_search: true
 theme: Jazzy/themes/jony_codewins
-xcodebuild_arguments: [-derivedDataPath,.jazzybuild,-scheme,PostgresClientKit-Package]
+xcodebuild_arguments: [-derivedDataPath,.jazzybuild]

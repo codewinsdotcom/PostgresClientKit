@@ -44,7 +44,7 @@ public struct ConnectionConfiguration {
     /// - Does not authenticate the server certificate
     /// - Does not present a client certificate
     ///
-    /// Refer to the [BlueSSLService documentation](https://github.com/IBM-Swift/BlueSSLService#creating-the-configuration)
+    /// Refer to the [BlueSSLService documentation](https://github.com/Kitura/BlueSSLService#creating-the-configuration)
     /// for additional information on how to initialize and configure the configuration.
     public var sslServiceConfiguration = SSLService.Configuration()
 

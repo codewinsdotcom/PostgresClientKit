@@ -200,8 +200,8 @@ PostgresClientKit uses [Semantic Versioning 2.0.0](https://semver.org).  For the
 
 ## Built with
 
-- [Kitura BlueSocket](https://github.com/IBM-Swift/BlueSocket) - socket library
-- [Kitura BlueSSLService](https://github.com/IBM-Swift/BlueSSLService) - SSL/TLS support
+- [Kitura BlueSocket](https://github.com/Kitura/BlueSocket) - socket library
+- [Kitura BlueSSLService](https://github.com/Kitura/BlueSSLService) - SSL/TLS support
 - [Jazzy](https://github.com/realm/jazzy) - generation of API documentation pages
 
 ## Authors

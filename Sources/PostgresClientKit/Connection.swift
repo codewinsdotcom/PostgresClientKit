@@ -1242,7 +1242,7 @@ public class Connection: CustomStringConvertible {
                 readCount = try socket.read(into: &readBuffer)
                 
                 if readCount == 0 {
-                    // Workaround https://github.com/IBM-Swift/BlueSSLService/issues/79.
+                    // Workaround https://github.com/Kitura/BlueSSLService/issues/79.
                     // This issue results in socket.read(...) returning 0 even though the
                     // socket is supposedly "blocking".
                     Thread.sleep(forTimeInterval: 0.01) // 10 ms
