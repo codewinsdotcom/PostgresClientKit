@@ -53,7 +53,6 @@ internal class RowDecoder {
     ///   - type: the type of instance to create
     ///   - postgresValues: the values of the columns for the row
     ///   - defaultTimeZone: the default time zone for certain conversions to Foundation `Date`
-    ///       (see above); if `nil` then the UTC time zone is used
     /// - Returns: an instance of the specified type
     /// - Throws: `DecodingError` if the operation fails
     func decode<T: Decodable>(_ type: T.Type,
