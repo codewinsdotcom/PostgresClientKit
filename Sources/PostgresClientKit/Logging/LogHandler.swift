@@ -64,7 +64,9 @@ public class ConsoleLogHandler: LogHandler {
                 .filter { $0.count > 0 }
                 .joined(separator: " ")
             
-            print("[\(prefix)] \(record.message)")
+            // print(...) buffers output, causing log output to not be correctly interleaved with
+            // XCTest output
+            FileHandle.standardOutput.write(("[\(prefix)] \(record.message)\n").data)
         }
     }
     

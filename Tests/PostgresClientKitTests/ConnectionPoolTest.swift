@@ -904,7 +904,7 @@ class ConnectionPoolTest: PostgresClientKitTestCase {
                     connections.append(connection)
                     expectation.fulfill()
                 } catch {
-                    print(error)
+                    Postgres.logger.info("<<< \(error) >>>")
                 }
             }
             
@@ -928,7 +928,7 @@ class ConnectionPoolTest: PostgresClientKitTestCase {
                 do {
                     _ = try result.get()
                 } catch {
-                    print(error)
+                    Postgres.logger.info("<<< \(error) >>>")
                 }
             }
         }

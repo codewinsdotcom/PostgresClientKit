@@ -72,15 +72,15 @@ class ConnectionPoolStressTest: PostgresClientKitTestCase {
                     switch error {
                     case PostgresError.tooManyRequestsForConnections: break // reported in metrics
                     case PostgresError.timedOutAcquiringConnection: break   // reported in metrics
-                    default: print(error)
+                    default: Postgres.logger.info("<<< \(error) >>>")
                     }
                 }
             }
         }
         
-        print("<<< Submitted final request; stopping in 5 seconds >>>")
+        Postgres.logger.info("<<< Submitted final request; stopping in 5 seconds >>>")
         Thread.sleep(forTimeInterval: 5.0)
-        print(pool.computeMetrics(reset: false))
+        Postgres.logger.info("<<< \(pool.computeMetrics(reset: false)) >>>")
     }
 }
 
