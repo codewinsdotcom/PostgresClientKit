@@ -23,6 +23,9 @@ public enum PostgresError: Error {
     /// The Postgres server requires a `Credential.cleartextPassword` for authentication.
     case cleartextPasswordCredentialRequired
     
+    /// `Cursor.columns` is nil, indicating column metadata is not available.
+    case columnMetadataNotAvailable
+    
     /// An attempt was made to operate on a closed connection.
     case connectionClosed
     

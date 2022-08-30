@@ -16,6 +16,8 @@ Concurrency is [an evolving area](https://gist.github.com/lattner/31ed37682ef157
 
 Postgres doesn't require the columns returned by a `SELECT` to be uniquely named (for example, in queries with joins or computed columns).  Name-based access is better left to a higher level, such as an object-relational mapper.
 
+That said, as of v1.5.0, PostgresClientKit can decode a row into a Swift type that conforms to the `Decodable` protocol, mapping columns to stored properties by either by or by position.  See the [API documentation](https://codewinsdotcom.github.io/PostgresClientKit/Docs/API/index.html) for `Row.decodeByColumnName(_:defaultTimeZone)` and `Row.decodeByColumnIndex(_:defaultTimeZone)`.
+
 ### In retrieving the value of a column, why do I need to specify the Swift type?
 
 To make Postgres-to-Swift type conversion explicit and robust, PostgresClientKit defers to the developer.  Should a SQL `NUMERIC` map to a Swift `Int`, `Double`, or `Decimal`?  Should a SQL `VARCHAR` map to a Swift `String` or an `Optional<String>`?  Answering these questions requires domain knowledge, which may not be encoded in the SQL data model, but which the developer (hopefully) has.
