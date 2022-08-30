@@ -35,7 +35,7 @@ internal class RowDecoder {
         inferColumnNames = (columns == nil) // whether to decode by column index
 
         for column in (columns ?? []) {
-            columnIndicesByName[column.name] = columnIndicesByName.count
+            _ = columnIndices.addColumn(name: column.name)
         }
     }
     
@@ -45,7 +45,7 @@ internal class RowDecoder {
     
     /// A map of columns' names (either explicitly provided by column metadata or inferred from the
     /// decoding order) to the indices of those columns' values.
-    private var columnIndicesByName = [String: Int]()
+    private let columnIndices = ColumnIndices()
     
     /// Decodes a row to create an instance of the specified type.
     ///
@@ -63,6 +63,35 @@ internal class RowDecoder {
                                        postgresValues: postgresValues,
                                        defaultTimeZone: defaultTimeZone))
     }
+    
+    private class ColumnIndices {
+        
+        // Postgres lowercases unquoted identifiers.  We similarly lowercase column names here,
+        // making comparisons case-insensitive (for example, "birthdate" matches "birthDate").
+        
+        // Note that a `Cursor` may have duplicated column names, so `indices.count` may not be
+        // equal to `count`.
+        
+        func addColumn(name: String) -> Int {
+            let index = count
+            indices[name.lowercased()] = index
+            count += 1
+            return index
+        }
+        
+        func indexOf(name: String) -> Int? {
+            return indices[name.lowercased()]
+        }
+        
+        // How many times addColumn(name:) was called.
+        private(set) var count = 0
+        
+        var columns: Set<String> {
+            return Set(indices.keys)
+        }
+        
+        private var indices = [String: Int]()
+    }
 
     // Inner class to hold per-row state.
     private class _RowDecoder: Decoder {
@@ -71,9 +100,6 @@ internal class RowDecoder {
             self.outer = outer
             self.postgresValues = postgresValues
             self.defaultTimeZone = defaultTimeZone
-
-            assert(outer.inferColumnNames ||
-                   outer.columnIndicesByName.count == postgresValues.count)
         }
         
         let outer: RowDecoder
@@ -83,11 +109,11 @@ internal class RowDecoder {
         // Gets the value of the column for the specified key.
         func value<T>(for key: CodingKey) throws -> T {
             
-            var index = outer.columnIndicesByName[key.stringValue]
+            var index = outer.columnIndices.indexOf(name: key.stringValue)
             
             if index == nil {
                 guard outer.inferColumnNames &&
-                        outer.columnIndicesByName.count < postgresValues.count else {
+                        outer.columnIndices.count < postgresValues.count else {
                     throw DecodingError.keyNotFound(
                         key,
                         DecodingError.Context(
@@ -96,8 +122,7 @@ internal class RowDecoder {
                 }
                 
                 // Add a new name-to-index mapping.
-                index = outer.columnIndicesByName.count
-                outer.columnIndicesByName[key.stringValue] = index
+                index = outer.columnIndices.addColumn(name: key.stringValue)
             }
             
             let postgresValue = postgresValues[index!]
@@ -200,15 +225,15 @@ internal class RowDecoder {
             var allKeys: [Key] {
                 // When decoding by column index, we can only return "all known keys".
                 // In any case, this method doesn't appear to ever get called.
-                outer.columnIndicesByName.keys.compactMap { Key(stringValue: $0) }
+                outer.columnIndices.columns.compactMap { Key(stringValue: $0) }
             }
             
             func contains(_ key: Key) -> Bool {
                 // When decoding by column index, we return true if we're prepared to add a new
                 // name-to-index mapping, even if we haven't heard of this column name until now.
-                return outer.columnIndicesByName[key.stringValue] != nil ||
+                return outer.columnIndices.indexOf(name: key.stringValue) != nil ||
                     (outer.inferColumnNames &&
-                     outer.columnIndicesByName.count < decoder.postgresValues.count)
+                     outer.columnIndices.count < decoder.postgresValues.count)
             }
             
             func value<T>(for key: Key) throws -> T {
