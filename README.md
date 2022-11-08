@@ -118,7 +118,25 @@ swift test
 
 ## Using
 
-### Swift Package Manager
+### From an Xcode project (as a package dependency)
+
+In Xcode:
+
+- Select File > Add Packages...
+
+- Enter the package URL: `https://github.com/codewinsdotcom/PostgresClientKit`
+
+- Set the package version requirements (see [Decide on Package Requirements](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app)).  For example, choose `Up To Next Major Version` and `1.0.0` to select the latest 1.x.x release of PostgresClientKit.
+
+- Click Add Package.
+
+Import to your source code file:
+
+```swift
+import PostgresClientKit
+```
+
+### From a standalone Swift package (`Package.swift`)
 
 In your `Package.swift` file:
 
@@ -146,7 +164,7 @@ Import to your source code file:
 import PostgresClientKit
 ```
 
-### CocoaPods
+### Using CocoaPods
 
 Add `PostgresClientKit` to your `Podfile`.  For example:
 
