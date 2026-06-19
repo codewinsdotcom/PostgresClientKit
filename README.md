@@ -1,5 +1,12 @@
 # PostgresClientKit
 
+> [!CAUTION]
+> This repository has been archived, and will no longer be updated or supported.
+>
+> [SwiftPostgresClient](https://github.com/willtemperley/swift-postgres-client) and
+> [PostgresNIO](https://github.com/vapor/postgres-nio) offer alternative Swift APIs
+> for operating against a PostgreSQL database.
+
 <p>
 
   <a href="https://codewinsdotcom.github.io/PostgresClientKit/Docs/API/index.html">
